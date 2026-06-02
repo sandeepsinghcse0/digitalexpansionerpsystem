@@ -15,6 +15,3 @@ export const config = {
     "/reports/:path*",
   ],
 };
-export default function middleware() {
-  return;
-}
