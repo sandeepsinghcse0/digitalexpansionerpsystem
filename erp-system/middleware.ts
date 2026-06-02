@@ -1,3 +1,3 @@
-export function middleware() {}
-
-export const config = {};
+export default function middleware() {
+  return;
+}
