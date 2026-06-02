@@ -15,7 +15,7 @@ export default function LoginPage() {
 
 	// Login State
 	const [loginEmail, setLoginEmail] = useState("");
-	const [loginPassword, setLoginPassword] = useState("");
+	const [loginPassword, setLoginPassword] = useState(""); 
 
 	// Signup State
 	const [signUpName, setSignUpName] = useState("");
