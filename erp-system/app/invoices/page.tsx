@@ -10,9 +10,7 @@ export default function InvoicePage() {
 
       <div className="flex-1 p-12">
         <Navbar />
-
         <StatsCards />
-
         <InvoiceTable />
       </div>
     </div>
