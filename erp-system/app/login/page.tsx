@@ -425,78 +425,6 @@ export default function LoginPage() {
 						)}
 					</div>
 				</div>
-
-				{/* Social Login Buttons */}
-				<div className="relative mt-10 w-full max-w-xl mx-auto z-10">
-
-					<div className="absolute inset-0 bg-black/20 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl"></div>
-
-					<div className="relative flex items-center justify-center gap-5 p-5">
-
-						{/* Github */}
-						<button
-							type="button"
-							className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center border border-gray-600 shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-2"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="white"
-								className="w-8 h-8"
-							>
-								<path d="M12 0C5.37 0 0 5.37 0 12a12 12 0 008.21 11.39c.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.41-4.03-1.41-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.72.08-.72 1.21.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.4 11.4 0 016 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58A12 12 0 0024 12c0-6.63-5.37-12-12-12z" />
-							</svg>
-						</button>
-
-						{/* LinkedIn */}
-						<button
-							type="button"
-							className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-800 flex items-center justify-center border border-blue-400 shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-2"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="white"
-								className="w-8 h-8"
-							>
-								<path d="M4.98 3.5C4.98 4.6 4.1 5.5 3 5.5S1.02 4.6 1.02 3.5 1.9 1.5 3 1.5s1.98.9 1.98 2zM1 8h4v15H1V8zm7 0h3.6v2.1h.1c.5-.9 1.7-2.1 3.5-2.1 3.7 0 4.4 2.4 4.4 5.6V23h-4v-7.4c0-1.8 0-4-2.5-4s-2.9 1.9-2.9 3.8V23H8V8z" />
-							</svg>
-						</button>
-
-						{/* YouTube */}
-						<button
-							type="button"
-							className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500 to-red-800 flex items-center justify-center border border-red-400 shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-2"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="white"
-								className="w-8 h-8"
-							>
-								<path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 00.5 6.2 31.4 31.4 0 000 12a31.4 31.4 0 00.5 5.8 3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1A31.4 31.4 0 0024 12a31.4 31.4 0 00-.5-5.8zM9.8 15.5v-7L16 12l-6.2 3.5z" />
-							</svg>
-						</button>
-
-						{/* Discord */}
-						<button
-							type="button"
-							className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-800 flex items-center justify-center border border-indigo-400 shadow-xl transition-all duration-300 hover:scale-110 hover:-translate-y-2"
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								fill="white"
-								className="w-8 h-8"
-							>
-								<path d="M20.3 4.4A19.8 19.8 0 0015.4 3l-.2.4c-.2.4-.4.8-.6 1.2a18 18 0 00-5.2 0 13 13 0 00-.6-1.2L8.6 3a19.7 19.7 0 00-4.9 1.4C1.1 8.1.2 11.6.6 15.1a20 20 0 005.9 3 .1.1 0 00.1 0c.5-.6.9-1.2 1.2-1.9a12 12 0 01-1.8-.9.1.1 0 010-.2l.4-.3a.1.1 0 01.1 0c3.8 1.7 7.9 1.7 11.7 0a.1.1 0 01.1 0l.4.3a.1.1 0 010 .2 12 12 0 01-1.8.9c.3.7.7 1.3 1.2 1.9a.1.1 0 00.1 0 20 20 0 005.9-3c.5-4-.8-7.5-3.5-10.7z" />
-							</svg>
-						</button>
-
-					</div>
-				</div>
-
-
 				{/* Footer */}
 				<div className="mt-6 text-center text-sm text-slate-400">
 					<Link
@@ -510,4 +438,4 @@ export default function LoginPage() {
 		</div>
 	);
 }
-}
+
