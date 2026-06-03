@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
@@ -8,32 +10,60 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
+  const pathname = usePathname();
+
+  const menuItems = [
+    {
+      name: "Dashboard",
+      href: "/",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "Invoice",
+      href: "/invoices",
+      icon: FileText,
+    },
+    {
+      name: "Payments",
+      href: "/payments",
+      icon: CreditCard,
+    },
+    {
+      name: "Settings",
+      href: "/settings",
+      icon: Settings,
+    },
+  ];
+
   return (
     <div className="w-72 min-h-screen bg-[#071028] border-r border-slate-800 p-8">
       <h1 className="text-3xl font-bold text-white mb-14">
         Digital Expansion
       </h1>
 
-      <div className="space-y-5">
-        <button className="flex items-center gap-4 text-slate-300 hover:text-white text-lg">
-          <LayoutDashboard size={22} />
-          Dashboard
-        </button>
+      <div className="space-y-4">
+        {menuItems.map((item) => {
+          const Icon = item.icon;
 
-        <button className="flex items-center gap-4 text-white bg-blue-600 px-5 py-4 rounded-2xl w-full text-lg font-medium shadow-lg">
-          <FileText size={22} />
-          Invoice
-        </button>
+          const active =
+            pathname === item.href ||
+            pathname.startsWith(item.href + "/");
 
-        <button className="flex items-center gap-4 text-slate-300 hover:text-white text-lg">
-          <CreditCard size={22} />
-          Payments
-        </button>
-
-        <button className="flex items-center gap-4 text-slate-300 hover:text-white text-lg">
-          <Settings size={22} />
-          Settings
-        </button>
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`flex items-center gap-4 px-5 py-4 rounded-2xl text-lg font-medium transition-all duration-200 ${
+                active
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "text-slate-300 hover:text-white hover:bg-slate-800"
+              }`}
+            >
+              <Icon size={22} />
+              {item.name}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
