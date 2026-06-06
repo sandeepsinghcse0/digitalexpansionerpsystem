@@ -1,16 +1,29 @@
 import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "../../../../prisma/lib/prisma";
 import bcrypt from "bcryptjs";
 
 const handler = NextAuth({
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: {
+          label: "Email",
+          type: "email",
+        },
+        password: {
+          label: "Password",
+          type: "password",
+        },
       },
+
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
@@ -18,8 +31,12 @@ const handler = NextAuth({
 
         try {
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email },
-            include: { tenant: true },
+            where: {
+              email: credentials.email,
+            },
+            include: {
+              tenant: true,
+            },
           });
 
           if (!user) {
@@ -48,26 +65,81 @@ const handler = NextAuth({
       },
     }),
   ],
+
   pages: {
     signIn: "/login",
-    error: "/login?error=CredentialsSignin",
+    error: "/login",
   },
+
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.tenant_id = user.tenant_id;
+    async signIn({ user, account }) {
+      if (
+        account?.provider === "google" &&
+        user.email
+      ) {
+        const existingUser =
+          await prisma.user.findUnique({
+            where: {
+              email: user.email,
+            },
+          });
+
+        if (!existingUser) {
+          const tenant =
+            await prisma.tenant.create({
+              data: {
+                business_name:
+                  user.name || "Google User",
+                email: user.email,
+              },
+            });
+
+          await prisma.user.create({
+            data: {
+              name: user.name || "User",
+              email: user.email,
+              password: "",
+              tenant_id: tenant.id,
+            },
+          });
+        }
       }
+
+      return true;
+    },
+
+    async jwt({ token, user }) {
+      if (user?.email) {
+        const dbUser =
+          await prisma.user.findUnique({
+            where: {
+              email: user.email,
+            },
+          });
+
+        if (dbUser) {
+          token.id = dbUser.id.toString();
+          token.tenant_id =
+            dbUser.tenant_id.toString();
+        }
+      }
+
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.tenant_id = token.tenant_id as string;
+        session.user.id =
+          token.id as string;
+
+        session.user.tenant_id =
+          token.tenant_id as string;
       }
+
       return session;
     },
   },
+
   secret: process.env.NEXTAUTH_SECRET,
 });
 
