@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import Sidebar from "./components/Sidebar";
-import Topbar from "./components/Topbar";
-import CustomerHeader from "./components/CustomerHeader";
-import StatsCards from "./components/StatsCards";
-import CustomerTable from "./components/CustomerTable";
-import AddCustomerModal from "./components/AddCustomerModel";
-import CustomerFilters from "./components/CustomerFilters";
+import Sidebar from "../components/Sidebar";
+import Topbar from "../components/Topbar";
+import CustomerHeader from "../components/CustomerHeader";
+import StatsCards from "../components/StatsCards";
+import CustomerTable from "../components/CustomerTable";
+import AddCustomerModal from "../components/AddCustomerModal";
+import CustomerFilters from "../components/CustomerFilters";
 
 type Customer = {
   id: number;
@@ -183,18 +183,7 @@ useEffect(() => {
           />
 
           {/* Stats */}
-          <StatsCards
-            totalCustomers={
-              customers.length
-            }
-            activeCustomers={
-              customers.filter(
-                (c) =>
-                  c.status ===
-                  "Active"
-              ).length
-            }
-          />
+          <StatsCards />
 
           {/* Filters */}
           <CustomerFilters
