@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import Sidebar from "./components/Sidebar";
-import Topbar from "./components/Topbar";
-import CustomerHeader from "./components/CustomerHeader";
-import StatsCards from "./components/StatsCards";
-import CustomerTable from "./components/CustomerTable";
-import AddCustomerModal from "./components/AddCustomerModel";
-import CustomerFilters from "./components/CustomerFilters";
+import Sidebar from "../components/Sidebar";
+import Topbar from "../components/Topbar";
+import CustomerHeader from "../components/CustomerHeader";
+import StatsCards from "../components/StatsCards";
+import CustomerTable from "../components/CustomerTable";
+import AddCustomerModal from "../components/AddCustomerModal";
+import CustomerFilters from "../components/CustomerFilters";
 
 type Customer = {
   id: number;
@@ -42,51 +42,54 @@ export default function CustomersPage() {
     null
   );
 
-  // Load customers from localStorage
-  useEffect(() => {
-    const storedCustomers =
-      localStorage.getItem(
-        "customers"
-      );
-
-    if (storedCustomers) {
-      setCustomers(
-        JSON.parse(
-          storedCustomers
-        )
-      );
-    }
-  }, []);
-
-  // Save customers to localStorage
-  useEffect(() => {
-    localStorage.setItem(
-      "customers",
-      JSON.stringify(customers)
+  // Load customers from database
+useEffect(() => {
+  fetch("/api/auth/customers")
+    .then((res) => res.json())
+    .then((data) => setCustomers(data))
+    .catch((err) =>
+      console.error(
+        "Error loading customers:",
+        err
+      )
     );
-  }, [customers]);
+}, []);
 
   // Add or Edit customer
-  const handleSaveCustomer = (
-    customer: Customer
-  ) => {
-    if (editingCustomer) {
-      setCustomers((prev) =>
-        prev.map((c) =>
-          c.id === customer.id
-            ? customer
-            : c
-        )
-      );
-    } else {
-      setCustomers((prev) => [
-        customer,
-        ...prev,
-      ]);
-    }
+  const handleSaveCustomer = async (
+  customer: Customer
+) => {
+  try {
+    const response = await fetch(
+      "/api/auth/customers",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify(
+          customer
+        ),
+      }
+    );
+
+    const newCustomer =
+      await response.json();
+
+    setCustomers((prev) => [
+      newCustomer,
+      ...prev,
+    ]);
 
     setEditingCustomer(null);
-  };
+  } catch (error) {
+    console.error(error);
+    alert(
+      "Failed to save customer"
+    );
+  }
+};
 
   // Delete customer
   const handleDeleteCustomer = (
@@ -180,18 +183,7 @@ export default function CustomersPage() {
           />
 
           {/* Stats */}
-          <StatsCards
-            totalCustomers={
-              customers.length
-            }
-            activeCustomers={
-              customers.filter(
-                (c) =>
-                  c.status ===
-                  "Active"
-              ).length
-            }
-          />
+          <StatsCards />
 
           {/* Filters */}
           <CustomerFilters

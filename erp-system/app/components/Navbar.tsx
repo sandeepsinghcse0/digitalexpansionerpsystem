@@ -1,4 +1,10 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 export default function Navbar() {
+  const router = useRouter();
+
   return (
     <div className="flex justify-between items-center mb-12">
       <div>
@@ -11,7 +17,10 @@ export default function Navbar() {
         </p>
       </div>
 
-      <button className="bg-blue-600 hover:bg-blue-700 px-7 py-4 rounded-2xl text-white text-lg font-medium shadow-lg transition">
+      <button
+        onClick={() => router.push("/invoices/create")}
+        className="bg-blue-600 hover:bg-blue-700 px-7 py-4 rounded-2xl text-white text-lg font-medium"
+      >
         + Create Invoice
       </button>
     </div>
