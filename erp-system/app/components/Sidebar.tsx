@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Wallet } from "lucide-react";
 
 import {
   LayoutDashboard,
@@ -22,6 +23,11 @@ export default function Sidebar() {
       icon: LayoutDashboard,
     },
     {
+      name: "Expenses",
+      href: "/expenses",
+      icon: Wallet,
+    },
+    {
       name: "Customers",
       href: "/customers",
       icon: Users,
@@ -35,11 +41,6 @@ export default function Sidebar() {
       name: "Invoices",
       href: "/invoices",
       icon: FileText,
-    },
-    {
-      name: "Expenses",
-      href: "/expenses",
-      icon: CreditCard,
     },
     {
       name: "Reports",
