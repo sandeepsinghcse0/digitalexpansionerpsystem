@@ -1,30 +1,25 @@
 import { prisma } from "./prisma/lib/prisma";
 
 async function main() {
+  const tenant = await prisma.tenant.create({
+    data: {
+      business_name: "Sample Org",
+      email: "sample@prisma.io",
+    },
+  });
+
   const user = await prisma.user.create({
     data: {
       name: "Alice",
       email: "alice@prisma.io",
-      posts: {
-        create: {
-          title: "Hello World",
-          content: "This is my first post!",
-          published: true,
-        },
-      },
-    },
-    include: {
-      posts: true,
+      password: "password123",
+      tenant_id: tenant.id,
     },
   });
+
   console.log("Created user:", user);
 
-  // Fetch all users with their posts
-  const allUsers = await prisma.user.findMany({
-    include: {
-      posts: true,
-    },
-  });
+  const allUsers = await prisma.user.findMany();
   console.log("All users:", JSON.stringify(allUsers, null, 2));
 }
 
