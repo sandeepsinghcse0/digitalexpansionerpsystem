@@ -1,6 +1,6 @@
 "use client";
+import { useState, useEffect } from "react";
 import ExpenseChart from "../components/ExpenseChart";
-import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
 export default function ExpensesPage() {
@@ -8,26 +8,25 @@ const [showModal, setShowModal] = useState(false);
 const [searchTerm, setSearchTerm] = useState("");
 const [selectedCategory, setSelectedCategory] = useState("All");
 const [editingIndex, setEditingIndex] = useState<number | null>(null);
-const [expenses, setExpenses] = useState([
-{
-title: "Internet Bill",
-category: "Utilities",
-amount: 1200,
-date: "2026-06-10",
-status: "Paid",
-},
-{
-title: "Google Ads",
-category: "Marketing",
-amount: 5000,
-date: "2026-06-08",
-status: "Pending",
-},
-]);
+const [editingId, setEditingId] =
+  useState<number | null>(null);
+const [expenses, setExpenses] = useState<any[]>([]);
 
-const handleDeleteExpense = (indexToDelete: number) => {
+const handleDeleteExpense = async (
+  expenseId: number
+) => {
+  await fetch(
+    `/api/expenses/${expenseId}`,
+    {
+      method: "DELETE",
+    }
+  );
+
   setExpenses(
-    expenses.filter((_, index) => index !== indexToDelete)
+    expenses.filter(
+      (expense) =>
+        expense.id !== expenseId
+    )
   );
 };
 const [title, setTitle] = useState("");
@@ -36,10 +35,54 @@ const [category, setCategory] = useState("Utilities");
 const [date, setDate] = useState("");
 const [description, setDescription] = useState("");
 
+useEffect(() => {
+  fetch("/api/expenses")
+    .then((res) => res.json())
+    .then((data) => {
+      const formattedExpenses = data.map(
+  (expense: any) => ({
+    id: expense.id,
+    title: expense.description,
+    category: expense.category?.name ?? "Utilities",
+    amount: expense.amount,
+    date: expense.expense_date.split("T")[0],
+    status: "Paid",
+  })
+);
+
+      setExpenses(formattedExpenses);
+    });
+}, []);
+
+console.log("FIRST:", expenses[0]);
+console.log("ALL:", expenses);
+
 const handleAddExpense = async (
   e: React.FormEvent
 ) => {
   e.preventDefault();
+  if (editingId) {
+  await fetch(
+    `/api/expenses/${editingId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        description: title,
+        amount,
+        date,
+        notes: description,
+        category,
+      }),
+    }
+  );
+
+  window.location.reload();
+  return;
+}
   alert("SAVE CLICKED");
 
   if (!title || !amount || !date) return;
@@ -52,25 +95,28 @@ const handleAddExpense = async (
         "Content-Type":
           "application/json",
       },
-      body: JSON.stringify({
-        description: title,
-        amount,
-        date,
-        notes: description,
-      }),
+body: JSON.stringify({
+  description: title,
+  amount,
+  date,
+  notes: description,
+  category,
+}),
     }
   );
 
-  const savedExpense =
-    await response.json();
+ console.log("STATUS:", response.status);
 
-  console.log(savedExpense);
+const savedExpense = await response.json();
+
+console.log("RESPONSE:", savedExpense);
 
 setExpenses([
   {
-    title,
+    id: savedExpense.id,
+    title: savedExpense.description,
     category,
-    amount: Number(amount),
+    amount: savedExpense.amount,
     date,
     status: "Paid",
   },
@@ -85,10 +131,12 @@ setDescription("");
 
 setShowModal(false);
 };
-const filteredExpenses = expenses.filter((expense) => {
-  const matchesSearch = expense.title
-    .toLowerCase()
-    .includes(searchTerm.toLowerCase());
+console.log(
+  JSON.stringify(expenses, null, 2)
+);const filteredExpenses = expenses.filter((expense) => {
+ const matchesSearch = (expense.title ?? "")
+  .toLowerCase()
+  .includes(searchTerm.toLowerCase());
 
   const matchesCategory =
     selectedCategory === "All" ||
@@ -267,6 +315,7 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
     <button
       onClick={() => {
         setEditingIndex(index);
+        setEditingId(expense.id);
 
         setTitle(expense.title);
         setAmount(expense.amount.toString());
@@ -281,7 +330,9 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
     </button>
 
     <button
-      onClick={() => handleDeleteExpense(index)}
+      onClick={() =>
+  handleDeleteExpense(expense.id)
+}
       className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg"
     >
       Delete
@@ -295,7 +346,9 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
       </div>
     </div>
 
-    <ExpenseChart expenses={expenses} />
+    <div className="w-full mt-8">
+  <ExpenseChart expenses={expenses} />
+</div>
 
     {/* Modal */}
     {showModal && (
