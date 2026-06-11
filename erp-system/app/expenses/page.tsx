@@ -1,5 +1,5 @@
 "use client";
-
+import ExpenseChart from "../components/ExpenseChart";
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 
@@ -35,38 +35,55 @@ const [amount, setAmount] = useState("");
 const [category, setCategory] = useState("Utilities");
 const [date, setDate] = useState("");
 const [description, setDescription] = useState("");
-const handleAddExpense = (e: React.FormEvent) => {
+
+const handleAddExpense = async (
+  e: React.FormEvent
+) => {
   e.preventDefault();
+  alert("SAVE CLICKED");
 
   if (!title || !amount || !date) return;
 
-  const expenseData = {
+  const response = await fetch(
+    "/api/expenses",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+      body: JSON.stringify({
+        description: title,
+        amount,
+        date,
+        notes: description,
+      }),
+    }
+  );
+
+  const savedExpense =
+    await response.json();
+
+  console.log(savedExpense);
+
+setExpenses([
+  {
     title,
     category,
     amount: Number(amount),
     date,
     status: "Paid",
-  };
+  },
+  ...expenses,
+]);
 
-  if (editingIndex !== null) {
-    const updatedExpenses = [...expenses];
+setTitle("");
+setAmount("");
+setCategory("Utilities");
+setDate("");
+setDescription("");
 
-    updatedExpenses[editingIndex] = expenseData;
-
-    setExpenses(updatedExpenses);
-
-    setEditingIndex(null);
-  } else {
-    setExpenses([expenseData, ...expenses]);
-  }
-
-  setTitle("");
-  setAmount("");
-  setCategory("Utilities");
-  setDate("");
-  setDescription("");
-
-  setShowModal(false);
+setShowModal(false);
 };
 const filteredExpenses = expenses.filter((expense) => {
   const matchesSearch = expense.title
@@ -277,6 +294,8 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
         </table>
       </div>
     </div>
+
+    <ExpenseChart expenses={expenses} />
 
     {/* Modal */}
     {showModal && (
