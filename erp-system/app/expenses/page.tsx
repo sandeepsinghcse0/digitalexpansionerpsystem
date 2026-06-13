@@ -1,4 +1,6 @@
 "use client";
+import ExpenseStats from "../components/ExpenseStats";
+import ExpenseFilters from "../components/ExpenseFilters";
 import { useState, useEffect } from "react";
 import ExpenseChart from "../components/ExpenseChart";
 import Sidebar from "../components/Sidebar";
@@ -11,6 +13,11 @@ const [editingIndex, setEditingIndex] = useState<number | null>(null);
 const [editingId, setEditingId] =
   useState<number | null>(null);
 const [expenses, setExpenses] = useState<any[]>([]);
+const totalExpenses = expenses.reduce(
+  (sum, expense) =>
+    sum + Number(expense.amount || 0),
+  0
+);
 
 const handleDeleteExpense = async (
   expenseId: number
@@ -40,22 +47,19 @@ useEffect(() => {
     .then((res) => res.json())
     .then((data) => {
       const formattedExpenses = data.map(
-  (expense: any) => ({
-    id: expense.id,
-    title: expense.description,
-    category: expense.category?.name ?? "Utilities",
-    amount: expense.amount,
-    date: expense.expense_date.split("T")[0],
-    status: "Paid",
-  })
-);
+        (expense: any) => ({
+          id: expense.id,
+          title: expense.description,
+          category: expense.category?.name || "Unknown",
+          amount: expense.amount,
+          date: expense.expense_date.split("T")[0],
+          status: "Paid",
+        })
+      );
 
       setExpenses(formattedExpenses);
     });
 }, []);
-
-console.log("FIRST:", expenses[0]);
-console.log("ALL:", expenses);
 
 const handleAddExpense = async (
   e: React.FormEvent
@@ -80,8 +84,10 @@ const handleAddExpense = async (
     }
   );
 
-  window.location.reload();
-  return;
+  setEditingId(null);
+setEditingIndex(null);
+window.location.reload();
+return;
 }
   alert("SAVE CLICKED");
 
@@ -131,9 +137,7 @@ setDescription("");
 
 setShowModal(false);
 };
-console.log(
-  JSON.stringify(expenses, null, 2)
-);const filteredExpenses = expenses.filter((expense) => {
+const filteredExpenses = expenses.filter((expense) => {
  const matchesSearch = (expense.title ?? "")
   .toLowerCase()
   .includes(searchTerm.toLowerCase());
@@ -145,15 +149,15 @@ console.log(
   return matchesSearch && matchesCategory;
 });
 
-const totalExpenses = expenses.reduce(
-  (sum, expense) => sum + expense.amount,
-  0
-);
-
 const highestExpense =
   expenses.length > 0
-    ? Math.max(...expenses.map((e) => e.amount))
+    ? Math.max(
+        ...expenses.map((e) =>
+          Number(e.amount || 0)
+        )
+      )
     : 0;
+
 
 const totalCount = expenses.length;
 
@@ -184,64 +188,21 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
 </button>
     </div>
 
-    {/* Stats Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {[
-  {
-    title: "Total Expenses",
-    value: `₹${totalExpenses}`,
-  },
-  {
-    title: "Total Records",
-    value: totalCount,
-  },
-  {
-    title: "Highest Expense",
-    value: `₹${highestExpense}`,
-  },
-  {
-    title: "Categories",
-    value: 4,
-  },
-].map((card) => (
-        <div
-          key={card.title}
-          className="bg-[#071028] border border-slate-800 rounded-2xl p-6"
-        >
-          <p className="text-gray-400 text-sm">
-            {card.title}
-          </p>
+  
+{/* Stats Cards */}
+<ExpenseStats
+  totalExpenses={totalExpenses}
+  totalCount={totalCount}
+  highestExpense={highestExpense}
+/>
 
-          <h2 className="text-3xl font-bold text-white mt-2">
-            {card.value}
-          </h2>
-        </div>
-      ))}
-    </div>
-
-   <div className="flex gap-4 mb-6">
-  <input
-    type="text"
-    placeholder="🔍 Search expenses..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-full md:w-80 bg-[#071028] border border-slate-800 rounded-xl px-4 py-3 text-white"
-  />
-
-  <select
-    value={selectedCategory}
-    onChange={(e) => setSelectedCategory(e.target.value)}
-    className="bg-[#071028] border border-slate-800 rounded-xl px-4 py-3 text-white"
-  >
-    <option value="All">All Categories</option>
-    <option value="Utilities">Utilities</option>
-    <option value="Marketing">Marketing</option>
-    <option value="Travel">Travel</option>
-    <option value="Office Supplies">
-      Office Supplies
-    </option>
-  </select>
-</div>
+{/* Filters */}
+<ExpenseFilters
+  searchTerm={searchTerm}
+  setSearchTerm={setSearchTerm}
+  selectedCategory={selectedCategory}
+  setSelectedCategory={setSelectedCategory}
+/>
 
 
     {/* Expense Table */}
