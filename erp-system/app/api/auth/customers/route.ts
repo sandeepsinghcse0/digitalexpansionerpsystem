@@ -35,10 +35,45 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(customer);
   } catch (error) {
-    console.error(error);
+    console.error("CREATE ERROR:", error);
 
     return NextResponse.json(
-      { message: "Error creating customer" },
+      {
+        message: "Error creating customer",
+        error: String(error),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+
+    const customer = await prisma.customer.update({
+      where: {
+        id: body.id,
+      },
+      data: {
+        name: body.name,
+        email: body.email,
+        phone: body.phone,
+        city: body.city,
+        status: body.status,
+        gstNumber: body.gstNumber,
+      },
+    });
+
+    return NextResponse.json(customer);
+  } catch (error) {
+    console.error("UPDATE ERROR:", error);
+
+    return NextResponse.json(
+      {
+        message: "Error updating customer",
+        error: String(error),
+      },
       { status: 500 }
     );
   }

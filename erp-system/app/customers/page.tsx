@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import CustomerHeader from "./components/CustomerHeader";
-import StatsCards from "./components/StatsCards";
-import CustomerTable from "./components/CustomerTable";
+import StatsCards from "../components/StatsCards";
+import CustomerTable from "./components/CustomerTable.tsx";
 import AddCustomerModal from "./components/AddCustomerModel";
 import CustomerFilters from "./components/CustomerFilters";
 
@@ -63,7 +63,9 @@ useEffect(() => {
     const response = await fetch(
       "/api/auth/customers",
       {
-        method: "POST",
+        method: editingCustomer
+          ? "PATCH"
+          : "POST",
         headers: {
           "Content-Type":
             "application/json",
@@ -77,10 +79,20 @@ useEffect(() => {
     const newCustomer =
       await response.json();
 
-    setCustomers((prev) => [
-      newCustomer,
-      ...prev,
-    ]);
+    if (editingCustomer) {
+  setCustomers((prev) =>
+    prev.map((c) =>
+      c.id === newCustomer.id
+        ? newCustomer
+        : c
+    )
+  );
+} else {
+  setCustomers((prev) => [
+    newCustomer,
+    ...prev,
+  ]);
+}
 
     setEditingCustomer(null);
   } catch (error) {

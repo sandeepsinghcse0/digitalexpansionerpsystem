@@ -129,11 +129,13 @@ const handler = NextAuth({
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.id =
-          token.id as string;
+        const user = session.user as {
+          id?: string;
+          tenant_id?: string;
+        } & typeof session.user;
 
-        session.user.tenant_id =
-          token.tenant_id as string;
+        user.id = token.id as string;
+        user.tenant_id = token.tenant_id as string;
       }
 
       return session;
