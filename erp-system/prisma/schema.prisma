@@ -514,3 +514,6 @@ model Expense {
   @@index([category_id])
   @@index([expense_date])
 }
+
+
+

@@ -79,28 +79,6 @@ CREATE TABLE `Address` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Customer` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `tenant_id` INTEGER NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NULL,
-    `phone` VARCHAR(191) NULL,
-    `mobile` VARCHAR(191) NULL,
-    `gst_number` VARCHAR(191) NULL,
-    `pan_number` VARCHAR(191) NULL,
-    `credit_limit` DOUBLE NOT NULL DEFAULT 0,
-    `payment_terms` VARCHAR(191) NULL,
-    `status` ENUM('ACTIVE', 'INACTIVE', 'SUSPENDED') NOT NULL DEFAULT 'ACTIVE',
-    `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updated_at` DATETIME(3) NOT NULL,
-
-    INDEX `Customer_tenant_id_idx`(`tenant_id`),
-    INDEX `Customer_gst_number_idx`(`gst_number`),
-    UNIQUE INDEX `Customer_tenant_id_email_key`(`tenant_id`, `email`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `ProductCategory` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `tenant_id` INTEGER NOT NULL,

@@ -1,34 +1,68 @@
-"use client";
 
+import { prisma } from "@/lib/db/prisma";
 import Link from "next/link";
 
-export default function DashboardPage() {
-  const stats = [
-    {
-      title: "Customers",
-      value: "0",
-      icon: "👥",
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      title: "Products",
-      value: "0",
-      icon: "📦",
-      color: "from-purple-500 to-indigo-500",
-    },
-    {
-      title: "Sales",
-      value: "₹0",
-      icon: "💰",
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      title: "Expenses",
-      value: "₹0",
-      icon: "💳",
-      color: "from-red-500 to-pink-500",
-    },
-  ];
+export default async function DashboardPage() {
+
+  const totalCustomers = await prisma.customer.count();
+
+const totalInvoices = await prisma.invoice.count();
+
+const revenue = await prisma.invoice.aggregate({
+  _sum: {
+    total_amount: true,
+  },
+});
+
+const paidInvoices = await prisma.invoice.count({
+  where: {
+    status: "PAID" as any,
+  },
+});
+
+const recentCustomers = await prisma.customer.findMany({
+  take: 5,
+  orderBy: {
+    created_at: "desc",
+  },
+});
+
+const latestInvoices = await prisma.invoice.findMany({
+  take: 5,
+  orderBy: {
+    created_at: "desc",
+  },
+  include: {
+    customer: true,
+  },
+});
+  
+const stats = [
+  {
+    title: "Customers",
+    value: totalCustomers,
+    icon: "👥",
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
+    title: "Invoices",
+    value: totalInvoices,
+    icon: "🧾",
+    color: "from-purple-500 to-indigo-500",
+  },
+  {
+    title: "Revenue",
+    value: `₹${revenue._sum.total_amount || 0}`,
+    icon: "💰",
+    color: "from-green-500 to-emerald-500",
+  },
+  {
+    title: "Paid",
+    value: paidInvoices,
+    icon: "✅",
+    color: "from-yellow-500 to-orange-500",
+  },
+];
 
   return (
     <div className="min-h-screen bg-[#050816] text-white p-8">
@@ -115,8 +149,27 @@ export default function DashboardPage() {
             Revenue Analytics
           </h2>
 
-          <div className="h-72 flex items-center justify-center text-slate-500">
-            Chart Coming Soon 📈
+          <div className="space-y-3">
+            <div className="space-y-3">
+  {latestInvoices.map((invoice) => (
+    <div
+      key={invoice.id}
+      className="border-b border-slate-800 pb-2"
+    >
+      <p className="font-medium">
+        {invoice.invoice_number}
+      </p>
+
+      <p className="text-sm text-slate-400">
+        {invoice.customer.name}
+      </p>
+
+      <p className="text-green-400">
+        ₹{invoice.total_amount}
+      </p>
+    </div>
+  ))}
+</div>
           </div>
         </div>
 
@@ -125,10 +178,24 @@ export default function DashboardPage() {
             Recent Activity
           </h2>
 
-          <div className="space-y-4 text-slate-400">
-            <p>No activity yet.</p>
-            <p>Customer registrations will appear here.</p>
-            <p>Sales records will appear here.</p>
+          <div className="space-y-3">
+            <div className="space-y-3">
+  {recentCustomers.map((customer) => (
+    <div
+      key={customer.id}
+      className="border-b border-slate-800 pb-2"
+    >
+      <p className="text-white">
+        {customer.name}
+      </p>
+
+      <p className="text-xs text-slate-500">
+        New customer added
+      </p>
+    </div>
+  ))}
+</div>
+            
           </div>
         </div>
       </div>

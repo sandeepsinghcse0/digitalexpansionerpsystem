@@ -183,18 +183,7 @@ useEffect(() => {
           />
 
           {/* Stats */}
-          <StatsCards
-            totalCustomers={
-              customers.length
-            }
-            activeCustomers={
-              customers.filter(
-                (c) =>
-                  c.status ===
-                  "Active"
-              ).length
-            }
-          />
+          <StatsCards />
 
           {/* Filters */}
           <CustomerFilters
