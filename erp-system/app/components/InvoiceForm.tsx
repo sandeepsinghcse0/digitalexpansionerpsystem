@@ -41,7 +41,70 @@ export default function InvoiceForm() {
       rate: 0,
     },
   ]);
+  const subtotal = items.reduce(
+  (sum, item) => sum + item.qty * item.rate,
+  0
+);
 
+const gst = subtotal * 0.18;
+const total = subtotal + gst;
+
+const saveDraft = async () => {
+  try {
+    const response = await fetch("/api/invoices", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        invoiceNumber,
+        customerName,
+        status: "Draft",
+        total,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      alert("Draft saved successfully");
+    } else {
+      alert("Failed to save draft");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
+
+const generateInvoice = async () => {
+  try {
+    const response = await fetch("/api/invoices", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        invoiceNumber,
+        customerName,
+        status: "Generated",
+        total,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setShowPreview(true);
+      alert("Invoice generated successfully");
+    } else {
+      alert("Failed to generate invoice");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
+  }
+};
   const [showPreview, setShowPreview] = useState(false);
   const [invoiceNumber] = useState(`INV-${Date.now()}`);
   const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().slice(0, 10));
