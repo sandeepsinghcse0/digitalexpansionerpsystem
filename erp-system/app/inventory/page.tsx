@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type InventoryItem = {
   id: number;
@@ -67,12 +68,30 @@ export default function InventoryPage() {
         </button>
       </div>
 
+      {/* Inventory Tabs */}
+      <div className="flex gap-4 mb-8">
+        <Link
+          href="/inventory"
+          className="bg-blue-600 px-5 py-3 rounded-xl font-medium"
+        >
+          Products
+        </Link>
+
+        <Link
+          href="/inventory/suppliers"
+          className="bg-[#071028] border border-slate-800 px-5 py-3 rounded-xl font-medium hover:bg-slate-800"
+        >
+          Suppliers
+        </Link>
+      </div>
+
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
           <h3 className="text-slate-400 text-sm">
             Total Products
           </h3>
+
           <p className="text-3xl font-bold mt-2">
             {totalProducts}
           </p>
@@ -82,6 +101,7 @@ export default function InventoryPage() {
           <h3 className="text-slate-400 text-sm">
             In Stock
           </h3>
+
           <p className="text-3xl font-bold mt-2 text-green-400">
             {inStock}
           </p>
@@ -91,6 +111,7 @@ export default function InventoryPage() {
           <h3 className="text-slate-400 text-sm">
             Low Stock
           </h3>
+
           <p className="text-3xl font-bold mt-2 text-yellow-400">
             {lowStock}
           </p>
@@ -100,6 +121,7 @@ export default function InventoryPage() {
           <h3 className="text-slate-400 text-sm">
             Out Of Stock
           </h3>
+
           <p className="text-3xl font-bold mt-2 text-red-400">
             {outOfStock}
           </p>
@@ -134,9 +156,7 @@ export default function InventoryPage() {
               inventory.map((item) => {
                 let status = "In Stock";
 
-                if (
-                  item.quantity_available === 0
-                ) {
+                if (item.quantity_available === 0) {
                   status = "Out Of Stock";
                 } else if (
                   item.quantity_available <= 10
@@ -158,8 +178,8 @@ export default function InventoryPage() {
                     </td>
 
                     <td className="p-4">
-                      {item.product.category
-                        ?.name || "N/A"}
+                      {item.product.category?.name ||
+                        "N/A"}
                     </td>
 
                     <td className="p-4">
@@ -176,8 +196,7 @@ export default function InventoryPage() {
                         className={`px-3 py-1 rounded-full text-sm ${
                           status === "In Stock"
                             ? "bg-green-600"
-                            : status ===
-                              "Low Stock"
+                            : status === "Low Stock"
                             ? "bg-yellow-600"
                             : "bg-red-600"
                         }`}
@@ -189,7 +208,7 @@ export default function InventoryPage() {
                 );
               })
             )}
-            </tbody>
+          </tbody>
         </table>
       </div>
     </div>
