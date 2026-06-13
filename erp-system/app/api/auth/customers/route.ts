@@ -22,14 +22,23 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    const tenant =
+      (await prisma.tenant.findFirst()) ||
+      (await prisma.tenant.create({
+        data: {
+          business_name: "Default Tenant",
+          email: `tenant-${Date.now()}@example.com`,
+        },
+      }));
+
     const customer = await prisma.customer.create({
       data: {
+        tenant_id: tenant.id,
         name: body.name,
-        email: body.email,
-        phone: body.phone,
-        city: body.city,
-        status: body.status,
-        gstNumber: body.gstNumber,
+        email: body.email || null,
+        phone: body.phone || null,
+        status: body.status || "ACTIVE",
+        gst_number: body.gstNumber || null,
       },
     });
 

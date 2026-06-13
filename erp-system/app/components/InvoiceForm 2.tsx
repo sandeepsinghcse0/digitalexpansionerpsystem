@@ -165,6 +165,30 @@ export default function InvoiceForm() {
         onClose={() => setShowPreview(false)}
         customerName={customerName}
         invoiceNumber={invoiceNumber}
+        sellerDetails={{
+          businessName: "Digital Expansion",
+          contactName: "Seller",
+          email: "billing@digitalexpansion.com",
+          phone: "+91 98765 43210",
+          gstNumber: "27ABCDE1234F1Z5",
+          panNumber: "ABCDE1234F",
+          address: "12, MG Road",
+          city: "Bengaluru",
+          state: "Karnataka",
+          postalCode: "560001",
+        }}
+        customerDetails={{
+          customerName,
+          companyName: "",
+          email: "",
+          phone: "",
+          gstNumber: "",
+          panNumber: "",
+          address: "",
+          city: "",
+          state: "",
+          postalCode: "",
+        }}
         items={items}
       />
 

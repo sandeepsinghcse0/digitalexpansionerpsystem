@@ -385,6 +385,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Tenant: 'Tenant',
+  SellerProfile: 'SellerProfile',
+  InvoiceCustomerProfile: 'InvoiceCustomerProfile',
   User: 'User',
   Organization: 'Organization',
   Address: 'Address',
@@ -417,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tenant" | "user" | "organization" | "address" | "customer" | "productCategory" | "unitOfMeasure" | "gstRate" | "product" | "supplier" | "inventory" | "stockTransfer" | "invoice" | "invoiceItem" | "payment" | "purchaseOrder" | "expenseCategory" | "expense"
+    modelProps: "tenant" | "sellerProfile" | "invoiceCustomerProfile" | "user" | "organization" | "address" | "customer" | "productCategory" | "unitOfMeasure" | "gstRate" | "product" | "supplier" | "inventory" | "stockTransfer" | "invoice" | "invoiceItem" | "payment" | "purchaseOrder" | "expenseCategory" | "expense"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -484,6 +486,138 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TenantCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TenantCountAggregateOutputType> | number
+        }
+      }
+    }
+    SellerProfile: {
+      payload: Prisma.$SellerProfilePayload<ExtArgs>
+      fields: Prisma.SellerProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SellerProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SellerProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.SellerProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SellerProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        findMany: {
+          args: Prisma.SellerProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>[]
+        }
+        create: {
+          args: Prisma.SellerProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        createMany: {
+          args: Prisma.SellerProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.SellerProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        update: {
+          args: Prisma.SellerProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.SellerProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SellerProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.SellerProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.SellerProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSellerProfile>
+        }
+        groupBy: {
+          args: Prisma.SellerProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SellerProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    InvoiceCustomerProfile: {
+      payload: Prisma.$InvoiceCustomerProfilePayload<ExtArgs>
+      fields: Prisma.InvoiceCustomerProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvoiceCustomerProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvoiceCustomerProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.InvoiceCustomerProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvoiceCustomerProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        findMany: {
+          args: Prisma.InvoiceCustomerProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>[]
+        }
+        create: {
+          args: Prisma.InvoiceCustomerProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        createMany: {
+          args: Prisma.InvoiceCustomerProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.InvoiceCustomerProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        update: {
+          args: Prisma.InvoiceCustomerProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.InvoiceCustomerProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvoiceCustomerProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.InvoiceCustomerProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.InvoiceCustomerProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvoiceCustomerProfile>
+        }
+        groupBy: {
+          args: Prisma.InvoiceCustomerProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceCustomerProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvoiceCustomerProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceCustomerProfileCountAggregateOutputType> | number
         }
       }
     }
@@ -1662,6 +1796,50 @@ export const TenantScalarFieldEnum = {
 export type TenantScalarFieldEnum = (typeof TenantScalarFieldEnum)[keyof typeof TenantScalarFieldEnum]
 
 
+export const SellerProfileScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  business_name: 'business_name',
+  contact_name: 'contact_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  bank_account: 'bank_account',
+  ifsc_code: 'ifsc_code',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type SellerProfileScalarFieldEnum = (typeof SellerProfileScalarFieldEnum)[keyof typeof SellerProfileScalarFieldEnum]
+
+
+export const InvoiceCustomerProfileScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  customer_name: 'customer_name',
+  company_name: 'company_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InvoiceCustomerProfileScalarFieldEnum = (typeof InvoiceCustomerProfileScalarFieldEnum)[keyof typeof InvoiceCustomerProfileScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -1856,7 +2034,9 @@ export const InvoiceScalarFieldEnum = {
   terms: 'terms',
   created_by: 'created_by',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  seller_profile_id: 'seller_profile_id',
+  customer_profile_id: 'customer_profile_id'
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
@@ -1972,6 +2152,42 @@ export const TenantOrderByRelevanceFieldEnum = {
 } as const
 
 export type TenantOrderByRelevanceFieldEnum = (typeof TenantOrderByRelevanceFieldEnum)[keyof typeof TenantOrderByRelevanceFieldEnum]
+
+
+export const SellerProfileOrderByRelevanceFieldEnum = {
+  business_name: 'business_name',
+  contact_name: 'contact_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  bank_account: 'bank_account',
+  ifsc_code: 'ifsc_code'
+} as const
+
+export type SellerProfileOrderByRelevanceFieldEnum = (typeof SellerProfileOrderByRelevanceFieldEnum)[keyof typeof SellerProfileOrderByRelevanceFieldEnum]
+
+
+export const InvoiceCustomerProfileOrderByRelevanceFieldEnum = {
+  customer_name: 'customer_name',
+  company_name: 'company_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country'
+} as const
+
+export type InvoiceCustomerProfileOrderByRelevanceFieldEnum = (typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum)[keyof typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum]
 
 
 export const UserOrderByRelevanceFieldEnum = {
@@ -2321,6 +2537,8 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   tenant?: Prisma.TenantOmit
+  sellerProfile?: Prisma.SellerProfileOmit
+  invoiceCustomerProfile?: Prisma.InvoiceCustomerProfileOmit
   user?: Prisma.UserOmit
   organization?: Prisma.OrganizationOmit
   address?: Prisma.AddressOmit

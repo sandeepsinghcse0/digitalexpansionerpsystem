@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "../../../../prisma/lib/prisma";
 import bcrypt from "bcryptjs";
 
 const handler = NextAuth({
@@ -30,6 +29,7 @@ const handler = NextAuth({
         }
 
         try {
+          const { prisma } = await import("../../../../prisma/lib/prisma");
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email,
@@ -77,6 +77,7 @@ const handler = NextAuth({
         account?.provider === "google" &&
         user.email
       ) {
+        const { prisma } = await import("../../../../prisma/lib/prisma");
         const existingUser =
           await prisma.user.findUnique({
             where: {
@@ -110,6 +111,7 @@ const handler = NextAuth({
 
     async jwt({ token, user }) {
       if (user?.email) {
+        const { prisma } = await import("../../../../prisma/lib/prisma");
         const dbUser =
           await prisma.user.findUnique({
             where: {
@@ -129,11 +131,13 @@ const handler = NextAuth({
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.id =
-          token.id as string;
+        const sessionUser = session.user as typeof session.user & {
+          id?: string;
+          tenant_id?: string;
+        };
 
-        session.user.tenant_id =
-          token.tenant_id as string;
+        sessionUser.id = token.id as string;
+        sessionUser.tenant_id = token.tenant_id as string;
       }
 
       return session;
