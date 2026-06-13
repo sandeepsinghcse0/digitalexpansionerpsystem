@@ -1,344 +1,125 @@
-"use client";
-import { useState, useEffect } from "react";
-import ExpenseChart from "../components/ExpenseChart";
-import Sidebar from "../components/Sidebar";
-
 export default function ExpensesPage() {
-const [showModal, setShowModal] = useState(false);
-const [searchTerm, setSearchTerm] = useState("");
-const [selectedCategory, setSelectedCategory] = useState("All");
-const [editingIndex, setEditingIndex] = useState<number | null>(null);
-const [editingId, setEditingId] =
-  useState<number | null>(null);
-const [expenses, setExpenses] = useState<any[]>([]);
-
-const handleDeleteExpense = async (
-  expenseId: number
-) => {
-  await fetch(
-    `/api/expenses/${expenseId}`,
+  const expenses = [
     {
-      method: "DELETE",
-    }
-  );
-
-  setExpenses(
-    expenses.filter(
-      (expense) =>
-        expense.id !== expenseId
-    )
-  );
-};
-const [title, setTitle] = useState("");
-const [amount, setAmount] = useState("");
-const [category, setCategory] = useState("Utilities");
-const [date, setDate] = useState("");
-const [description, setDescription] = useState("");
-
-useEffect(() => {
-  fetch("/api/expenses")
-    .then((res) => res.json())
-    .then((data) => {
-      const formattedExpenses = data.map(
-  (expense: any) => ({
-    id: expense.id,
-    title: expense.description,
-    category: expense.category?.name ?? "Utilities",
-    amount: expense.amount,
-    date: expense.expense_date.split("T")[0],
-    status: "Paid",
-  })
-);
-
-      setExpenses(formattedExpenses);
-    });
-}, []);
-
-console.log("FIRST:", expenses[0]);
-console.log("ALL:", expenses);
-
-const handleAddExpense = async (
-  e: React.FormEvent
-) => {
-  e.preventDefault();
-  if (editingId) {
-  await fetch(
-    `/api/expenses/${editingId}`,
+      id: "EXP-001",
+      category: "Office Rent",
+      amount: "₹25,000",
+      date: "10 Jun 2026",
+      status: "Paid",
+    },
     {
-      method: "PUT",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-      body: JSON.stringify({
-        description: title,
-        amount,
-        date,
-        notes: description,
-        category,
-      }),
-    }
-  );
-
-  window.location.reload();
-  return;
-}
-  alert("SAVE CLICKED");
-
-  if (!title || !amount || !date) return;
-
-  const response = await fetch(
-    "/api/expenses",
+      id: "EXP-002",
+      category: "Internet Bill",
+      amount: "₹2,500",
+      date: "08 Jun 2026",
+      status: "Paid",
+    },
     {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-body: JSON.stringify({
-  description: title,
-  amount,
-  date,
-  notes: description,
-  category,
-}),
-    }
-  );
+      id: "EXP-003",
+      category: "Electricity",
+      amount: "₹6,800",
+      date: "05 Jun 2026",
+      status: "Pending",
+    },
+  ];
 
- console.log("STATUS:", response.status);
-
-const savedExpense = await response.json();
-
-console.log("RESPONSE:", savedExpense);
-
-setExpenses([
-  {
-    id: savedExpense.id,
-    title: savedExpense.description,
-    category,
-    amount: savedExpense.amount,
-    date,
-    status: "Paid",
-  },
-  ...expenses,
-]);
-
-setTitle("");
-setAmount("");
-setCategory("Utilities");
-setDate("");
-setDescription("");
-
-setShowModal(false);
-};
-console.log(
-  JSON.stringify(expenses, null, 2)
-);const filteredExpenses = expenses.filter((expense) => {
- const matchesSearch = (expense.title ?? "")
-  .toLowerCase()
-  .includes(searchTerm.toLowerCase());
-
-  const matchesCategory =
-    selectedCategory === "All" ||
-    expense.category === selectedCategory;
-
-  return matchesSearch && matchesCategory;
-});
-
-const totalExpenses = expenses.reduce(
-  (sum, expense) => sum + expense.amount,
-  0
-);
-
-const highestExpense =
-  expenses.length > 0
-    ? Math.max(...expenses.map((e) => e.amount))
-    : 0;
-
-const totalCount = expenses.length;
-
-
-
-return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
-
-
-  <main className="flex-1 p-8">
-    {/* Header */}
-
-    <div className="flex justify-between items-center mb-8">
-      <div>
-        <h1 className="text-4xl font-bold text-white">
-          Expense Management
+  return (
+    <div className="p-8 text-white">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold">
+          Expenses Management
         </h1>
-
-        <p className="text-gray-400 mt-2">
-          Monitor and control company spending.
+        <p className="text-slate-400 mt-2">
+          Track and manage company expenses
         </p>
       </div>
 
-      <button
-  onClick={() => setShowModal(true)}
-  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-medium transition"
->
-  + Add Expense
-</button>
-    </div>
-
-    {/* Stats Cards */}
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {[
-  {
-    title: "Total Expenses",
-    value: `₹${totalExpenses}`,
-  },
-  {
-    title: "Total Records",
-    value: totalCount,
-  },
-  {
-    title: "Highest Expense",
-    value: `₹${highestExpense}`,
-  },
-  {
-    title: "Categories",
-    value: 4,
-  },
-].map((card) => (
-        <div
-          key={card.title}
-          className="bg-[#071028] border border-slate-800 rounded-2xl p-6"
-        >
-          <p className="text-gray-400 text-sm">
-            {card.title}
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+          <h3 className="text-slate-400 text-sm">
+            Total Expenses
+          </h3>
+          <p className="text-3xl font-bold mt-2">
+            ₹34,300
           </p>
-
-          <h2 className="text-3xl font-bold text-white mt-2">
-            {card.value}
-          </h2>
         </div>
-      ))}
-    </div>
 
-   <div className="flex gap-4 mb-6">
-  <input
-    type="text"
-    placeholder="🔍 Search expenses..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-full md:w-80 bg-[#071028] border border-slate-800 rounded-xl px-4 py-3 text-white"
-  />
+        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+          <h3 className="text-slate-400 text-sm">
+            Paid
+          </h3>
+          <p className="text-3xl font-bold mt-2 text-green-400">
+            ₹27,500
+          </p>
+        </div>
 
-  <select
-    value={selectedCategory}
-    onChange={(e) => setSelectedCategory(e.target.value)}
-    className="bg-[#071028] border border-slate-800 rounded-xl px-4 py-3 text-white"
-  >
-    <option value="All">All Categories</option>
-    <option value="Utilities">Utilities</option>
-    <option value="Marketing">Marketing</option>
-    <option value="Travel">Travel</option>
-    <option value="Office Supplies">
-      Office Supplies
-    </option>
-  </select>
-</div>
+        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+          <h3 className="text-slate-400 text-sm">
+            Pending
+          </h3>
+          <p className="text-3xl font-bold mt-2 text-yellow-400">
+            ₹6,800
+          </p>
+        </div>
+      </div>
 
-
-    {/* Expense Table */}
-    <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
-      <h2 className="text-xl font-semibold text-white mb-6">
-        Recent Expenses
-      </h2>
-
-      <div className="overflow-x-auto">
+      {/* Table */}
+      <div className="bg-[#071028] border border-slate-800 rounded-2xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-800">
-              <th className="text-left py-4 text-gray-400">
-                Expense
+              <th className="text-left p-4">
+                Expense ID
               </th>
-
-              <th className="text-left py-4 text-gray-400">
+              <th className="text-left p-4">
                 Category
               </th>
-
-              <th className="text-left py-4 text-gray-400">
+              <th className="text-left p-4">
                 Amount
               </th>
-
-              <th className="text-left py-4 text-gray-400">
-  Date
-</th>
-
-<th className="text-left py-4 text-gray-400">
-  Status
-</th>
-
-<th className="text-left py-4 text-gray-400">
-  Actions
-</th>
+              <th className="text-left p-4">
+                Date
+              </th>
+              <th className="text-left p-4">
+                Status
+              </th>
             </tr>
           </thead>
 
           <tbody>
-            {filteredExpenses.map((expense, index) => (
-
-                
+            {expenses.map((expense) => (
               <tr
-                key={index}
+                key={expense.id}
                 className="border-b border-slate-800"
               >
-                <td className="py-4 text-white">
-                  {expense.title}
+                <td className="p-4">
+                  {expense.id}
                 </td>
 
-                <td className="py-4 text-gray-300">
+                <td className="p-4">
                   {expense.category}
                 </td>
 
-                <td className="py-4 text-red-400">
-                  ₹{expense.amount}
+                <td className="p-4">
+                  {expense.amount}
                 </td>
 
-                <td className="py-4 text-gray-300">
+                <td className="p-4">
                   {expense.date}
                 </td>
 
-                <td className="py-4">
-  <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
-    {expense.status}
-  </span>
-</td>
-
-<td className="py-4">
-  <div className="flex gap-2">
-    <button
-      onClick={() => {
-        setEditingIndex(index);
-        setEditingId(expense.id);
-
-        setTitle(expense.title);
-        setAmount(expense.amount.toString());
-        setCategory(expense.category);
-        setDate(expense.date);
-
-        setShowModal(true);
-      }}
-      className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-lg"
-    >
-      Edit
-    </button>
-
-    <button
-      onClick={() =>
-  handleDeleteExpense(expense.id)
-}
-      className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg"
-    >
-      Delete
-    </button>
-  </div>
-</td>
+                <td className="p-4">
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm ${
+                      expense.status === "Paid"
+                        ? "bg-green-600"
+                        : "bg-yellow-600"
+                    }`}
+                  >
+                    {expense.status}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>

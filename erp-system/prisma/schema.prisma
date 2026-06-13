@@ -56,14 +56,15 @@ enum AddressType {
 
 // ============= TENANT & USER =============
 model Tenant {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   business_name String
-  email         String  @unique
+  email         String   @unique
   gst_number    String?
   pan_number    String?
-  status        String  @default("ACTIVE")
+  status        String   @default("ACTIVE")
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
+<<<<<<< Updated upstream
   
   users                User[]
   organization         Organization?
@@ -83,6 +84,25 @@ model Tenant {
   product_categories   ProductCategory[]
   expense_categories   ExpenseCategory[]
   
+=======
+
+  users              User[]
+  organization       Organization?
+  customers          Customer[]
+  products           Product[]
+  invoices           Invoice[]
+  payments           Payment[]
+  addresses          Address[]
+  gst_rates          GstRate[]
+  suppliers          Supplier[]
+  purchase_orders    PurchaseOrder[]
+  expenses           Expense[]
+  stock_transfers    StockTransfer[]
+  inventory          Inventory[]
+  product_categories ProductCategory[]
+  expense_categories ExpenseCategory[]
+
+>>>>>>> Stashed changes
   @@index([email])
 }
 
@@ -135,65 +155,65 @@ model InvoiceCustomerProfile {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  name      String
-  password  String
-  role      UserRole @default(USER)
-  tenant_id Int
-  tenant    Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String
+  password   String
+  role       UserRole @default(USER)
+  tenant_id  Int
+  tenant     Tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  
+
   @@index([tenant_id])
 }
 
 // ============= ORGANIZATION =============
 model Organization {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int     @unique
-  name          String
-  email         String
-  phone         String?
-  gst_number    String? @unique
-  pan_number    String? @unique
-  cin_number    String? // Corporate Identification Number
-  bank_account  String?
-  ifsc_code     String?
-  status        String  @default("ACTIVE")
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  addresses     Address[] @relation("AddressToOrganization")
-  
+  id           Int      @id @default(autoincrement())
+  tenant_id    Int      @unique
+  name         String
+  email        String
+  phone        String?
+  gst_number   String?  @unique
+  pan_number   String?  @unique
+  cin_number   String? // Corporate Identification Number
+  bank_account String?
+  ifsc_code    String?
+  status       String   @default("ACTIVE")
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  tenant    Tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  addresses Address[] @relation("AddressToOrganization")
+
   @@index([gst_number])
 }
 
 // ============= ADDRESS =============
 model Address {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  customer_id   Int?
-  supplier_id   Int?
+  id              Int  @id @default(autoincrement())
+  tenant_id       Int
+  customer_id     Int?
+  supplier_id     Int?
   organization_id Int?
-  
-  street        String
-  street2       String?
-  city          String
-  state         String
-  postal_code   String
-  country       String  @default("India")
-  address_type  AddressType @default(BILLING)
-  is_primary    Boolean @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant     @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  customer      Customer?  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
-  supplier      Supplier?  @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
-  organization  Organization? @relation("AddressToOrganization", fields: [organization_id], references: [id], onDelete: Cascade)
-  
+
+  street       String
+  street2      String?
+  city         String
+  state        String
+  postal_code  String
+  country      String      @default("India")
+  address_type AddressType @default(BILLING)
+  is_primary   Boolean     @default(false)
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+
+  tenant       Tenant        @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  customer     Customer?     @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  supplier     Supplier?     @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
+  organization Organization? @relation("AddressToOrganization", fields: [organization_id], references: [id], onDelete: Cascade)
+
   @@index([tenant_id])
   @@index([customer_id])
   @@index([supplier_id])
@@ -202,7 +222,7 @@ model Address {
 
 // ============= CUSTOMER =============
 model Customer {
-  id            Int     @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   tenant_id     Int
   name          String
   email         String?
@@ -210,17 +230,17 @@ model Customer {
   mobile        String?
   gst_number    String?
   pan_number    String?
-  credit_limit  Float   @default(0)
+  credit_limit  Float          @default(0)
   payment_terms String? // e.g., "NET 30", "NET 60"
   status        CustomerStatus @default(ACTIVE)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant     @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  addresses     Address[]
-  invoices      Invoice[]
-  payments      Payment[]
-  
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+
+  tenant    Tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  addresses Address[]
+  invoices  Invoice[]
+  payments  Payment[]
+
   @@unique([tenant_id, email])
   @@index([tenant_id])
   @@index([gst_number])
@@ -228,77 +248,77 @@ model Customer {
 
 // ============= PRODUCT CATEGORY =============
 model ProductCategory {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  name          String
-  description   String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  products      Product[]
-  
+  id          Int      @id @default(autoincrement())
+  tenant_id   Int
+  name        String
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  products Product[]
+
   @@unique([tenant_id, name])
   @@index([tenant_id])
 }
 
 // ============= UNIT OF MEASURE =============
 model UnitOfMeasure {
-  id            Int     @id @default(autoincrement())
-  name          String  @unique // e.g., "KG", "LITER", "PIECE", "METER"
-  symbol        String  @unique
-  created_at    DateTime @default(now())
-  
-  products      Product[]
+  id         Int      @id @default(autoincrement())
+  name       String   @unique // e.g., "KG", "LITER", "PIECE", "METER"
+  symbol     String   @unique
+  created_at DateTime @default(now())
+
+  products Product[]
 }
 
 // ============= GST RATE =============
 model GstRate {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  percentage    Float   // e.g., 5, 12, 18, 28
-  name          String  // e.g., "GST 5%", "GST 18%"
-  description   String?
-  is_active     Boolean @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  id          Int      @id @default(autoincrement())
+  tenant_id   Int
+  percentage  Float // e.g., 5, 12, 18, 28
+  name        String // e.g., "GST 5%", "GST 18%"
+  description String?
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  tenant        Tenant        @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   products      Product[]
   invoice_items InvoiceItem[]
-  
+
   @@unique([tenant_id, percentage])
   @@index([tenant_id])
 }
 
 // ============= PRODUCT =============
 model Product {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  sku           String
-  name          String
-  description   String?
-  category_id   Int?
-  supplier_id   Int?
-  unit_id       Int
-  cost_price    Float
-  selling_price Float
-  quantity_in_stock Int @default(0)
-  reorder_level Int   @default(0)
-  gst_rate_id   Int
-  status        ProductStatus @default(ACTIVE)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  category      ProductCategory? @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  supplier      Supplier?       @relation(fields: [supplier_id], references: [id], onDelete: SetNull)
-  unit           UnitOfMeasure   @relation(fields: [unit_id], references: [id])
-  gst_rate      GstRate         @relation(fields: [gst_rate_id], references: [id])
-  invoice_items InvoiceItem[]
-  inventory     Inventory?
+  id                Int           @id @default(autoincrement())
+  tenant_id         Int
+  sku               String
+  name              String
+  description       String?
+  category_id       Int?
+  supplier_id       Int?
+  unit_id           Int
+  cost_price        Float
+  selling_price     Float
+  quantity_in_stock Int           @default(0)
+  reorder_level     Int           @default(0)
+  gst_rate_id       Int
+  status            ProductStatus @default(ACTIVE)
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+
+  tenant          Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  category        ProductCategory? @relation(fields: [category_id], references: [id], onDelete: SetNull)
+  supplier        Supplier?        @relation(fields: [supplier_id], references: [id], onDelete: SetNull)
+  unit            UnitOfMeasure    @relation(fields: [unit_id], references: [id])
+  gst_rate        GstRate          @relation(fields: [gst_rate_id], references: [id])
+  invoice_items   InvoiceItem[]
+  inventory       Inventory?
   stock_transfers StockTransfer[]
-  
+
   @@unique([tenant_id, sku])
   @@index([tenant_id])
   @@index([category_id])
@@ -307,7 +327,7 @@ model Product {
 
 // ============= SUPPLIER =============
 model Supplier {
-  id            Int     @id @default(autoincrement())
+  id            Int            @id @default(autoincrement())
   tenant_id     Int
   name          String
   email         String?
@@ -316,14 +336,14 @@ model Supplier {
   pan_number    String?
   payment_terms String?
   status        CustomerStatus @default(ACTIVE)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  addresses     Address[]
-  products      Product[]
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+
+  tenant          Tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  addresses       Address[]
+  products        Product[]
   purchase_orders PurchaseOrder[]
-  
+
   @@unique([tenant_id, email])
   @@index([tenant_id])
   @@index([gst_number])
@@ -331,39 +351,39 @@ model Supplier {
 
 // ============= INVENTORY =============
 model Inventory {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  product_id    Int     @unique
+  id                 Int      @id @default(autoincrement())
+  tenant_id          Int
+  product_id         Int      @unique
   quantity_available Int
-  quantity_reserved  Int @default(0)
-  quantity_damaged   Int @default(0)
-  last_stock_update DateTime @default(now())
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  
+  quantity_reserved  Int      @default(0)
+  quantity_damaged   Int      @default(0)
+  last_stock_update  DateTime @default(now())
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
   @@index([tenant_id])
   @@index([product_id])
 }
 
 // ============= STOCK TRANSFER =============
 model StockTransfer {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  product_id    Int
-  transfer_type String  // INBOUND, OUTBOUND, ADJUSTMENT
-  quantity      Int
+  id             Int      @id @default(autoincrement())
+  tenant_id      Int
+  product_id     Int
+  transfer_type  String // INBOUND, OUTBOUND, ADJUSTMENT
+  quantity       Int
   reference_type String? // e.g., PURCHASE_ORDER, INVOICE, ADJUSTMENT
-  reference_id  Int?
-  notes         String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  
+  reference_id   Int?
+  notes          String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  tenant  Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+
   @@index([tenant_id])
   @@index([product_id])
   @@index([created_at])
@@ -371,10 +391,11 @@ model StockTransfer {
 
 // ============= INVOICE =============
 model Invoice {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  customer_id   Int
+  id             Int           @id @default(autoincrement())
+  tenant_id      Int
+  customer_id    Int
   invoice_number String
+<<<<<<< Updated upstream
   invoice_date  DateTime @default(now())
   due_date      DateTime?
   status        InvoiceStatus @default(DRAFT)
@@ -396,6 +417,25 @@ model Invoice {
   line_items    InvoiceItem[]
   payments      Payment[]
   
+=======
+  invoice_date   DateTime      @default(now())
+  due_date       DateTime?
+  status         InvoiceStatus @default(DRAFT)
+  subtotal       Float         @default(0)
+  tax_amount     Float         @default(0)
+  total_amount   Float         @default(0)
+  notes          String?
+  terms          String?
+  created_by     Int // User ID
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  tenant     Tenant        @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  customer   Customer      @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  line_items InvoiceItem[]
+  payments   Payment[]
+
+>>>>>>> Stashed changes
   @@unique([tenant_id, invoice_number])
   @@index([tenant_id])
   @@index([customer_id])
@@ -405,46 +445,46 @@ model Invoice {
 
 // ============= INVOICE ITEM =============
 model InvoiceItem {
-  id            Int     @id @default(autoincrement())
-  invoice_id    Int
-  product_id    Int
-  gst_rate_id   Int
-  quantity      Float
-  unit_price    Float
-  subtotal      Float  // quantity * unit_price
-  tax_amount    Float
-  total_amount  Float  // subtotal + tax
-  description   String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  invoice       Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
-  product       Product @relation(fields: [product_id], references: [id], onDelete: Restrict)
-  gst_rate      GstRate @relation(fields: [gst_rate_id], references: [id])
-  
+  id           Int      @id @default(autoincrement())
+  invoice_id   Int
+  product_id   Int
+  gst_rate_id  Int
+  quantity     Float
+  unit_price   Float
+  subtotal     Float // quantity * unit_price
+  tax_amount   Float
+  total_amount Float // subtotal + tax
+  description  String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  invoice  Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  product  Product @relation(fields: [product_id], references: [id], onDelete: Restrict)
+  gst_rate GstRate @relation(fields: [gst_rate_id], references: [id])
+
   @@index([invoice_id])
   @@index([product_id])
 }
 
 // ============= PAYMENT =============
 model Payment {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  invoice_id    Int?
-  customer_id   Int
-  payment_amount Float
-  payment_date  DateTime @default(now())
-  payment_method String  // e.g., "CASH", "CHEQUE", "BANK_TRANSFER", "CREDIT_CARD"
+  id               Int           @id @default(autoincrement())
+  tenant_id        Int
+  invoice_id       Int?
+  customer_id      Int
+  payment_amount   Float
+  payment_date     DateTime      @default(now())
+  payment_method   String // e.g., "CASH", "CHEQUE", "BANK_TRANSFER", "CREDIT_CARD"
   reference_number String?
-  notes         String?
-  status        PaymentStatus @default(PENDING)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  invoice       Invoice? @relation(fields: [invoice_id], references: [id], onDelete: SetNull)
-  customer      Customer @relation(fields: [customer_id], references: [id], onDelete: Restrict)
-  
+  notes            String?
+  status           PaymentStatus @default(PENDING)
+  created_at       DateTime      @default(now())
+  updated_at       DateTime      @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  invoice  Invoice? @relation(fields: [invoice_id], references: [id], onDelete: SetNull)
+  customer Customer @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+
   @@index([tenant_id])
   @@index([customer_id])
   @@index([invoice_id])
@@ -453,25 +493,25 @@ model Payment {
 
 // ============= PURCHASE ORDER =============
 model PurchaseOrder {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  supplier_id   Int
-  po_number     String
-  po_date       DateTime @default(now())
+  id                Int       @id @default(autoincrement())
+  tenant_id         Int
+  supplier_id       Int
+  po_number         String
+  po_date           DateTime  @default(now())
   expected_delivery DateTime?
-  actual_delivery DateTime?
-  status        String  @default("DRAFT") // DRAFT, SENT, RECEIVED, CANCELLED
-  subtotal      Float   @default(0)
-  tax_amount    Float   @default(0)
-  total_amount  Float   @default(0)
-  notes         String?
-  created_by    Int     // User ID
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  supplier      Supplier @relation(fields: [supplier_id], references: [id], onDelete: Restrict)
-  
+  actual_delivery   DateTime?
+  status            String    @default("DRAFT") // DRAFT, SENT, RECEIVED, CANCELLED
+  subtotal          Float     @default(0)
+  tax_amount        Float     @default(0)
+  total_amount      Float     @default(0)
+  notes             String?
+  created_by        Int // User ID
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  tenant   Tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  supplier Supplier @relation(fields: [supplier_id], references: [id], onDelete: Restrict)
+
   @@unique([tenant_id, po_number])
   @@index([tenant_id])
   @@index([supplier_id])
@@ -479,36 +519,36 @@ model PurchaseOrder {
 
 // ============= EXPENSE CATEGORY =============
 model ExpenseCategory {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  name          String
-  description   String?
-  created_at    DateTime @default(now())
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  expenses      Expense[]
-  
+  id          Int      @id @default(autoincrement())
+  tenant_id   Int
+  name        String
+  description String?
+  created_at  DateTime @default(now())
+
+  tenant   Tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  expenses Expense[]
+
   @@unique([tenant_id, name])
   @@index([tenant_id])
 }
 
 // ============= EXPENSE =============
 model Expense {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  category_id   Int
-  description   String
-  amount        Float
-  expense_date  DateTime @default(now())
-  created_by    Int     // User ID
+  id             Int      @id @default(autoincrement())
+  tenant_id      Int
+  category_id    Int
+  description    String
+  amount         Float
+  expense_date   DateTime @default(now())
+  created_by     Int // User ID
   attachment_url String?
-  notes         String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant         @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  category      ExpenseCategory @relation(fields: [category_id], references: [id], onDelete: Restrict)
-  
+  notes          String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  tenant   Tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  category ExpenseCategory @relation(fields: [category_id], references: [id], onDelete: Restrict)
+
   @@index([tenant_id])
   @@index([category_id])
   @@index([expense_date])
