@@ -3,13 +3,28 @@ import { prisma } from "@/lib/db/prisma";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id?: string } }
 ) {
-  const { id } = await params;
+  const { id } = params;
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "Missing expense id" },
+      { status: 400 }
+    );
+  }
+
+  const expenseId = Number(id);
+  if (Number.isNaN(expenseId)) {
+    return NextResponse.json(
+      { error: "Invalid expense id" },
+      { status: 400 }
+    );
+  }
 
   await prisma.expense.delete({
     where: {
-      id: Number(id),
+      id: expenseId,
     },
   });
 
@@ -19,9 +34,16 @@ export async function DELETE(
 }
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id?: string } }
 ) {
-  const { id } = await params;
+  const { id } = params;
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "Missing expense id" },
+      { status: 400 }
+    );
+  }
 
   const body = await request.json();
 
@@ -49,6 +71,9 @@ export async function PUT(
       expense_date: new Date(body.date),
       notes: body.notes || null,
       category_id: categoryRecord.id,
+    },
+    include: {
+      category: true,
     },
   });
 

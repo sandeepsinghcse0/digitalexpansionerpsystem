@@ -47,16 +47,6 @@ export { Prisma }
  */
 export type Tenant = Prisma.TenantModel
 /**
- * Model SellerProfile
- * 
- */
-export type SellerProfile = Prisma.SellerProfileModel
-/**
- * Model InvoiceCustomerProfile
- * 
- */
-export type InvoiceCustomerProfile = Prisma.InvoiceCustomerProfileModel
-/**
  * Model User
  * 
  */

@@ -29,29 +29,48 @@ export async function POST(request: Request) {
 
     console.log("POST BODY:", body);
 
-    const categoryRecord =
+    let categoryRecord =
       await prisma.expenseCategory.findFirst({
         where: {
           name: body.category,
         },
       });
 
+    // Ensure a tenant exists (tenant_id is required by schema)
+    let tenantRecord = await prisma.tenant.findUnique({ where: { id: 1 } });
+    if (!tenantRecord) {
+      tenantRecord = await prisma.tenant.create({
+        data: {
+          business_name: "Default Tenant",
+          email: "default@local",
+        },
+      });
+    }
+
     if (!categoryRecord) {
-      return NextResponse.json(
-        { error: "Category not found" },
-        { status: 400 }
-      );
+      categoryRecord = await prisma.expenseCategory.create({
+        data: {
+          tenant_id: tenantRecord.id,
+          name: body.category || "Others",
+          description: body.category
+            ? `${body.category} expenses`
+            : "Auto-created category",
+        },
+      });
     }
 
     const expense = await prisma.expense.create({
       data: {
-        tenant_id: 1,
+        tenant_id: tenantRecord.id,
         category_id: categoryRecord.id,
         description: body.description,
         amount: Number(body.amount),
         expense_date: new Date(body.date),
         created_by: 1,
         notes: body.notes || null,
+      },
+      include: {
+        category: true,
       },
     });
 
