@@ -69,6 +69,8 @@ model Tenant {
   users                User[]
   organization         Organization?
   customers            Customer[]
+  seller_profiles      SellerProfile[]
+  invoice_customer_profiles InvoiceCustomerProfile[]
   products             Product[]
   invoices             Invoice[]
   payments             Payment[]
@@ -83,6 +85,54 @@ model Tenant {
   expense_categories   ExpenseCategory[]
   
   @@index([email])
+}
+
+model SellerProfile {
+  id            Int     @id @default(autoincrement())
+  tenant_id     Int
+  business_name String
+  contact_name  String
+  email         String?
+  phone         String?
+  gst_number    String?
+  pan_number    String?
+  address       String?
+  city          String?
+  state         String?
+  postal_code   String?
+  country       String  @default("India")
+  bank_account  String?
+  ifsc_code     String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  invoices      Invoice[] @relation("InvoiceSellerProfile")
+
+  @@index([tenant_id])
+}
+
+model InvoiceCustomerProfile {
+  id            Int     @id @default(autoincrement())
+  tenant_id     Int
+  customer_name String
+  company_name  String?
+  email         String?
+  phone         String?
+  gst_number    String?
+  pan_number    String?
+  address       String?
+  city          String?
+  state         String?
+  postal_code   String?
+  country       String  @default("India")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  invoices      Invoice[] @relation("InvoiceCustomerProfile")
+
+  @@index([tenant_id])
 }
 
 model User {
@@ -340,6 +390,10 @@ model Invoice {
   
   tenant        Tenant       @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
   customer      Customer     @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  seller_profile_id Int?
+  customer_profile_id Int?
+  seller_profile SellerProfile? @relation("InvoiceSellerProfile", fields: [seller_profile_id], references: [id], onDelete: SetNull)
+  customer_profile InvoiceCustomerProfile? @relation("InvoiceCustomerProfile", fields: [customer_profile_id], references: [id], onDelete: SetNull)
   line_items    InvoiceItem[]
   payments      Payment[]
   

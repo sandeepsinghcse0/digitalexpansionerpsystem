@@ -5,6 +5,30 @@ type InvoicePreviewProps = {
   onClose: () => void;
   customerName: string;
   invoiceNumber: string;
+  sellerDetails: {
+    businessName: string;
+    contactName: string;
+    email: string;
+    phone: string;
+    gstNumber: string;
+    panNumber: string;
+    address: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+  customerDetails: {
+    customerName: string;
+    companyName: string;
+    email: string;
+    phone: string;
+    gstNumber: string;
+    panNumber: string;
+    address: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
   items: {
     description: string;
     qty: number;
@@ -17,6 +41,8 @@ export default function InvoicePreview({
   onClose,
   customerName,
   invoiceNumber,
+  sellerDetails,
+  customerDetails,
   items,
 }: InvoicePreviewProps) {
   if (!open) return null;
@@ -39,11 +65,11 @@ export default function InvoicePreview({
         <div className="flex justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold">
-              DIGITAL EXPANSION
+              {sellerDetails.businessName || "Seller"}
             </h1>
 
             <p className="text-gray-600">
-              Professional IT Solutions
+              {sellerDetails.businessName || "Seller Name"}
             </p>
           </div>
 
@@ -64,6 +90,10 @@ export default function InvoicePreview({
             </h2>
 
             <p>{customerName}</p>
+            <p className="text-sm text-gray-600">{customerDetails.companyName}</p>
+            <p className="text-sm text-gray-600">{customerDetails.email}</p>
+            <p className="text-sm text-gray-600">{customerDetails.phone}</p>
+            <p className="text-sm text-gray-600">{customerDetails.address}</p>
           </div>
 
           <div className="text-right">

@@ -1,4 +1,3 @@
-import { prisma } from "../../../../prisma/lib/prisma";
 import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -20,6 +19,8 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const { prisma } = await import("../../../../prisma/lib/prisma");
 
     // Check if user already exists
     const existingUser = await prisma.user.findUnique({

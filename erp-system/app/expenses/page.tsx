@@ -7,6 +7,8 @@ import Sidebar from "../components/Sidebar";
 
 export default function ExpensesPage() {
 const [showModal, setShowModal] = useState(false);
+const [viewExpense, setViewExpense] = useState<any>(null);
+const [showViewModal, setShowViewModal] = useState(false);
 const [searchTerm, setSearchTerm] = useState("");
 const [selectedCategory, setSelectedCategory] = useState("All");
 const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -20,6 +22,7 @@ const totalExpenses = expenses.reduce(
 );
 
 const handleDeleteExpense = async (
+  
   expenseId: number
 ) => {
   await fetch(
@@ -41,24 +44,36 @@ const [amount, setAmount] = useState("");
 const [category, setCategory] = useState("Utilities");
 const [date, setDate] = useState("");
 const [description, setDescription] = useState("");
+const handleViewExpense = (expense: any) => {
+  setViewExpense(expense);
+  setShowViewModal(true);
+};
 
 useEffect(() => {
   fetch("/api/expenses")
     .then((res) => res.json())
     .then((data) => {
+      console.log("API RESPONSE:", data);
+
+      if (!Array.isArray(data)) {
+        console.error("Expected array but got:", data);
+        return;
+      }
+
       const formattedExpenses = data.map(
         (expense: any) => ({
           id: expense.id,
           title: expense.description,
           category: expense.category?.name || "Unknown",
           amount: expense.amount,
-          date: expense.expense_date.split("T")[0],
+          date: expense.expense_date?.split("T")[0],
           status: "Paid",
         })
       );
 
       setExpenses(formattedExpenses);
-    });
+    })
+    .catch(console.error);
 }, []);
 
 const handleAddExpense = async (
@@ -76,7 +91,7 @@ const handleAddExpense = async (
       },
       body: JSON.stringify({
         description: title,
-        amount,
+        amount, 
         date,
         notes: description,
         category,
@@ -138,15 +153,31 @@ setDescription("");
 setShowModal(false);
 };
 const filteredExpenses = expenses.filter((expense) => {
- const matchesSearch = (expense.title ?? "")
-  .toLowerCase()
-  .includes(searchTerm.toLowerCase());
+  const searchValue =
+    searchTerm.toLowerCase();
+
+  const matchesSearch =
+    expense.title
+      ?.toLowerCase()
+      .includes(searchValue) ||
+    expense.category
+      ?.toLowerCase()
+      .includes(searchValue) ||
+    expense.amount
+      ?.toString()
+      .includes(searchTerm) ||
+    expense.date
+      ?.toLowerCase()
+      .includes(searchValue);
 
   const matchesCategory =
     selectedCategory === "All" ||
     expense.category === selectedCategory;
 
-  return matchesSearch && matchesCategory;
+  return (
+    matchesSearch &&
+    matchesCategory
+  );
 });
 
 const highestExpense =
@@ -273,6 +304,14 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
 
 <td className="py-4">
   <div className="flex gap-2">
+
+    <button
+      onClick={() => handleViewExpense(expense)}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg"
+    >
+      View
+    </button>
+
     <button
       onClick={() => {
         setEditingIndex(index);
@@ -292,12 +331,13 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
 
     <button
       onClick={() =>
-  handleDeleteExpense(expense.id)
-}
+        handleDeleteExpense(expense.id)
+      }
       className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg"
     >
       Delete
     </button>
+
   </div>
 </td>
               </tr>
@@ -312,90 +352,141 @@ return ( <div className="flex min-h-screen bg-[#020817]"> <Sidebar />
 </div>
 
     {/* Modal */}
-    {showModal && (
-      <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-8 w-full max-w-md">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-white">
-              {editingIndex !== null ? "Edit Expense" : "Add Expense"}
-            </h2>
+    {/* Add/Edit Modal */}
+{showModal && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="bg-[#071028] border border-slate-800 rounded-2xl p-8 w-full max-w-md">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-white">
+          {editingIndex !== null
+            ? "Edit Expense"
+            : "Add Expense"}
+        </h2>
 
-            <button
-              onClick={() => setShowModal(false)}
-              className="text-gray-400 hover:text-white"
-            >
-              ✕
-            </button>
-          </div>
-
-          <form
-            onSubmit={handleAddExpense}
-            className="space-y-4"
-          >
-            <input
-              type="text"
-              placeholder="Expense Title"
-              value={title}
-              onChange={(e) =>
-                setTitle(e.target.value)
-              }
-              className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
-            />
-
-            <input
-              type="number"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) =>
-                setAmount(e.target.value)
-              }
-              className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
-            />
-
-            <select
-              value={category}
-              onChange={(e) =>
-                setCategory(e.target.value)
-              }
-              className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
-            >
-              <option>Utilities</option>
-              <option>Marketing</option>
-              <option>Travel</option>
-              <option>Office Supplies</option>
-            </select>
-
-            <input
-              type="date"
-              value={date}
-              onChange={(e) =>
-                setDate(e.target.value)
-              }
-              className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
-            />
-
-            <textarea
-              value={description}
-              onChange={(e) =>
-                setDescription(e.target.value)
-              }
-              placeholder="Description"
-              rows={3}
-              className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
-            />
-
-            <button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl"
-            >
-              Save Expense
-            </button>
-          </form>
-        </div>
+        <button
+          onClick={() => setShowModal(false)}
+          className="text-gray-400 hover:text-white"
+        >
+          ✕
+        </button>
       </div>
-    )}
-  </main>
-</div>
 
+      <form
+        onSubmit={handleAddExpense}
+        className="space-y-4"
+      >
+        <input
+          type="text"
+          placeholder="Expense Title"
+          value={title}
+          onChange={(e) =>
+            setTitle(e.target.value)
+          }
+          className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
+        />
+
+        <input
+          type="number"
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) =>
+            setAmount(e.target.value)
+          }
+          className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
+        />
+
+        <select
+          value={category}
+          onChange={(e) =>
+            setCategory(e.target.value)
+          }
+          className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
+        >
+          <option>Utilities</option>
+          <option>Marketing</option>
+          <option>Travel</option>
+          <option>Office Supplies</option>
+        </select>
+
+        <input
+          type="date"
+          value={date}
+          onChange={(e) =>
+            setDate(e.target.value)
+          }
+          className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
+        />
+
+        <textarea
+          value={description}
+          onChange={(e) =>
+            setDescription(e.target.value)
+          }
+          placeholder="Description"
+          rows={3}
+          className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white"
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl"
+        >
+          Save Expense
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
+{/* View Modal */}
+{showViewModal && viewExpense && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="bg-[#071028] border border-slate-800 rounded-2xl p-8 w-full max-w-md">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-white">
+          Expense Details
+        </h2>
+
+        <button
+          onClick={() =>
+            setShowViewModal(false)
+          }
+          className="text-gray-400 hover:text-white"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div className="space-y-4 text-white">
+        <p>
+          <strong>Title:</strong>{" "}
+          {viewExpense.title}
+        </p>
+
+        <p>
+          <strong>Category:</strong>{" "}
+          {viewExpense.category}
+        </p>
+
+        <p>
+          <strong>Amount:</strong> ₹
+          {viewExpense.amount}
+        </p>
+
+        <p>
+          <strong>Date:</strong>{" "}
+          {viewExpense.date}
+        </p>
+
+        <p>
+          <strong>Status:</strong>{" "}
+          {viewExpense.status}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
+</main>
+</div>
 );
 }
