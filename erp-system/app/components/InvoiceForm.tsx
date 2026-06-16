@@ -5,7 +5,6 @@ import InvoiceItem from "./InvoiceItem";
 import InvoiceSummary from "./InvoiceSummary";
 import InvoicePreview from "./InvoicePreview";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 
 const emptySellerDetails = {
   businessName: "",
@@ -41,11 +40,11 @@ export default function InvoiceForm() {
       rate: 0,
     },
   ]);
-
   const [showPreview, setShowPreview] = useState(false);
-  const [invoiceNumber] = useState(`INV-${Date.now()}`);
-  const [invoiceDate, setInvoiceDate] = useState(new Date().toISOString().slice(0, 10));
+  const [invoiceNumber] = useState(() => `INV-${Date.now()}`);
+  const [invoiceDate, setInvoiceDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [dueDate, setDueDate] = useState("");
+  const [customerName, setCustomerName] = useState("");
   const [status, setStatus] = useState("DRAFT");
   const [sellerDetails, setSellerDetails] = useState(emptySellerDetails);
   const [customerDetails, setCustomerDetails] = useState(emptyCustomerDetails);
@@ -56,22 +55,178 @@ export default function InvoiceForm() {
   const taxAmount = subtotal * 0.18;
   const totalAmount = subtotal + taxAmount;
 
-  const downloadPDF = async () => {
-    const invoice = document.getElementById("invoice-preview");
+  const downloadPDF = () => {
+    try {
+      const doc = new jsPDF({ unit: "pt", format: "a4" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 40;
+      const lineHeight = 12;
+      let y = margin;
 
-    if (!invoice) {
-      alert("Open Preview First");
-      return;
+      const setTextStyle = (size: number, weight: "normal" | "bold" = "normal") => {
+        doc.setFont("helvetica", weight);
+        doc.setFontSize(size);
+      };
+
+      const addWrappedText = (
+        text: string,
+        x: number,
+        maxWidth: number,
+        startY: number,
+        size = 10,
+        weight: "normal" | "bold" = "normal"
+      ) => {
+        setTextStyle(size, weight);
+        const lines = doc.splitTextToSize(text || "", maxWidth);
+        doc.text(lines, x, startY);
+        return startY + lines.length * (size >= 11 ? 12 : lineHeight);
+      };
+
+      setTextStyle(24, "bold");
+      doc.text("INVOICE", margin, y);
+      y += 28;
+
+      setTextStyle(10, "bold");
+      y = addWrappedText(sellerDetails.businessName || "Seller Name", margin, 220, y, 10, "bold");
+      y = addWrappedText(sellerDetails.contactName || "Seller Contact", margin, 220, y, 10);
+      y = addWrappedText(sellerDetails.email || "", margin, 220, y, 10);
+      y = addWrappedText(sellerDetails.phone || "", margin, 220, y, 10);
+      y = addWrappedText(
+        [sellerDetails.address, sellerDetails.city, sellerDetails.state, sellerDetails.postalCode]
+          .filter(Boolean)
+          .join(", "),
+        margin,
+        220,
+        y,
+        10
+      );
+
+      setTextStyle(10, "bold");
+      doc.text("Invoice No:", pageWidth - 180, margin);
+      setTextStyle(10, "normal");
+      doc.text(invoiceNumber, pageWidth - 110, margin);
+      setTextStyle(10, "bold");
+      doc.text("Invoice Date:", pageWidth - 180, margin + 16);
+      setTextStyle(10, "normal");
+      doc.text(invoiceDate || "", pageWidth - 110, margin + 16);
+      setTextStyle(10, "bold");
+      doc.text("Due Date:", pageWidth - 180, margin + 32);
+      setTextStyle(10, "normal");
+      doc.text(dueDate || "—", pageWidth - 110, margin + 32);
+      setTextStyle(10, "bold");
+      doc.text("Status:", pageWidth - 180, margin + 48);
+      setTextStyle(10, "normal");
+      doc.text(status || "DRAFT", pageWidth - 110, margin + 48);
+
+      y = Math.max(y + 16, margin + 90);
+      doc.setDrawColor(180);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 16;
+
+      const billFromX = margin;
+      const billToX = pageWidth / 2 + 10;
+      setTextStyle(12, "bold");
+      doc.text("Bill From", billFromX, y);
+      doc.text("Bill To", billToX, y);
+      y += 14;
+
+      setTextStyle(10, "normal");
+      y = addWrappedText(sellerDetails.businessName || "Seller", billFromX, 220, y, 10, "bold");
+      y = addWrappedText(sellerDetails.contactName || "", billFromX, 220, y, 10);
+      y = addWrappedText(sellerDetails.email || "", billFromX, 220, y, 10);
+      y = addWrappedText(sellerDetails.phone || "", billFromX, 220, y, 10);
+      y = addWrappedText(
+        [sellerDetails.address, sellerDetails.city, sellerDetails.state, sellerDetails.postalCode]
+          .filter(Boolean)
+          .join(", "),
+        billFromX,
+        220,
+        y,
+        10
+      );
+      y = addWrappedText(`GST: ${sellerDetails.gstNumber || ""}`, billFromX, 220, y, 10);
+      y = addWrappedText(`PAN: ${sellerDetails.panNumber || ""}`, billFromX, 220, y, 10);
+
+      let yTo = y - 12 * 6;
+      yTo = addWrappedText(customerName || customerDetails.customerName || "Customer", billToX, 220, yTo, 10, "bold");
+      yTo = addWrappedText(customerDetails.companyName || "", billToX, 220, yTo, 10);
+      yTo = addWrappedText(customerDetails.email || "", billToX, 220, yTo, 10);
+      yTo = addWrappedText(customerDetails.phone || "", billToX, 220, yTo, 10);
+      yTo = addWrappedText(
+        [customerDetails.address, customerDetails.city, customerDetails.state, customerDetails.postalCode]
+          .filter(Boolean)
+          .join(", "),
+        billToX,
+        220,
+        yTo,
+        10
+      );
+      yTo = addWrappedText(`GST: ${customerDetails.gstNumber || ""}`, billToX, 220, yTo, 10);
+      yTo = addWrappedText(`PAN: ${customerDetails.panNumber || ""}`, billToX, 220, yTo, 10);
+
+      y = Math.max(y, yTo) + 16;
+      doc.setDrawColor(180);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 8;
+
+      const col1 = margin;
+      const col2 = 290;
+      const col3 = 390;
+      const col4 = 470;
+      const rowHeight = 20;
+
+      setTextStyle(10, "bold");
+      doc.text("Description", col1, y);
+      doc.text("Qty", col2, y);
+      doc.text("Rate", col3, y);
+      doc.text("Amount", col4, y);
+      y += rowHeight;
+      doc.setDrawColor(200);
+      doc.line(margin, y - 8, pageWidth - margin, y - 8);
+
+      setTextStyle(9, "normal");
+      items.forEach((item) => {
+        if (y > pageHeight - 140) {
+          doc.addPage();
+          y = margin + 24;
+        }
+        const amount = item.qty * item.rate;
+        doc.text(item.description || "", col1, y);
+        doc.text(String(item.qty || 0), col2, y);
+        doc.text(`₹${Number(item.rate || 0).toFixed(2)}`, col3, y);
+        doc.text(`₹${amount.toFixed(2)}`, col4, y);
+        y += rowHeight;
+      });
+
+      doc.setDrawColor(180);
+      doc.line(margin, y, pageWidth - margin, y);
+      y += 24;
+
+      setTextStyle(10, "normal");
+      const summaryX = pageWidth - 170;
+      doc.text(`Subtotal: ₹${subtotal.toFixed(2)}`, summaryX, y);
+      y += 16;
+      doc.text(`GST (18%): ₹${taxAmount.toFixed(2)}`, summaryX, y);
+      y += 24;
+      setTextStyle(11, "bold");
+      doc.text(`Total: ₹${totalAmount.toFixed(2)}`, summaryX, y);
+      y += 24;
+
+      if (notes) {
+        setTextStyle(11, "bold");
+        doc.text("Notes:", margin, y);
+        y += 14;
+        setTextStyle(10, "normal");
+        const noteLines = doc.splitTextToSize(notes, pageWidth - margin * 2);
+        doc.text(noteLines, margin, y);
+      }
+
+      doc.save(`${invoiceNumber}.pdf`);
+    } catch (error) {
+      console.error(error);
+      alert("Unable to generate PDF right now.");
     }
-
-    const canvas = await html2canvas(invoice);
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pdfWidth = 190;
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 10, 10, pdfWidth, pdfHeight);
-    pdf.save(`${invoiceNumber}.pdf`);
   };
 
   const handleSave = async () => {
@@ -149,7 +304,16 @@ export default function InvoiceForm() {
       <div className="rounded-3xl bg-[#071028] p-6">
         <h2 className="mb-4 text-xl font-bold text-white">Customer Details</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <input value={customerDetails.customerName} onChange={(e) => setCustomerDetails({ ...customerDetails, customerName: e.target.value })} placeholder="Customer Name" className="rounded-xl bg-slate-900 p-4 text-white" />
+          <input
+            value={customerName}
+            onChange={(e) => {
+              const value = e.target.value;
+              setCustomerName(value);
+              setCustomerDetails((prev) => ({ ...prev, customerName: value }));
+            }}
+            placeholder="Customer Name"
+            className="rounded-xl bg-slate-900 p-4 text-white"
+          />
           <input value={customerDetails.companyName} onChange={(e) => setCustomerDetails({ ...customerDetails, companyName: e.target.value })} placeholder="Company Name" className="rounded-xl bg-slate-900 p-4 text-white" />
           <input type="email" value={customerDetails.email} onChange={(e) => setCustomerDetails({ ...customerDetails, email: e.target.value })} placeholder="Email" className="rounded-xl bg-slate-900 p-4 text-white" />
           <input value={customerDetails.phone} onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })} placeholder="Phone" className="rounded-xl bg-slate-900 p-4 text-white" />
@@ -184,8 +348,13 @@ export default function InvoiceForm() {
       <InvoicePreview
         open={showPreview}
         onClose={() => setShowPreview(false)}
-        customerName={customerDetails.customerName}
+        onDownloadPDF={downloadPDF}
+        customerName={customerName || customerDetails.customerName}
         invoiceNumber={invoiceNumber}
+        invoiceDate={invoiceDate}
+        dueDate={dueDate}
+        status={status}
+        notes={notes}
         sellerDetails={sellerDetails}
         customerDetails={customerDetails}
         items={items}

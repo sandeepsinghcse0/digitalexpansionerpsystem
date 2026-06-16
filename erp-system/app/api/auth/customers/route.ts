@@ -32,15 +32,20 @@ export async function POST(request: NextRequest) {
       }));
 
     const customer = await prisma.customer.create({
-      data: {
-        tenant_id: tenant.id,
-        name: body.name,
-        email: body.email || null,
-        phone: body.phone || null,
-        status: body.status || "ACTIVE",
-        gst_number: body.gstNumber || null,
-      },
-    });
+  data: {
+    tenant_id: 1, // replace with logged-in tenant later
+
+    name: body.name,
+
+    email: body.email || null,
+
+    phone: body.phone || null,
+
+    gst_number: body.gstNumber || null,
+
+    status: body.status || "ACTIVE",
+  },
+});
 
     return NextResponse.json(customer);
   } catch (error) {
