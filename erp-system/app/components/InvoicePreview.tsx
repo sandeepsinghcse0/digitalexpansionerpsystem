@@ -3,7 +3,7 @@
 type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
-  onDownloadPDF: () => void;
+  onDownloadPDF?: () => void;
   customerName: string;
   invoiceNumber: string;
   invoiceDate: string;
@@ -66,7 +66,7 @@ export default function InvoicePreview({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
       <div
         id="invoice-preview"
-        className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl bg-white p-8 text-black shadow-2xl"
+        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8"
       >
         <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-start md:justify-between">
           <div className="space-y-1">
@@ -85,16 +85,19 @@ export default function InvoicePreview({
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={onDownloadPDF}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
-            >
-              Download PDF
-            </button>
+          <div className="flex gap-3">
+            {onDownloadPDF ? (
+              <button
+                onClick={onDownloadPDF}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Download PDF
+              </button>
+            ) : null}
+
             <button
               onClick={onClose}
-              className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600"
+              className="bg-red-500 text-white px-4 py-2 rounded-lg"
             >
               Close
             </button>
@@ -113,12 +116,15 @@ export default function InvoicePreview({
             <p className="text-[14px] text-slate-600">PAN: {sellerDetails.panNumber || ""}</p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 md:text-right">
-            <h2 className="mb-2 text-lg font-semibold uppercase tracking-wide text-slate-900">Invoice</h2>
-            <p className="text-[14px] text-slate-700">Invoice No: {invoiceNumber}</p>
-            <p className="text-[14px] text-slate-700">Invoice Date: {invoiceDate || new Date().toISOString().slice(0, 10)}</p>
-            <p className="text-[14px] text-slate-700">Due Date: {dueDate || "—"}</p>
-            <p className="text-[14px] text-slate-700">Status: {status?.toUpperCase() || "DRAFT"}</p>
+          <div className="text-right">
+            <h2 className="font-bold text-xl">
+              Invoice
+            </h2>
+
+            <p>{invoiceNumber}</p>
+            <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
           </div>
         </div>
 
@@ -155,8 +161,8 @@ export default function InvoicePreview({
         </table>
 
         <div className="mt-8 flex justify-end">
-          <div className="w-full max-w-[320px] rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <div className="mb-2 flex justify-between text-[14px] text-slate-700">
+          <div className="w-75">
+            <div className="flex justify-between mb-2">
               <span>Subtotal</span>
               <span>₹{subtotal.toFixed(2)}</span>
             </div>
