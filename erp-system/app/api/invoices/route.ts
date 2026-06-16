@@ -12,16 +12,64 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    console.log("========== PRISMA DEBUG ==========");
+    console.log("PRISMA:", prisma);
+    console.log("PRISMA KEYS:", Object.keys(prisma as any));
+    console.log("TENANT:", (prisma as any).tenant);
+
     let tenant = await prisma.tenant.findFirst();
 
     if (!tenant) {
       tenant = await prisma.tenant.create({
         data: {
-          business_name: body.sellerDetails?.businessName || body.customerDetails?.companyName || "",
-          email: body.sellerDetails?.email || `tenant-${Date.now()}@local`,
+          business_name:
+            body.sellerDetails?.businessName ||
+            body.customerDetails?.companyName ||
+            "",
+          email:
+            body.sellerDetails?.email ||
+            `tenant-${Date.now()}@local`,
         },
       });
     }
+
+    // rest of your code...
+
+    const sellerProfile = await prisma.sellerProfile.create({
+      data: {
+        tenant_id: tenant.id,
+        business_name: body.sellerDetails?.businessName || "",
+        contact_name: body.sellerDetails?.contactName || "",
+        email: body.sellerDetails?.email || null,
+        phone: body.sellerDetails?.phone || null,
+        gst_number: body.sellerDetails?.gstNumber || null,
+        pan_number: body.sellerDetails?.panNumber || null,
+        address: body.sellerDetails?.address || null,
+        city: body.sellerDetails?.city || null,
+        state: body.sellerDetails?.state || null,
+        postal_code: body.sellerDetails?.postalCode || null,
+        country: body.sellerDetails?.country || "India",
+        bank_account: body.sellerDetails?.bankAccount || null,
+        ifsc_code: body.sellerDetails?.ifscCode || null,
+      },
+    });
+
+    const customerProfile = await prisma.invoiceCustomerProfile.create({
+      data: {
+        tenant_id: tenant.id,
+        customer_name: body.customerDetails?.customerName || "",
+        company_name: body.customerDetails?.companyName || null,
+        email: body.customerDetails?.email || null,
+        phone: body.customerDetails?.phone || null,
+        gst_number: body.customerDetails?.gstNumber || null,
+        pan_number: body.customerDetails?.panNumber || null,
+        address: body.customerDetails?.address || null,
+        city: body.customerDetails?.city || null,
+        state: body.customerDetails?.state || null,
+        postal_code: body.customerDetails?.postalCode || null,
+        country: body.customerDetails?.country || "India",
+      },
+    });
 
     const customerRecord = await prisma.customer.create({
       data: {
@@ -130,14 +178,18 @@ export async function POST(request: Request) {
       success: true,
       invoice,
     });
-  } catch (error) {
-    console.error("Invoice create error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to create invoice",
-      },
-      { status: 500 }
-    );
-  }
+  } catch (error: any) {
+  console.error("========== INVOICE ERROR ==========");
+  console.error(error);
+  console.error("MESSAGE:", error?.message);
+  console.error("STACK:", error?.stack);
+
+  return NextResponse.json(
+    {
+      success: false,
+      message: error?.message || "Failed to create invoice",
+    },
+    { status: 500 }
+  );
+}
 }
