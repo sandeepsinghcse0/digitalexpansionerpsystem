@@ -3,8 +3,13 @@
 type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
+  onDownloadPDF?: () => void;
   customerName: string;
   invoiceNumber: string;
+  invoiceDate: string;
+  dueDate: string;
+  status: string;
+  notes: string;
   sellerDetails: {
     businessName: string;
     contactName: string;
@@ -39,8 +44,13 @@ type InvoicePreviewProps = {
 export default function InvoicePreview({
   open,
   onClose,
+  onDownloadPDF,
   customerName,
   invoiceNumber,
+  invoiceDate,
+  dueDate,
+  status,
+  notes,
   sellerDetails,
   customerDetails,
   items,
@@ -60,7 +70,7 @@ export default function InvoicePreview({
     <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
       <div
         id="invoice-preview"
-        className="bg-white text-black w-[900px] max-h-[90vh] overflow-y-auto rounded-2xl p-8"
+        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8"
       >
         <div className="flex justify-between mb-8">
           <div>
@@ -73,12 +83,23 @@ export default function InvoicePreview({
             </p>
           </div>
 
-          <button
-            onClick={onClose}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg"
-          >
-            Close
-          </button>
+          <div className="flex gap-3">
+            {onDownloadPDF ? (
+              <button
+                onClick={onDownloadPDF}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Download PDF
+              </button>
+            ) : null}
+
+            <button
+              onClick={onClose}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg"
+            >
+              Close
+            </button>
+          </div>
         </div>
 
         <hr className="mb-6" />
@@ -102,10 +123,9 @@ export default function InvoicePreview({
             </h2>
 
             <p>{invoiceNumber}</p>
-
-            <p>
-              {new Date().toLocaleDateString()}
-            </p>
+            <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
+            <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
           </div>
         </div>
 
@@ -151,7 +171,7 @@ export default function InvoicePreview({
         </table>
 
         <div className="mt-8 flex justify-end">
-          <div className="w-[300px]">
+          <div className="w-75">
             <div className="flex justify-between mb-2">
               <span>Subtotal</span>
               <span>₹{subtotal}</span>
