@@ -34,9 +34,12 @@ export default function SuppliersPage() {
           </p>
         </div>
 
-        <button className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-medium">
+        <Link
+          href="/inventory/suppliers/add"
+          className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-medium"
+        >
           + Add Supplier
-        </button>
+        </Link>
       </div>
 
       {/* Inventory Tabs */}
