@@ -24,24 +24,6 @@ export default function Topbar({ search, setSearch }: TopbarProps) {
       <div className="rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3 text-sm text-slate-300">
         Customer Directory
       </div>
-type Props = {
-  search: string;
-  setSearch: (value: string) => void;
-};
-
-export default function Topbar({
-  search,
-  setSearch,
-}: Props) {
-  return (
-    <div className="mb-6">
-      <input
-        type="text"
-        placeholder="Search customers..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-3 rounded-lg bg-[#0f172a] border border-gray-700 text-white"
-      />
     </div>
   );
 }
