@@ -23,46 +23,13 @@ export async function POST(request: Request) {
       });
     }
 
-    const sellerProfile = await prisma.sellerProfile.create({
-      data: {
-        tenant_id: tenant.id,
-        business_name: body.sellerDetails?.businessName || "",
-        contact_name: body.sellerDetails?.contactName || "",
-        email: body.sellerDetails?.email || null,
-        phone: body.sellerDetails?.phone || null,
-        gst_number: body.sellerDetails?.gstNumber || null,
-        pan_number: body.sellerDetails?.panNumber || null,
-        address: body.sellerDetails?.address || null,
-        city: body.sellerDetails?.city || null,
-        state: body.sellerDetails?.state || null,
-        postal_code: body.sellerDetails?.postalCode || null,
-        country: body.sellerDetails?.country || "India",
-        bank_account: body.sellerDetails?.bankAccount || null,
-        ifsc_code: body.sellerDetails?.ifscCode || null,
-      },
-    });
-
-    const customerProfile = await prisma.invoiceCustomerProfile.create({
-      data: {
-        tenant_id: tenant.id,
-        customer_name: body.customerDetails?.customerName || "",
-        company_name: body.customerDetails?.companyName || null,
-        email: body.customerDetails?.email || null,
-        phone: body.customerDetails?.phone || null,
-        gst_number: body.customerDetails?.gstNumber || null,
-        pan_number: body.customerDetails?.panNumber || null,
-        address: body.customerDetails?.address || null,
-        city: body.customerDetails?.city || null,
-        state: body.customerDetails?.state || null,
-        postal_code: body.customerDetails?.postalCode || null,
-        country: body.customerDetails?.country || "India",
-      },
-    });
-
     const customerRecord = await prisma.customer.create({
       data: {
         tenant_id: tenant.id,
-        name: body.customerDetails?.customerName || "",
+        name:
+          body.customerDetails?.customerName ||
+          body.customerDetails?.companyName ||
+          "Guest Customer",
         email: body.customerDetails?.email || null,
         phone: body.customerDetails?.phone || null,
         gst_number: body.customerDetails?.gstNumber || null,
@@ -86,8 +53,6 @@ export async function POST(request: Request) {
         notes: body.notes || null,
         terms: body.terms || null,
         created_by: creator?.id ?? 1,
-        seller_profile_id: sellerProfile.id,
-        customer_profile_id: customerProfile.id,
       },
     });
 
