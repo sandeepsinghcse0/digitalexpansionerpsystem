@@ -31,8 +31,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Tenants
- * const tenants = await prisma.tenant.findMany()
+ * // Fetch zero or more Addresses
+ * const addresses = await prisma.address.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,92 +42,92 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model Tenant
+ * Model address
  * 
  */
-export type Tenant = Prisma.TenantModel
+export type address = Prisma.addressModel
 /**
- * Model User
+ * Model customer
  * 
  */
-export type User = Prisma.UserModel
+export type customer = Prisma.customerModel
 /**
- * Model Organization
+ * Model expense
  * 
  */
-export type Organization = Prisma.OrganizationModel
+export type expense = Prisma.expenseModel
 /**
- * Model Address
+ * Model expensecategory
  * 
  */
-export type Address = Prisma.AddressModel
+export type expensecategory = Prisma.expensecategoryModel
 /**
- * Model Customer
+ * Model gstrate
  * 
  */
-export type Customer = Prisma.CustomerModel
+export type gstrate = Prisma.gstrateModel
 /**
- * Model ProductCategory
+ * Model inventory
  * 
  */
-export type ProductCategory = Prisma.ProductCategoryModel
+export type inventory = Prisma.inventoryModel
 /**
- * Model UnitOfMeasure
+ * Model invoice
  * 
  */
-export type UnitOfMeasure = Prisma.UnitOfMeasureModel
+export type invoice = Prisma.invoiceModel
 /**
- * Model GstRate
+ * Model invoiceitem
  * 
  */
-export type GstRate = Prisma.GstRateModel
+export type invoiceitem = Prisma.invoiceitemModel
 /**
- * Model Product
+ * Model organization
  * 
  */
-export type Product = Prisma.ProductModel
+export type organization = Prisma.organizationModel
 /**
- * Model Supplier
+ * Model payment
  * 
  */
-export type Supplier = Prisma.SupplierModel
+export type payment = Prisma.paymentModel
 /**
- * Model Inventory
+ * Model product
  * 
  */
-export type Inventory = Prisma.InventoryModel
+export type product = Prisma.productModel
 /**
- * Model StockTransfer
+ * Model productcategory
  * 
  */
-export type StockTransfer = Prisma.StockTransferModel
+export type productcategory = Prisma.productcategoryModel
 /**
- * Model Invoice
+ * Model purchaseorder
  * 
  */
-export type Invoice = Prisma.InvoiceModel
+export type purchaseorder = Prisma.purchaseorderModel
 /**
- * Model InvoiceItem
+ * Model stocktransfer
  * 
  */
-export type InvoiceItem = Prisma.InvoiceItemModel
+export type stocktransfer = Prisma.stocktransferModel
 /**
- * Model Payment
+ * Model supplier
  * 
  */
-export type Payment = Prisma.PaymentModel
+export type supplier = Prisma.supplierModel
 /**
- * Model PurchaseOrder
+ * Model tenant
  * 
  */
-export type PurchaseOrder = Prisma.PurchaseOrderModel
+export type tenant = Prisma.tenantModel
 /**
- * Model ExpenseCategory
+ * Model unitofmeasure
  * 
  */
-export type ExpenseCategory = Prisma.ExpenseCategoryModel
+export type unitofmeasure = Prisma.unitofmeasureModel
 /**
- * Model Expense
+ * Model user
  * 
  */
-export type Expense = Prisma.ExpenseModel
+export type user = Prisma.userModel
