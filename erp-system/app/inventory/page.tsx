@@ -22,13 +22,24 @@ export default function InventoryPage() {
 
   useEffect(() => {
     fetch("/api/inventory")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Failed to fetch inventory");
+        }
+        return res.json();
+      })
       .then((data) => {
-        setInventory(data);
+        if (Array.isArray(data)) {
+          setInventory(data);
+        } else {
+          console.error("Invalid data format received from API:", data);
+          setInventory([]);
+        }
         setLoading(false);
       })
       .catch((err) => {
         console.error(err);
+        setInventory([]);
         setLoading(false);
       });
   }, []);
@@ -63,9 +74,12 @@ export default function InventoryPage() {
           </p>
         </div>
 
-        <button className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-medium">
+        <Link
+          href="/inventory/add"
+          className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-medium"
+        >
           + Add Product
-        </button>
+        </Link>
       </div>
 
       {/* Inventory Tabs */}

@@ -48,7 +48,7 @@ export async function PUT(
   const body = await request.json();
 
   const categoryRecord =
-    await prisma.expenseCategory.findFirst({
+    await prisma.expensecategory.findFirst({
       where: {
         name: body.category,
       },
@@ -71,11 +71,17 @@ export async function PUT(
       expense_date: new Date(body.date),
       notes: body.notes || null,
       category_id: categoryRecord.id,
+      updated_at: new Date(),
     },
     include: {
-      category: true,
+      expensecategory: true,
     },
   });
 
-  return NextResponse.json(expense);
+  const mappedExpense = {
+    ...expense,
+    category: (expense as any).expensecategory,
+  };
+
+  return NextResponse.json(mappedExpense);
 }

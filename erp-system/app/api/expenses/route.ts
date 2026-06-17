@@ -5,14 +5,19 @@ export async function GET() {
   try {
     const expenses = await prisma.expense.findMany({
       include: {
-        category: true,
+        expensecategory: true,
       },
       orderBy: {
         expense_date: "desc",
       },
     });
 
-    return NextResponse.json(expenses);
+    const mappedExpenses = expenses.map((expense: any) => ({
+      ...expense,
+      category: expense.expensecategory,
+    }));
+
+    return NextResponse.json(mappedExpenses);
   } catch (error) {
     console.error(error);
 
@@ -30,7 +35,7 @@ export async function POST(request: Request) {
     console.log("POST BODY:", body);
 
     let categoryRecord =
-      await prisma.expenseCategory.findFirst({
+      await prisma.expensecategory.findFirst({
         where: {
           name: body.category,
         },
@@ -43,12 +48,13 @@ export async function POST(request: Request) {
         data: {
           business_name: "Default Tenant",
           email: "default@local",
+          updated_at: new Date(),
         },
       });
     }
 
     if (!categoryRecord) {
-      categoryRecord = await prisma.expenseCategory.create({
+      categoryRecord = await prisma.expensecategory.create({
         data: {
           tenant_id: tenantRecord.id,
           name: body.category || "Others",
@@ -68,13 +74,19 @@ export async function POST(request: Request) {
         expense_date: new Date(body.date),
         created_by: 1,
         notes: body.notes || null,
+        updated_at: new Date(),
       },
       include: {
-        category: true,
+        expensecategory: true,
       },
     });
 
-    return NextResponse.json(expense);
+    const mappedExpense = {
+      ...expense,
+      category: (expense as any).expensecategory,
+    };
+
+    return NextResponse.json(mappedExpense);
   } catch (error) {
     console.error(error);
 
