@@ -4,7 +4,7 @@ import ExpenseFilters from "../components/ExpenseFilters";
 import { useState, useEffect, type FormEvent } from "react";
 import Sidebar from "../components/Sidebar";
 import ExpenseChart from "../components/ExpenseChart";
-import Topbar from "../components/Topbar";
+
 
 const defaultCategories = [
   "Utilities",
@@ -27,7 +27,8 @@ type ExpenseItem = {
 };
 
 export default function ExpensesPage() {
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] =
+  useState<Date | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -43,6 +44,20 @@ export default function ExpensesPage() {
   const [description, setDescription] = useState("");
   const [viewExpense, setViewExpense] = useState<ExpenseItem | null>(null);
   const [isViewMode, setIsViewMode] = useState(false);
+  
+
+const handleViewExpense = (
+  expenseId: number
+) => {
+  const expense = expenses.find(
+    (e) => e.id === expenseId
+  );
+
+  if (!expense) return;
+
+  setViewExpense(expense);
+  setIsViewMode(true);
+};
 
   const resetForm = () => {
     setTitle("");
@@ -59,31 +74,39 @@ export default function ExpensesPage() {
     setShowModal(false);
     resetForm();
   };
-
-  const handleDeleteExpense = async (
-    expenseId: number
-  ) => {
-    await fetch(
+const handleDeleteExpense = async (
+  expenseId: number
+) => {
+  try {
+    console.log("Deleting ID:", expenseId);
+    const response = await fetch(
       `/api/expenses/${expenseId}`,
       {
         method: "DELETE",
       }
     );
 
+    console.log("STATUS:", response.status);
 
-    setExpenses((current) =>
-      current.filter((expense) => expense.id !== expenseId)
+    const data = await response.json();
+    console.log("DATA:", data);
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Failed to delete expense"
+      );
+    }
+
+    setExpenses((prev) =>
+      prev.filter(
+        (expense) =>
+          expense.id !== expenseId
+      )
     );
-  };
-  const handleViewExpense = (id: number) => {
-    const expense = expenses.find((e) => e.id === id);
-
-    if (!expense) return;
-
-    setViewExpense(expense);
-    setIsViewMode(true);
-  };
-
+  } catch (error) {
+    console.error(error);
+  }
+};
   useEffect(() => {
     fetch("/api/expenses")
       .then((res) => res.json())
@@ -216,21 +239,40 @@ export default function ExpensesPage() {
     );
     closeModal();
   };
-  const filteredExpenses = expenses.filter((expense) => {
-    const matchesSearch = (expense.title ?? "")
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  const filteredExpenses = expenses.filter(
+  (expense) => {
+    const matchesSearch =
+      expense.title
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+
+      expense.category
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+
+      String(expense.amount)
+        .includes(searchTerm) ||
+
+      expense.date
+        ?.includes(searchTerm);
 
     const matchesCategory =
       selectedCategory === "All" ||
       expense.category === selectedCategory;
 
     const matchesDate =
-      !selectedDate ||
-      expense.date === selectedDate;
+  !selectedDate ||
+  expense.date ===
+    selectedDate.toISOString().split("T")[0];
+   
 
-    return matchesSearch && matchesCategory && matchesDate;
-  });
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesDate
+    );
+  }
+);
 
   const totalExpenses = filteredExpenses.reduce(
     (sum, expense) =>
@@ -324,10 +366,8 @@ export default function ExpensesPage() {
                       </span>
                     </span>
                   </div>
-                  <div className="flex flex-col md:col-span-2">
-                    <span className="text-slate-400 text-sm">Created By</span>
-                    <span className="text-white font-medium mt-1">Aman Kumar</span>
-                  </div>
+                
+            
                 </div>
               </div>
 
@@ -423,9 +463,9 @@ export default function ExpensesPage() {
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto">
-        <div className="w-full pt-2 pb-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between mb-8">
-            <div>
+        <div className="max-w-[1600px] mx-auto px-8 py-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 mb-10">
+            <div className="space-y-3">
               <h1 className="text-4xl font-bold text-white">Expenses</h1>
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-emerald-400 text-sm font-semibold">
@@ -445,29 +485,31 @@ export default function ExpensesPage() {
             </button>
           </div>
 
-          <div className="grid gap-6 xl:grid-cols-[2fr_1fr] mb-8">
-            <div className="rounded-3xl border border-slate-800 bg-[#071028] p-6 h-[450px] min-h-[450px] relative z-0 overflow-hidden">
-              <ExpenseChart expenses={filteredExpenses} />
-            </div>
-            <div className="relative z-10">
-              <ExpenseStats
-                totalExpenses={totalExpenses}
-                totalCount={totalCount}
-                highestExpense={highestExpense}
-                categoryCount={categoryCount}
-              />
-            </div>
-          </div>
+          <div className="grid gap-6 xl:grid-cols-[2fr_420px] mb-8">
+
+  {/* Left Side - Chart */}
+  <ExpenseChart expenses={filteredExpenses} />
+
+  {/* Right Side - Summary */}
+  <ExpenseStats
+    totalExpenses={totalExpenses}
+    totalCount={totalCount}
+    highestExpense={highestExpense}
+    categoryCount={categoryCount}
+  />
+
+</div>
+
 
           <ExpenseFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            categories={categories}
-          />
+  searchTerm={searchTerm}
+  setSearchTerm={setSearchTerm}
+  selectedCategory={selectedCategory}
+  setSelectedCategory={setSelectedCategory}
+  categories={categories}
+  selectedDate={selectedDate}
+  setSelectedDate={setSelectedDate}
+/>
 
           <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
             <h2 className="text-xl font-semibold text-white mb-6">Recent Expenses</h2>
@@ -499,16 +541,16 @@ export default function ExpensesPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => {
-                              setIsViewMode(false);  
-                              setEditingIndex(index);
-                              setEditingId(expense.id);
-                              setTitle(expense.title);
-                              setAmount(expense.amount.toString());
-                              setCategory(expense.category);
-                              setDate(expense.date);
-                              setShowModal(true);
-                               setDescription("");
-                            }}
+  setIsViewMode(false);
+  setEditingIndex(index);
+  setEditingId(expense.id);
+  setTitle(expense.title);
+  setAmount(expense.amount.toString());
+  setCategory(expense.category);
+  setDate(expense.date);
+  setDescription(expense.notes || "");
+  setShowModal(true);
+}}
                             className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-lg"
                           >
                             Edit

@@ -18,11 +18,7 @@
     "incremental": true,
 
     "baseUrl": ".",
-<<<<<<< HEAD
     "ignoreDeprecations": "6.0",
-=======
-
->>>>>>> 4c47c26 (expanses dashboard)
     "plugins": [
       {
         "name": "next"
