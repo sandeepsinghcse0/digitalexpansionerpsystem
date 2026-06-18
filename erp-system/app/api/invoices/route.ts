@@ -12,6 +12,12 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+    const normalizeAlphaNum = (value?: string) =>
+      value ? value.toUpperCase().replace(/[^A-Z0-9]/g, "") : "";
+
+    const sanitizeGstNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 15);
+    const sanitizePanNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 10);
+
     let tenant = await prisma.tenant.findFirst();
 
     if (!tenant) {
@@ -22,6 +28,34 @@ export async function POST(request: Request) {
         },
       });
     }
+
+    const generateUniqueInvoiceNumber = async () => {
+      let invoiceNumber = "";
+      let existing = null;
+      let attempts = 0;
+
+      do {
+        invoiceNumber = String(Math.floor(100000 + Math.random() * 900000));
+        existing = await prisma.invoice.findFirst({
+          where: {
+            tenant_id: tenant.id,
+            invoice_number: invoiceNumber,
+          },
+        });
+        attempts += 1;
+      } while (existing && attempts < 10);
+
+      if (existing) {
+        throw new Error("Unable to generate a unique invoice number. Please try again.");
+      }
+
+      return invoiceNumber;
+    };
+
+    const invoiceNumber =
+      body.invoiceNumber && /^[0-9]{6}$/.test(body.invoiceNumber)
+        ? body.invoiceNumber
+        : await generateUniqueInvoiceNumber();
 
     const sellerProfile = await prisma.sellerProfile.create({
       data: {
@@ -76,10 +110,11 @@ export async function POST(request: Request) {
       data: {
         tenant_id: tenant.id,
         customer_id: customerRecord.id,
-        invoice_number: body.invoiceNumber || `INV-${Date.now()}`,
+        invoice_number: invoiceNumber,
         invoice_date: new Date(body.invoiceDate || new Date()),
         due_date: body.dueDate ? new Date(body.dueDate) : null,
         status: (body.status || "DRAFT").toUpperCase(),
+        penalty_amount: Number(body.penaltyAmount || 0),
         subtotal: Number(body.subtotal || 0),
         tax_amount: Number(body.taxAmount || 0),
         total_amount: Number(body.totalAmount || 0),
@@ -104,7 +139,7 @@ export async function POST(request: Request) {
       const quantity = Number(item.qty || 0);
       const rate = Number(item.rate || 0);
       const subtotalValue = quantity * rate;
-      const gstPercent = Number(item.gstPercent || 0);
+      const gstPercent = Number(item.gstRate ?? item.gstPercent ?? 0);
 
       let gstRate = await prisma.gstRate.findFirst({
         where: {

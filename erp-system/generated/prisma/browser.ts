@@ -93,6 +93,11 @@ export type StockTransfer = Prisma.StockTransferModel
  */
 export type Invoice = Prisma.InvoiceModel
 /**
+ * Model InvoiceDraft
+ * 
+ */
+export type InvoiceDraft = Prisma.InvoiceDraftModel
+/**
  * Model InvoiceItem
  * 
  */

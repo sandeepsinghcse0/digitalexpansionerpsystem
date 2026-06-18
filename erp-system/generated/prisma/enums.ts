@@ -41,6 +41,7 @@ export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
 export const InvoiceStatus = {
   DRAFT: 'DRAFT',
   SENT: 'SENT',
+  UNPAID: 'UNPAID',
   VIEWED: 'VIEWED',
   PAID: 'PAID',
   PARTIALLY_PAID: 'PARTIALLY_PAID',

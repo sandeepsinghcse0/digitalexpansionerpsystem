@@ -66,6 +66,7 @@ export const ModelName = {
   Inventory: 'Inventory',
   StockTransfer: 'StockTransfer',
   Invoice: 'Invoice',
+  InvoiceDraft: 'InvoiceDraft',
   InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
   PurchaseOrder: 'PurchaseOrder',
@@ -334,6 +335,7 @@ export const InvoiceScalarFieldEnum = {
   invoice_date: 'invoice_date',
   due_date: 'due_date',
   status: 'status',
+  penalty_amount: 'penalty_amount',
   subtotal: 'subtotal',
   tax_amount: 'tax_amount',
   total_amount: 'total_amount',
@@ -347,6 +349,30 @@ export const InvoiceScalarFieldEnum = {
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceDraftScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  invoice_number: 'invoice_number',
+  invoice_date: 'invoice_date',
+  due_date: 'due_date',
+  status: 'status',
+  penalty_amount: 'penalty_amount',
+  subtotal: 'subtotal',
+  tax_amount: 'tax_amount',
+  total_amount: 'total_amount',
+  notes: 'notes',
+  terms: 'terms',
+  seller_details: 'seller_details',
+  customer_details: 'customer_details',
+  items: 'items',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InvoiceDraftScalarFieldEnum = (typeof InvoiceDraftScalarFieldEnum)[keyof typeof InvoiceDraftScalarFieldEnum]
 
 
 export const InvoiceItemScalarFieldEnum = {
@@ -440,6 +466,14 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -607,6 +641,32 @@ export const InvoiceOrderByRelevanceFieldEnum = {
 } as const
 
 export type InvoiceOrderByRelevanceFieldEnum = (typeof InvoiceOrderByRelevanceFieldEnum)[keyof typeof InvoiceOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const InvoiceDraftOrderByRelevanceFieldEnum = {
+  invoice_number: 'invoice_number',
+  notes: 'notes',
+  terms: 'terms'
+} as const
+
+export type InvoiceDraftOrderByRelevanceFieldEnum = (typeof InvoiceDraftOrderByRelevanceFieldEnum)[keyof typeof InvoiceDraftOrderByRelevanceFieldEnum]
 
 
 export const InvoiceItemOrderByRelevanceFieldEnum = {

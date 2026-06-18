@@ -33,6 +33,7 @@ enum ProductStatus {
 enum InvoiceStatus {
   DRAFT
   SENT
+  UNPAID
   VIEWED
   PAID
   PARTIALLY_PAID
@@ -378,6 +379,7 @@ model Invoice {
   invoice_date  DateTime @default(now())
   due_date      DateTime?
   status        InvoiceStatus @default(DRAFT)
+  penalty_amount Float   @default(0)
   subtotal      Float   @default(0)
   tax_amount    Float   @default(0)
   total_amount  Float   @default(0)
@@ -400,6 +402,33 @@ model Invoice {
   @@index([tenant_id])
   @@index([customer_id])
   @@index([invoice_date])
+  @@index([status])
+}
+
+model InvoiceDraft {
+  id               Int      @id @default(autoincrement())
+  tenant_id        Int
+  invoice_number   String
+  invoice_date     DateTime @default(now())
+  due_date         DateTime?
+  status           InvoiceStatus @default(DRAFT)
+  penalty_amount   Float    @default(0)
+  subtotal         Float    @default(0)
+  tax_amount       Float    @default(0)
+  total_amount     Float    @default(0)
+  notes            String?
+  terms            String?
+  seller_details   Json?
+  customer_details Json?
+  items            Json?
+  created_by       Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  @@unique([tenant_id, invoice_number])
+  @@index([tenant_id])
   @@index([status])
 }
 

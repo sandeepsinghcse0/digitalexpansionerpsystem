@@ -3,12 +3,14 @@
 type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
+  onEdit?: () => void;
   onDownloadPDF?: () => void;
   customerName: string;
   invoiceNumber: string;
   invoiceDate: string;
   dueDate: string;
   status: string;
+  penaltyAmount?: number;
   notes: string;
   sellerDetails: {
     businessName: string;
@@ -38,18 +40,21 @@ type InvoicePreviewProps = {
     description: string;
     qty: number;
     rate: number;
+    gstRate: number;
   }[];
 };
 
 export default function InvoicePreview({
   open,
   onClose,
+  onEdit,
   onDownloadPDF,
   customerName,
   invoiceNumber,
   invoiceDate,
   dueDate,
   status,
+  penaltyAmount = 0,
   notes,
   sellerDetails,
   customerDetails,
@@ -57,20 +62,35 @@ export default function InvoicePreview({
 }: InvoicePreviewProps) {
   if (!open) return null;
 
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.qty * item.rate,
+  const visibleItems = items.filter(
+    (item) => item.description?.trim() || item.qty > 0 || item.rate > 0 || item.gstRate > 0
+  );
+
+  const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
+
+  const gstTotal = visibleItems.reduce(
+    (sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100),
     0
   );
 
-  const gst = subtotal * 0.18;
+  const total = subtotal + gstTotal + penaltyAmount;
 
-  const total = subtotal + gst;
+  // breakdown by GST rate
+  const gstBreakdown = visibleItems.reduce((map: Record<string, { taxable: number; gst: number }>, item) => {
+    const rate = String(item.gstRate ?? 18);
+    const taxable = item.qty * item.rate;
+    const gst = taxable * ((item.gstRate ?? 18) / 100);
+    if (!map[rate]) map[rate] = { taxable: 0, gst: 0 };
+    map[rate].taxable += taxable;
+    map[rate].gst += gst;
+    return map;
+  }, {} as Record<string, { taxable: number; gst: number }>);
 
   return (
     <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
       <div
         id="invoice-preview"
-        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8"
+        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8 font-sans text-base leading-6"
       >
         <div className="flex justify-between mb-8">
           <div>
@@ -84,6 +104,14 @@ export default function InvoicePreview({
           </div>
 
           <div className="flex gap-3">
+            {onEdit ? (
+              <button
+                onClick={onEdit}
+                className="bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-600"
+              >
+                Edit
+              </button>
+            ) : null}
             {onDownloadPDF ? (
               <button
                 onClick={onDownloadPDF}
@@ -124,7 +152,9 @@ export default function InvoicePreview({
 
             <p>{invoiceNumber}</p>
             <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
-            <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            {status !== "PAID" && (
+              <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            )}
             <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
           </div>
         </div>
@@ -132,41 +162,33 @@ export default function InvoicePreview({
         <table className="w-full border">
           <thead>
             <tr className="bg-slate-100">
-              <th className="p-3 border">
-                Description
-              </th>
-              <th className="p-3 border">
-                Qty
-              </th>
-              <th className="p-3 border">
-                Rate
-              </th>
-              <th className="p-3 border">
-                Amount
-              </th>
+              <th className="p-3 border">Description</th>
+              <th className="p-3 border">Qty</th>
+              <th className="p-3 border">Rate</th>
+              <th className="p-3 border">GST %</th>
+              <th className="p-3 border">Taxable</th>
+              <th className="p-3 border">GST</th>
+              <th className="p-3 border">Total</th>
             </tr>
           </thead>
 
           <tbody>
-            {items.map((item, index) => (
-              <tr key={index}>
-                <td className="border p-3">
-                  {item.description}
-                </td>
-
-                <td className="border p-3">
-                  {item.qty}
-                </td>
-
-                <td className="border p-3">
-                  ₹{item.rate}
-                </td>
-
-                <td className="border p-3">
-                  ₹{item.qty * item.rate}
-                </td>
-              </tr>
-            ))}
+            {visibleItems.map((item, index) => {
+              const taxable = item.qty * item.rate;
+              const gst = taxable * ((item.gstRate ?? 18) / 100);
+              const rowTotal = taxable + gst;
+              return (
+                <tr key={index}>
+                  <td className="border p-3">{item.description}</td>
+                  <td className="border p-3">{item.qty}</td>
+                  <td className="border p-3">₹{item.rate.toFixed(2)}</td>
+                  <td className="border p-3">{(item.gstRate ?? 18).toFixed(2)}%</td>
+                  <td className="border p-3">₹{taxable.toFixed(2)}</td>
+                  <td className="border p-3">₹{gst.toFixed(2)}</td>
+                  <td className="border p-3">₹{rowTotal.toFixed(2)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
@@ -174,15 +196,27 @@ export default function InvoicePreview({
           <div className="w-75">
             <div className="flex justify-between mb-2">
               <span>Subtotal</span>
-              <span>₹{subtotal}</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
 
-            <div className="flex justify-between mb-2">
-              <span>GST (18%)</span>
-              <span>₹{gst.toFixed(2)}</span>
-            </div>
+            {Object.entries(gstBreakdown).map(([rate, data]) => (
+              <div key={rate} className="flex justify-between mb-2">
+                <span>GST ({rate}%)</span>
+                <span>₹{data.gst.toFixed(2)}</span>
+              </div>
+            ))}
 
-            <hr className="my-2" />
+            {penaltyAmount > 0 ? (
+              <>
+                <div className="flex justify-between mb-2 text-red-600">
+                  <span>Overdue Penalty (No GST)</span>
+                  <span>₹{penaltyAmount.toFixed(2)}</span>
+                </div>
+                <hr className="my-2 border-slate-200" />
+              </>
+            ) : (
+              <hr className="my-2 border-slate-200" />
+            )}
 
             <div className="flex justify-between font-bold text-2xl">
               <span>Total</span>
@@ -190,6 +224,13 @@ export default function InvoicePreview({
             </div>
           </div>
         </div>
+
+        {notes ? (
+          <div className="mt-8 rounded-xl border border-slate-200/50 bg-slate-50 p-4">
+            <h3 className="font-semibold mb-2">Notes</h3>
+            <p className="text-sm text-slate-700">{notes}</p>
+          </div>
+        ) : null}
       </div>
     </div>
   );
