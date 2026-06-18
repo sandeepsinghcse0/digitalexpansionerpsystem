@@ -96,7 +96,10 @@ export async function POST(request: Request) {
     const customerRecord = await prisma.customer.create({
       data: {
         tenant_id: tenant.id,
-        name: body.customerDetails?.customerName || "",
+        name:
+          body.customerDetails?.customerName ||
+          body.customerDetails?.companyName ||
+          "Guest Customer",
         email: body.customerDetails?.email || null,
         phone: body.customerDetails?.phone || null,
         gst_number: body.customerDetails?.gstNumber || null,
@@ -121,8 +124,6 @@ export async function POST(request: Request) {
         notes: body.notes || null,
         terms: body.terms || null,
         created_by: creator?.id ?? 1,
-        seller_profile_id: sellerProfile.id,
-        customer_profile_id: customerProfile.id,
       },
     });
 

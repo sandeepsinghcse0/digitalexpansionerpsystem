@@ -199,26 +199,6 @@ export interface PrismaClient<
   get tenant(): Prisma.TenantDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
-   * `prisma.sellerProfile`: Exposes CRUD operations for the **SellerProfile** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more SellerProfiles
-    * const sellerProfiles = await prisma.sellerProfile.findMany()
-    * ```
-    */
-  get sellerProfile(): Prisma.SellerProfileDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.invoiceCustomerProfile`: Exposes CRUD operations for the **InvoiceCustomerProfile** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more InvoiceCustomerProfiles
-    * const invoiceCustomerProfiles = await prisma.invoiceCustomerProfile.findMany()
-    * ```
-    */
-  get invoiceCustomerProfile(): Prisma.InvoiceCustomerProfileDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
     * Example usage:
     * ```ts

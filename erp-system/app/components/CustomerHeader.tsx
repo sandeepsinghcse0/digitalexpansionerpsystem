@@ -11,21 +11,6 @@ export default function CustomerHeader({ onAddCustomer }: CustomerHeaderProps) {
         <h1 className="text-3xl font-semibold text-white">Customers</h1>
         <p className="mt-1 text-sm text-slate-400">
           Manage your customer list and account status.
-type Props = {
-  onAddCustomer: () => void;
-};
-
-export default function CustomerHeader({
-  onAddCustomer,
-}: Props) {
-  return (
-    <div className="flex justify-between items-center mb-6">
-      <div>
-        <h1 className="text-3xl font-bold">
-          Customers
-        </h1>
-        <p className="text-gray-400">
-          Manage all customers
         </p>
       </div>
 

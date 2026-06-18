@@ -9,8 +9,6 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Tenant'
-export type * from './models/SellerProfile'
-export type * from './models/InvoiceCustomerProfile'
 export type * from './models/User'
 export type * from './models/Organization'
 export type * from './models/Address'

@@ -243,8 +243,6 @@ export type TenantWhereInput = {
   users?: Prisma.UserListRelationFilter
   organization?: Prisma.XOR<Prisma.OrganizationNullableScalarRelationFilter, Prisma.OrganizationWhereInput> | null
   customers?: Prisma.CustomerListRelationFilter
-  seller_profiles?: Prisma.SellerProfileListRelationFilter
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileListRelationFilter
   products?: Prisma.ProductListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   invoiceDrafts?: Prisma.InvoiceDraftListRelationFilter
@@ -272,8 +270,6 @@ export type TenantOrderByWithRelationInput = {
   users?: Prisma.UserOrderByRelationAggregateInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
   customers?: Prisma.CustomerOrderByRelationAggregateInput
-  seller_profiles?: Prisma.SellerProfileOrderByRelationAggregateInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileOrderByRelationAggregateInput
   products?: Prisma.ProductOrderByRelationAggregateInput
   invoices?: Prisma.InvoiceOrderByRelationAggregateInput
   invoiceDrafts?: Prisma.InvoiceDraftOrderByRelationAggregateInput
@@ -305,8 +301,6 @@ export type TenantWhereUniqueInput = Prisma.AtLeast<{
   users?: Prisma.UserListRelationFilter
   organization?: Prisma.XOR<Prisma.OrganizationNullableScalarRelationFilter, Prisma.OrganizationWhereInput> | null
   customers?: Prisma.CustomerListRelationFilter
-  seller_profiles?: Prisma.SellerProfileListRelationFilter
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileListRelationFilter
   products?: Prisma.ProductListRelationFilter
   invoices?: Prisma.InvoiceListRelationFilter
   invoiceDrafts?: Prisma.InvoiceDraftListRelationFilter
@@ -363,8 +357,6 @@ export type TenantCreateInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -392,8 +384,6 @@ export type TenantUncheckedCreateInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -420,8 +410,6 @@ export type TenantUpdateInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -449,8 +437,6 @@ export type TenantUncheckedUpdateInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -568,34 +554,6 @@ export type IntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
-}
-
-export type TenantCreateNestedOneWithoutSeller_profilesInput = {
-  create?: Prisma.XOR<Prisma.TenantCreateWithoutSeller_profilesInput, Prisma.TenantUncheckedCreateWithoutSeller_profilesInput>
-  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutSeller_profilesInput
-  connect?: Prisma.TenantWhereUniqueInput
-}
-
-export type TenantUpdateOneRequiredWithoutSeller_profilesNestedInput = {
-  create?: Prisma.XOR<Prisma.TenantCreateWithoutSeller_profilesInput, Prisma.TenantUncheckedCreateWithoutSeller_profilesInput>
-  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutSeller_profilesInput
-  upsert?: Prisma.TenantUpsertWithoutSeller_profilesInput
-  connect?: Prisma.TenantWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutSeller_profilesInput, Prisma.TenantUpdateWithoutSeller_profilesInput>, Prisma.TenantUncheckedUpdateWithoutSeller_profilesInput>
-}
-
-export type TenantCreateNestedOneWithoutInvoice_customer_profilesInput = {
-  create?: Prisma.XOR<Prisma.TenantCreateWithoutInvoice_customer_profilesInput, Prisma.TenantUncheckedCreateWithoutInvoice_customer_profilesInput>
-  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutInvoice_customer_profilesInput
-  connect?: Prisma.TenantWhereUniqueInput
-}
-
-export type TenantUpdateOneRequiredWithoutInvoice_customer_profilesNestedInput = {
-  create?: Prisma.XOR<Prisma.TenantCreateWithoutInvoice_customer_profilesInput, Prisma.TenantUncheckedCreateWithoutInvoice_customer_profilesInput>
-  connectOrCreate?: Prisma.TenantCreateOrConnectWithoutInvoice_customer_profilesInput
-  upsert?: Prisma.TenantUpsertWithoutInvoice_customer_profilesInput
-  connect?: Prisma.TenantWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantUpdateToOneWithWhereWithoutInvoice_customer_profilesInput, Prisma.TenantUpdateWithoutInvoice_customer_profilesInput>, Prisma.TenantUncheckedUpdateWithoutInvoice_customer_profilesInput>
 }
 
 export type TenantCreateNestedOneWithoutUsersInput = {
@@ -1084,8 +1042,6 @@ export type TenantCreateWithoutUsersInput = {
   updated_at?: Date | string
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -1112,8 +1068,6 @@ export type TenantUncheckedCreateWithoutUsersInput = {
   updated_at?: Date | string
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -1155,8 +1109,6 @@ export type TenantUpdateWithoutUsersInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -1183,8 +1135,6 @@ export type TenantUncheckedUpdateWithoutUsersInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -1210,8 +1160,6 @@ export type TenantCreateWithoutOrganizationInput = {
   updated_at?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -1238,8 +1186,6 @@ export type TenantUncheckedCreateWithoutOrganizationInput = {
   updated_at?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -1281,8 +1227,6 @@ export type TenantUpdateWithoutOrganizationInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -1309,8 +1253,6 @@ export type TenantUncheckedUpdateWithoutOrganizationInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -1337,8 +1279,6 @@ export type TenantCreateWithoutAddressesInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -1365,8 +1305,6 @@ export type TenantUncheckedCreateWithoutAddressesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -1408,8 +1346,6 @@ export type TenantUpdateWithoutAddressesInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -1436,8 +1372,6 @@ export type TenantUncheckedUpdateWithoutAddressesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -1462,8 +1396,6 @@ export type TenantCreateWithoutCustomersInput = {
   updated_at?: Date | string
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -1490,8 +1422,6 @@ export type TenantUncheckedCreateWithoutCustomersInput = {
   updated_at?: Date | string
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -1533,8 +1463,6 @@ export type TenantUpdateWithoutCustomersInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -1561,8 +1489,6 @@ export type TenantUncheckedUpdateWithoutCustomersInput = {
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -1589,8 +1515,6 @@ export type TenantCreateWithoutProduct_categoriesInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -1617,8 +1541,6 @@ export type TenantUncheckedCreateWithoutProduct_categoriesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -1660,8 +1582,6 @@ export type TenantUpdateWithoutProduct_categoriesInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -1688,8 +1608,6 @@ export type TenantUncheckedUpdateWithoutProduct_categoriesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -1715,8 +1633,6 @@ export type TenantCreateWithoutGst_ratesInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -1743,8 +1659,6 @@ export type TenantUncheckedCreateWithoutGst_ratesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -1786,8 +1700,6 @@ export type TenantUpdateWithoutGst_ratesInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -1814,8 +1726,6 @@ export type TenantUncheckedUpdateWithoutGst_ratesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -1841,8 +1751,6 @@ export type TenantCreateWithoutProductsInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
@@ -1869,8 +1777,6 @@ export type TenantUncheckedCreateWithoutProductsInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
@@ -1912,8 +1818,6 @@ export type TenantUpdateWithoutProductsInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
@@ -1940,8 +1844,6 @@ export type TenantUncheckedUpdateWithoutProductsInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
@@ -1967,8 +1869,6 @@ export type TenantCreateWithoutSuppliersInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -1995,8 +1895,6 @@ export type TenantUncheckedCreateWithoutSuppliersInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -2038,8 +1936,6 @@ export type TenantUpdateWithoutSuppliersInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -2066,8 +1962,6 @@ export type TenantUncheckedUpdateWithoutSuppliersInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -2093,8 +1987,6 @@ export type TenantCreateWithoutInventoryInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -2121,8 +2013,6 @@ export type TenantUncheckedCreateWithoutInventoryInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -2164,8 +2054,6 @@ export type TenantUpdateWithoutInventoryInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -2192,8 +2080,6 @@ export type TenantUncheckedUpdateWithoutInventoryInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -2219,8 +2105,6 @@ export type TenantCreateWithoutStock_transfersInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -2247,8 +2131,6 @@ export type TenantUncheckedCreateWithoutStock_transfersInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -2290,8 +2172,6 @@ export type TenantUpdateWithoutStock_transfersInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -2318,8 +2198,6 @@ export type TenantUncheckedUpdateWithoutStock_transfersInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -2345,8 +2223,6 @@ export type TenantCreateWithoutInvoicesInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentCreateNestedManyWithoutTenantInput
@@ -2373,8 +2249,6 @@ export type TenantUncheckedCreateWithoutInvoicesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
   payments?: Prisma.PaymentUncheckedCreateNestedManyWithoutTenantInput
@@ -2416,8 +2290,6 @@ export type TenantUpdateWithoutInvoicesInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUpdateManyWithoutTenantNestedInput
@@ -2444,8 +2316,6 @@ export type TenantUncheckedUpdateWithoutInvoicesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
   payments?: Prisma.PaymentUncheckedUpdateManyWithoutTenantNestedInput
@@ -2597,8 +2467,6 @@ export type TenantCreateWithoutPaymentsInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -2625,8 +2493,6 @@ export type TenantUncheckedCreateWithoutPaymentsInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -2668,8 +2534,6 @@ export type TenantUpdateWithoutPaymentsInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -2696,8 +2560,6 @@ export type TenantUncheckedUpdateWithoutPaymentsInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -2723,8 +2585,6 @@ export type TenantCreateWithoutPurchase_ordersInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -2751,8 +2611,6 @@ export type TenantUncheckedCreateWithoutPurchase_ordersInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -2794,8 +2652,6 @@ export type TenantUpdateWithoutPurchase_ordersInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -2822,8 +2678,6 @@ export type TenantUncheckedUpdateWithoutPurchase_ordersInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -2849,8 +2703,6 @@ export type TenantCreateWithoutExpense_categoriesInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -2877,8 +2729,6 @@ export type TenantUncheckedCreateWithoutExpense_categoriesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -2920,8 +2770,6 @@ export type TenantUpdateWithoutExpense_categoriesInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -2948,8 +2796,6 @@ export type TenantUncheckedUpdateWithoutExpense_categoriesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -2975,8 +2821,6 @@ export type TenantCreateWithoutExpensesInput = {
   users?: Prisma.UserCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftCreateNestedManyWithoutTenantInput
@@ -3003,8 +2847,6 @@ export type TenantUncheckedCreateWithoutExpensesInput = {
   users?: Prisma.UserUncheckedCreateNestedManyWithoutTenantInput
   organization?: Prisma.OrganizationUncheckedCreateNestedOneWithoutTenantInput
   customers?: Prisma.CustomerUncheckedCreateNestedManyWithoutTenantInput
-  seller_profiles?: Prisma.SellerProfileUncheckedCreateNestedManyWithoutTenantInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedCreateNestedManyWithoutTenantInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutTenantInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutTenantInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedCreateNestedManyWithoutTenantInput
@@ -3046,8 +2888,6 @@ export type TenantUpdateWithoutExpensesInput = {
   users?: Prisma.UserUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUpdateManyWithoutTenantNestedInput
@@ -3074,8 +2914,6 @@ export type TenantUncheckedUpdateWithoutExpensesInput = {
   users?: Prisma.UserUncheckedUpdateManyWithoutTenantNestedInput
   organization?: Prisma.OrganizationUncheckedUpdateOneWithoutTenantNestedInput
   customers?: Prisma.CustomerUncheckedUpdateManyWithoutTenantNestedInput
-  seller_profiles?: Prisma.SellerProfileUncheckedUpdateManyWithoutTenantNestedInput
-  invoice_customer_profiles?: Prisma.InvoiceCustomerProfileUncheckedUpdateManyWithoutTenantNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutTenantNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutTenantNestedInput
   invoiceDrafts?: Prisma.InvoiceDraftUncheckedUpdateManyWithoutTenantNestedInput
@@ -3098,8 +2936,6 @@ export type TenantUncheckedUpdateWithoutExpensesInput = {
 export type TenantCountOutputType = {
   users: number
   customers: number
-  seller_profiles: number
-  invoice_customer_profiles: number
   products: number
   invoices: number
   invoiceDrafts: number
@@ -3118,8 +2954,6 @@ export type TenantCountOutputType = {
 export type TenantCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   users?: boolean | TenantCountOutputTypeCountUsersArgs
   customers?: boolean | TenantCountOutputTypeCountCustomersArgs
-  seller_profiles?: boolean | TenantCountOutputTypeCountSeller_profilesArgs
-  invoice_customer_profiles?: boolean | TenantCountOutputTypeCountInvoice_customer_profilesArgs
   products?: boolean | TenantCountOutputTypeCountProductsArgs
   invoices?: boolean | TenantCountOutputTypeCountInvoicesArgs
   invoiceDrafts?: boolean | TenantCountOutputTypeCountInvoiceDraftsArgs
@@ -3157,20 +2991,6 @@ export type TenantCountOutputTypeCountUsersArgs<ExtArgs extends runtime.Types.Ex
  */
 export type TenantCountOutputTypeCountCustomersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CustomerWhereInput
-}
-
-/**
- * TenantCountOutputType without action
- */
-export type TenantCountOutputTypeCountSeller_profilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.SellerProfileWhereInput
-}
-
-/**
- * TenantCountOutputType without action
- */
-export type TenantCountOutputTypeCountInvoice_customer_profilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.InvoiceCustomerProfileWhereInput
 }
 
 /**
@@ -3277,8 +3097,6 @@ export type TenantSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   users?: boolean | Prisma.Tenant$usersArgs<ExtArgs>
   organization?: boolean | Prisma.Tenant$organizationArgs<ExtArgs>
   customers?: boolean | Prisma.Tenant$customersArgs<ExtArgs>
-  seller_profiles?: boolean | Prisma.Tenant$seller_profilesArgs<ExtArgs>
-  invoice_customer_profiles?: boolean | Prisma.Tenant$invoice_customer_profilesArgs<ExtArgs>
   products?: boolean | Prisma.Tenant$productsArgs<ExtArgs>
   invoices?: boolean | Prisma.Tenant$invoicesArgs<ExtArgs>
   invoiceDrafts?: boolean | Prisma.Tenant$invoiceDraftsArgs<ExtArgs>
@@ -3313,8 +3131,6 @@ export type TenantInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   users?: boolean | Prisma.Tenant$usersArgs<ExtArgs>
   organization?: boolean | Prisma.Tenant$organizationArgs<ExtArgs>
   customers?: boolean | Prisma.Tenant$customersArgs<ExtArgs>
-  seller_profiles?: boolean | Prisma.Tenant$seller_profilesArgs<ExtArgs>
-  invoice_customer_profiles?: boolean | Prisma.Tenant$invoice_customer_profilesArgs<ExtArgs>
   products?: boolean | Prisma.Tenant$productsArgs<ExtArgs>
   invoices?: boolean | Prisma.Tenant$invoicesArgs<ExtArgs>
   invoiceDrafts?: boolean | Prisma.Tenant$invoiceDraftsArgs<ExtArgs>
@@ -3337,8 +3153,6 @@ export type $TenantPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     users: Prisma.$UserPayload<ExtArgs>[]
     organization: Prisma.$OrganizationPayload<ExtArgs> | null
     customers: Prisma.$CustomerPayload<ExtArgs>[]
-    seller_profiles: Prisma.$SellerProfilePayload<ExtArgs>[]
-    invoice_customer_profiles: Prisma.$InvoiceCustomerProfilePayload<ExtArgs>[]
     products: Prisma.$ProductPayload<ExtArgs>[]
     invoices: Prisma.$InvoicePayload<ExtArgs>[]
     invoiceDrafts: Prisma.$InvoiceDraftPayload<ExtArgs>[]
@@ -3705,8 +3519,6 @@ export interface Prisma__TenantClient<T, Null = never, ExtArgs extends runtime.T
   users<T extends Prisma.Tenant$usersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$usersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   organization<T extends Prisma.Tenant$organizationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$organizationArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   customers<T extends Prisma.Tenant$customersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$customersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CustomerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  seller_profiles<T extends Prisma.Tenant$seller_profilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$seller_profilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SellerProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  invoice_customer_profiles<T extends Prisma.Tenant$invoice_customer_profilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$invoice_customer_profilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceCustomerProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   products<T extends Prisma.Tenant$productsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$productsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoices<T extends Prisma.Tenant$invoicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$invoicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   invoiceDrafts<T extends Prisma.Tenant$invoiceDraftsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Tenant$invoiceDraftsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvoiceDraftPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4169,54 +3981,6 @@ export type Tenant$customersArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.CustomerScalarFieldEnum | Prisma.CustomerScalarFieldEnum[]
-}
-
-/**
- * Tenant.seller_profiles
- */
-export type Tenant$seller_profilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the SellerProfile
-   */
-  select?: Prisma.SellerProfileSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the SellerProfile
-   */
-  omit?: Prisma.SellerProfileOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.SellerProfileInclude<ExtArgs> | null
-  where?: Prisma.SellerProfileWhereInput
-  orderBy?: Prisma.SellerProfileOrderByWithRelationInput | Prisma.SellerProfileOrderByWithRelationInput[]
-  cursor?: Prisma.SellerProfileWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.SellerProfileScalarFieldEnum | Prisma.SellerProfileScalarFieldEnum[]
-}
-
-/**
- * Tenant.invoice_customer_profiles
- */
-export type Tenant$invoice_customer_profilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the InvoiceCustomerProfile
-   */
-  select?: Prisma.InvoiceCustomerProfileSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the InvoiceCustomerProfile
-   */
-  omit?: Prisma.InvoiceCustomerProfileOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.InvoiceCustomerProfileInclude<ExtArgs> | null
-  where?: Prisma.InvoiceCustomerProfileWhereInput
-  orderBy?: Prisma.InvoiceCustomerProfileOrderByWithRelationInput | Prisma.InvoiceCustomerProfileOrderByWithRelationInput[]
-  cursor?: Prisma.InvoiceCustomerProfileWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.InvoiceCustomerProfileScalarFieldEnum | Prisma.InvoiceCustomerProfileScalarFieldEnum[]
 }
 
 /**

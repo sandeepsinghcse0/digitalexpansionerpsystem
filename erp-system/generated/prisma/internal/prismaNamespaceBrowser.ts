@@ -52,8 +52,6 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Tenant: 'Tenant',
-  SellerProfile: 'SellerProfile',
-  InvoiceCustomerProfile: 'InvoiceCustomerProfile',
   User: 'User',
   Organization: 'Organization',
   Address: 'Address',
@@ -102,50 +100,6 @@ export const TenantScalarFieldEnum = {
 } as const
 
 export type TenantScalarFieldEnum = (typeof TenantScalarFieldEnum)[keyof typeof TenantScalarFieldEnum]
-
-
-export const SellerProfileScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  business_name: 'business_name',
-  contact_name: 'contact_name',
-  email: 'email',
-  phone: 'phone',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  address: 'address',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country',
-  bank_account: 'bank_account',
-  ifsc_code: 'ifsc_code',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type SellerProfileScalarFieldEnum = (typeof SellerProfileScalarFieldEnum)[keyof typeof SellerProfileScalarFieldEnum]
-
-
-export const InvoiceCustomerProfileScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  customer_name: 'customer_name',
-  company_name: 'company_name',
-  email: 'email',
-  phone: 'phone',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  address: 'address',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type InvoiceCustomerProfileScalarFieldEnum = (typeof InvoiceCustomerProfileScalarFieldEnum)[keyof typeof InvoiceCustomerProfileScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {
@@ -343,9 +297,7 @@ export const InvoiceScalarFieldEnum = {
   terms: 'terms',
   created_by: 'created_by',
   created_at: 'created_at',
-  updated_at: 'updated_at',
-  seller_profile_id: 'seller_profile_id',
-  customer_profile_id: 'customer_profile_id'
+  updated_at: 'updated_at'
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
@@ -493,42 +445,6 @@ export const TenantOrderByRelevanceFieldEnum = {
 } as const
 
 export type TenantOrderByRelevanceFieldEnum = (typeof TenantOrderByRelevanceFieldEnum)[keyof typeof TenantOrderByRelevanceFieldEnum]
-
-
-export const SellerProfileOrderByRelevanceFieldEnum = {
-  business_name: 'business_name',
-  contact_name: 'contact_name',
-  email: 'email',
-  phone: 'phone',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  address: 'address',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country',
-  bank_account: 'bank_account',
-  ifsc_code: 'ifsc_code'
-} as const
-
-export type SellerProfileOrderByRelevanceFieldEnum = (typeof SellerProfileOrderByRelevanceFieldEnum)[keyof typeof SellerProfileOrderByRelevanceFieldEnum]
-
-
-export const InvoiceCustomerProfileOrderByRelevanceFieldEnum = {
-  customer_name: 'customer_name',
-  company_name: 'company_name',
-  email: 'email',
-  phone: 'phone',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  address: 'address',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country'
-} as const
-
-export type InvoiceCustomerProfileOrderByRelevanceFieldEnum = (typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum)[keyof typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum]
 
 
 export const UserOrderByRelevanceFieldEnum = {
