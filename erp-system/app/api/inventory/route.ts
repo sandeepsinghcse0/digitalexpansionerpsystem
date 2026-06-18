@@ -8,6 +8,8 @@ export async function GET() {
         product: {
           include: {
             productcategory: true,
+            supplier: true,
+            unitofmeasure: true,
           },
         },
       },
@@ -51,6 +53,7 @@ export async function POST(request: Request) {
       reorder_level,
       gst_rate_id,
       status,
+      custom_category,
     } = body;
 
     // Server-side validation
@@ -92,13 +95,36 @@ export async function POST(request: Request) {
 
     // Create product and corresponding inventory record in a transaction
     const newProduct = await prisma.$transaction(async (tx) => {
+      let finalCategoryId = (category_id && category_id !== "other") ? Number(category_id) : null;
+
+      // Handle custom category
+      if (custom_category && (category_id === "other" || !finalCategoryId || isNaN(finalCategoryId))) {
+        const catName = custom_category.trim();
+        let category = await tx.productcategory.findFirst({
+          where: {
+            tenant_id: tenantId,
+            name: catName,
+          },
+        });
+        if (!category) {
+          category = await tx.productcategory.create({
+            data: {
+              tenant_id: tenantId,
+              name: catName,
+              updated_at: new Date(),
+            },
+          });
+        }
+        finalCategoryId = category.id;
+      }
+
       const prod = await tx.product.create({
         data: {
           tenant_id: tenantId,
           sku: sku.trim(),
           name: name.trim(),
           description: description ? description.trim() : null,
-          category_id: category_id ? Number(category_id) : null,
+          category_id: finalCategoryId,
           supplier_id: supplier_id ? Number(supplier_id) : null,
           unit_id: Number(unit_id),
           cost_price: Number(cost_price),

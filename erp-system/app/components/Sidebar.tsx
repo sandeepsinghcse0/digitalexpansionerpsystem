@@ -143,19 +143,6 @@ export default function Sidebar() {
                 Suppliers
               </Link>
 
-              <Link
-                href="/inventory/add-product"
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all ${
-                  pathname.startsWith(
-                    "/inventory/add-product"
-                  )
-                    ? "bg-blue-500 text-white"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <PlusCircle size={16} />
-                Add Product
-              </Link>
             </div>
           )}
         </div>

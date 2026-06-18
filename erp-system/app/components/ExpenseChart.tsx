@@ -299,7 +299,7 @@
 />
 
         <Tooltip
-          formatter={(value: number) => [
+          formatter={(value: any) => [
             `₹${Number(value).toLocaleString("en-IN")}`,
             "Amount",
           ]}
@@ -312,7 +312,7 @@
   <LabelList
     dataKey="amount"
     position="top"
-    formatter={(value: number) =>
+    formatter={(value: any) =>
       `₹${Number(value).toLocaleString("en-IN")}`
     }
     fill="#94A3B8"
@@ -350,7 +350,7 @@
       </Pie>
 
       <Tooltip
-        formatter={(value: number) => [
+        formatter={(value: any) => [
           `₹${Number(value).toLocaleString("en-IN")}`,
           "Amount",
         ]}

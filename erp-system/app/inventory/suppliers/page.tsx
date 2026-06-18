@@ -40,6 +40,33 @@ export default function SuppliersPage() {
       });
   }, []);
 
+  const handleStatusChange = async (supplierId: number, newStatus: string) => {
+    try {
+      setError(null);
+      const res = await fetch(`/api/suppliers/${supplierId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to update supplier status");
+      }
+
+      setSuppliers((prev) =>
+        prev.map((sup) =>
+          sup.id === supplierId ? { ...sup, status: newStatus } : sup
+        )
+      );
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to update supplier status. Please try again.");
+    }
+  };
+
   return (
     <div className="p-8 text-white">
       {/* Header */}
@@ -146,13 +173,21 @@ export default function SuppliersPage() {
                   </td>
 
                   <td className="p-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      supplier.status === "ACTIVE" 
-                        ? "bg-green-500/10 text-green-400 border border-green-500/20" 
-                        : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
-                    }`}>
-                      {supplier.status}
-                    </span>
+                    <select
+                      value={supplier.status}
+                      onChange={(e) => handleStatusChange(supplier.id, e.target.value)}
+                      className={`bg-[#020817] border rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500/50 cursor-pointer transition ${
+                        supplier.status === "ACTIVE"
+                          ? "text-green-400 border-green-500/30"
+                          : supplier.status === "INACTIVE"
+                          ? "text-yellow-400 border-yellow-500/30"
+                          : "text-red-400 border-red-500/30"
+                      }`}
+                    >
+                      <option value="ACTIVE" className="text-green-400 bg-[#020817]">ACTIVE</option>
+                      <option value="INACTIVE" className="text-yellow-400 bg-[#020817]">INACTIVE</option>
+                      <option value="SUSPENDED" className="text-red-400 bg-[#020817]">SUSPENDED</option>
+                    </select>
                   </td>
                 </tr>
               ))

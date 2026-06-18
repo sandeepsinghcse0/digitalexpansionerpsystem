@@ -35,6 +35,7 @@ type FormErrors = {
   gst_rate_id?: string;
   quantity_in_stock?: string;
   reorder_level?: string;
+  category_id?: string;
   api?: string;
 };
 
@@ -56,6 +57,7 @@ export default function AddProductPage() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
   const [supplierId, setSupplierId] = useState("");
   const [unitId, setUnitId] = useState("");
   const [costPrice, setCostPrice] = useState("");
@@ -121,6 +123,12 @@ export default function AddProductPage() {
       isValid = false;
     }
 
+    // Custom Category Validation
+    if (categoryId === "other" && !customCategory.trim()) {
+      tempErrors.category_id = "Custom category name is required.";
+      isValid = false;
+    }
+
     // Cost Price Validation
     const cost = parseFloat(costPrice);
     if (costPrice.trim() === "" || Number.isNaN(cost)) {
@@ -178,7 +186,8 @@ export default function AddProductPage() {
       sku: sku.trim(),
       name: name.trim(),
       description: description.trim() || null,
-      category_id: categoryId ? parseInt(categoryId, 10) : null,
+      category_id: categoryId === "other" ? "other" : (categoryId ? parseInt(categoryId, 10) : null),
+      custom_category: categoryId === "other" ? customCategory.trim() : null,
       supplier_id: supplierId ? parseInt(supplierId, 10) : null,
       unit_id: parseInt(unitId, 10),
       cost_price: parseFloat(costPrice),
@@ -318,13 +327,39 @@ export default function AddProductPage() {
                   className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer"
                 >
                   <option value="">Select Category</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
+                  {categories
+                    .filter((cat) => cat.name !== "Others")
+                    .map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  <option value="other">Other</option>
                 </select>
               </div>
+
+              {/* Custom Category Input (shown when Category is Other) */}
+              {categoryId === "other" && (
+                <div className="flex flex-col">
+                  <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
+                    <span>Custom Category</span>
+                    <span className="text-red-500 ml-1">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="custom category"
+                    placeholder="Category add"
+                    value={customCategory}
+                    onChange={(e) => setCustomCategory(e.target.value)}
+                    className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
+                      errors.category_id ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
+                  />
+                  {errors.category_id && (
+                    <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.category_id}</span>
+                  )}
+                </div>
+              )}
 
               {/* Supplier Dropdown */}
               <div className="flex flex-col">
