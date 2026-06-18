@@ -397,6 +397,7 @@ export const ModelName = {
   Inventory: 'Inventory',
   StockTransfer: 'StockTransfer',
   Invoice: 'Invoice',
+  InvoiceDraft: 'InvoiceDraft',
   InvoiceItem: 'InvoiceItem',
   Payment: 'Payment',
   PurchaseOrder: 'PurchaseOrder',
@@ -417,7 +418,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tenant" | "user" | "organization" | "address" | "customer" | "productCategory" | "unitOfMeasure" | "gstRate" | "product" | "supplier" | "inventory" | "stockTransfer" | "invoice" | "invoiceItem" | "payment" | "purchaseOrder" | "expenseCategory" | "expense"
+    modelProps: "tenant" | "sellerProfile" | "invoiceCustomerProfile" | "user" | "organization" | "address" | "customer" | "productCategory" | "unitOfMeasure" | "gstRate" | "product" | "supplier" | "inventory" | "stockTransfer" | "invoice" | "invoiceDraft" | "invoiceItem" | "payment" | "purchaseOrder" | "expenseCategory" | "expense"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1279,6 +1280,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InvoiceDraft: {
+      payload: Prisma.$InvoiceDraftPayload<ExtArgs>
+      fields: Prisma.InvoiceDraftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvoiceDraftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvoiceDraftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        findFirst: {
+          args: Prisma.InvoiceDraftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvoiceDraftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        findMany: {
+          args: Prisma.InvoiceDraftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>[]
+        }
+        create: {
+          args: Prisma.InvoiceDraftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        createMany: {
+          args: Prisma.InvoiceDraftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.InvoiceDraftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        update: {
+          args: Prisma.InvoiceDraftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvoiceDraftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvoiceDraftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.InvoiceDraftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        aggregate: {
+          args: Prisma.InvoiceDraftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvoiceDraft>
+        }
+        groupBy: {
+          args: Prisma.InvoiceDraftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceDraftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvoiceDraftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceDraftCountAggregateOutputType> | number
+        }
+      }
+    }
     InvoiceItem: {
       payload: Prisma.$InvoiceItemPayload<ExtArgs>
       fields: Prisma.InvoiceItemFieldRefs
@@ -1849,6 +1916,7 @@ export const InvoiceScalarFieldEnum = {
   invoice_date: 'invoice_date',
   due_date: 'due_date',
   status: 'status',
+  penalty_amount: 'penalty_amount',
   subtotal: 'subtotal',
   tax_amount: 'tax_amount',
   total_amount: 'total_amount',
@@ -1860,6 +1928,30 @@ export const InvoiceScalarFieldEnum = {
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceDraftScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  invoice_number: 'invoice_number',
+  invoice_date: 'invoice_date',
+  due_date: 'due_date',
+  status: 'status',
+  penalty_amount: 'penalty_amount',
+  subtotal: 'subtotal',
+  tax_amount: 'tax_amount',
+  total_amount: 'total_amount',
+  notes: 'notes',
+  terms: 'terms',
+  seller_details: 'seller_details',
+  customer_details: 'customer_details',
+  items: 'items',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InvoiceDraftScalarFieldEnum = (typeof InvoiceDraftScalarFieldEnum)[keyof typeof InvoiceDraftScalarFieldEnum]
 
 
 export const InvoiceItemScalarFieldEnum = {
@@ -1953,6 +2045,14 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -2086,6 +2186,32 @@ export const InvoiceOrderByRelevanceFieldEnum = {
 export type InvoiceOrderByRelevanceFieldEnum = (typeof InvoiceOrderByRelevanceFieldEnum)[keyof typeof InvoiceOrderByRelevanceFieldEnum]
 
 
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const InvoiceDraftOrderByRelevanceFieldEnum = {
+  invoice_number: 'invoice_number',
+  notes: 'notes',
+  terms: 'terms'
+} as const
+
+export type InvoiceDraftOrderByRelevanceFieldEnum = (typeof InvoiceDraftOrderByRelevanceFieldEnum)[keyof typeof InvoiceDraftOrderByRelevanceFieldEnum]
+
+
 export const InvoiceItemOrderByRelevanceFieldEnum = {
   description: 'description'
 } as const
@@ -2201,6 +2327,20 @@ export type EnumProductStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'InvoiceStatus'
  */
 export type EnumInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -2333,6 +2473,7 @@ export type GlobalOmitConfig = {
   inventory?: Prisma.InventoryOmit
   stockTransfer?: Prisma.StockTransferOmit
   invoice?: Prisma.InvoiceOmit
+  invoiceDraft?: Prisma.InvoiceDraftOmit
   invoiceItem?: Prisma.InvoiceItemOmit
   payment?: Prisma.PaymentOmit
   purchaseOrder?: Prisma.PurchaseOrderOmit

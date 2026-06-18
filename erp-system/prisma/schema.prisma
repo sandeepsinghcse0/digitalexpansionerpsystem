@@ -6,31 +6,36 @@ datasource db {
   provider = "mysql"
 }
 
-model address {
-  id              Int                  @id @default(autoincrement())
-  tenant_id       Int
-  customer_id     Int?
-  supplier_id     Int?
-  organization_id Int?
-  street          String
-  street2         String?
-  city            String
-  state           String
-  postal_code     String
-  country         String               @default("India")
-  address_type    address_address_type @default(BILLING)
-  is_primary      Boolean              @default(false)
-  created_at      DateTime             @default(now())
-  updated_at      DateTime
-  customer        customer?            @relation(fields: [customer_id], references: [id], onDelete: Cascade, map: "Address_customer_id_fkey")
-  organization    organization?        @relation(fields: [organization_id], references: [id], onDelete: Cascade, map: "Address_organization_id_fkey")
-  supplier        supplier?            @relation(fields: [supplier_id], references: [id], onDelete: Cascade, map: "Address_supplier_id_fkey")
-  tenant          tenant               @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Address_tenant_id_fkey")
+// ============= ENUMS =============
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+  ACCOUNTANT
+  VIEWER
+}
 
-  @@index([customer_id], map: "Address_customer_id_idx")
-  @@index([organization_id], map: "Address_organization_id_idx")
-  @@index([supplier_id], map: "Address_supplier_id_idx")
-  @@index([tenant_id], map: "Address_tenant_id_idx")
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  UNPAID
+  VIEWED
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
 }
 
 model customer {
@@ -366,26 +371,89 @@ model unitofmeasure {
   product    product[]
 }
 
-model user {
-  id         Int       @id @default(autoincrement())
-  email      String    @unique(map: "User_email_key")
-  name       String
-  password   String
-  role       user_role @default(USER)
-  tenant_id  Int
-  created_at DateTime  @default(now())
-  updated_at DateTime
-  tenant     tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "User_tenant_id_fkey")
-
-  @@index([tenant_id], map: "User_tenant_id_idx")
+// ============= INVOICE =============
+model Invoice {
+  id            Int     @id @default(autoincrement())
+  tenant_id     Int
+  customer_id   Int
+  invoice_number String
+  invoice_date  DateTime @default(now())
+  due_date      DateTime?
+  status        InvoiceStatus @default(DRAFT)
+  penalty_amount Float   @default(0)
+  subtotal      Float   @default(0)
+  tax_amount    Float   @default(0)
+  total_amount  Float   @default(0)
+  notes         String?
+  terms         String?
+  created_by    Int     // User ID
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  
+  tenant        Tenant       @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  customer      Customer     @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  seller_profile_id Int?
+  customer_profile_id Int?
+  seller_profile SellerProfile? @relation("InvoiceSellerProfile", fields: [seller_profile_id], references: [id], onDelete: SetNull)
+  customer_profile InvoiceCustomerProfile? @relation("InvoiceCustomerProfile", fields: [customer_profile_id], references: [id], onDelete: SetNull)
+  line_items    InvoiceItem[]
+  payments      Payment[]
+  
+  @@unique([tenant_id, invoice_number])
+  @@index([tenant_id])
+  @@index([customer_id])
+  @@index([invoice_date])
+  @@index([status])
 }
 
-enum user_role {
-  ADMIN
-  MANAGER
-  USER
-  ACCOUNTANT
-  VIEWER
+model InvoiceDraft {
+  id               Int      @id @default(autoincrement())
+  tenant_id        Int
+  invoice_number   String
+  invoice_date     DateTime @default(now())
+  due_date         DateTime?
+  status           InvoiceStatus @default(DRAFT)
+  penalty_amount   Float    @default(0)
+  subtotal         Float    @default(0)
+  tax_amount       Float    @default(0)
+  total_amount     Float    @default(0)
+  notes            String?
+  terms            String?
+  seller_details   Json?
+  customer_details Json?
+  items            Json?
+  created_by       Int
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+
+  @@unique([tenant_id, invoice_number])
+  @@index([tenant_id])
+  @@index([status])
+}
+
+// ============= INVOICE ITEM =============
+model InvoiceItem {
+  id            Int     @id @default(autoincrement())
+  invoice_id    Int
+  product_id    Int
+  gst_rate_id   Int
+  quantity      Float
+  unit_price    Float
+  subtotal      Float  // quantity * unit_price
+  tax_amount    Float
+  total_amount  Float  // subtotal + tax
+  description   String?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+  
+  invoice       Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  product       Product @relation(fields: [product_id], references: [id], onDelete: Restrict)
+  gst_rate      GstRate @relation(fields: [gst_rate_id], references: [id])
+  
+  @@index([invoice_id])
+  @@index([product_id])
 }
 
 enum invoice_status {

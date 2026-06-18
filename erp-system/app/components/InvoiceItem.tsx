@@ -1,9 +1,10 @@
 "use client";
 
-type InvoiceItemType = {
+export type InvoiceItemType = {
   description: string;
   qty: number;
   rate: number;
+  gstRate: number;
 };
 
 type Props = {
@@ -24,6 +25,7 @@ export default function InvoiceItem({
         description: "",
         qty: 1,
         rate: 0,
+        gstRate: 18,
       },
     ]);
   };
@@ -65,10 +67,11 @@ export default function InvoiceItem({
       </div>
 
       {/* Column Headings */}
-      <div className="grid grid-cols-5 gap-4 mb-3 text-sm font-semibold text-gray-300">
+      <div className="grid grid-cols-6 gap-4 mb-3 text-sm font-semibold text-gray-300">
         <div>Item Name</div>
         <div>Quantity</div>
         <div>Price (₹)</div>
+        <div>GST %</div>
         <div>Amount</div>
         <div>Action</div>
       </div>
@@ -76,7 +79,7 @@ export default function InvoiceItem({
       {items.map((item, index) => (
         <div
           key={index}
-          className="grid grid-cols-5 gap-4 mb-4"
+          className="grid grid-cols-6 gap-4 mb-4"
         >
           {/* Item Name */}
           <input
@@ -118,6 +121,21 @@ export default function InvoiceItem({
               updateItem(
                 index,
                 "rate",
+                Number(e.target.value)
+              )
+            }
+          />
+
+          {/* GST Rate */}
+          <input
+            type="number"
+            min="0"
+            className="p-3 bg-slate-900 rounded-xl text-white"
+            value={item.gstRate}
+            onChange={(e) =>
+              updateItem(
+                index,
+                "gstRate",
                 Number(e.target.value)
               )
             }

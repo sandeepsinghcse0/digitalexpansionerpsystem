@@ -7,13 +7,7 @@ export default function CreateInvoicePage() {
         Create Invoice
       </h1>
 
-      <InvoiceForm
-        open={false}
-        onClose={() => {}}
-        customerName=""
-        invoiceNumber=""
-        items={[]}
-      />
+      <InvoiceForm />
     </div>
   );
 }
