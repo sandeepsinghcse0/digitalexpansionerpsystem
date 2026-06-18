@@ -11,7 +11,6 @@ const defaultCategories = [
   "Marketing",
   "Travel",
   "Office Supplies",
-  "Other",
 ];
 
 type ExpenseItem = {
@@ -145,10 +144,18 @@ const handleDeleteExpense = async (
   ) => {
     e.preventDefault();
 
+    if (
+  category === "__new__" &&
+  !customCategory.trim()
+) {
+  alert("Please enter category name");
+  return;
+}
+
     const finalCategory =
-      category === "Other"
-        ? customCategory.trim() || "Other"
-        : category;
+  category === "__new__"
+    ? customCategory.trim()
+    : category;
 
     if (!title || !amount || !date) return;
 
@@ -215,10 +222,15 @@ const handleDeleteExpense = async (
       }
     );
 
-    if (!response.ok) {
-      console.error("Failed to save expense");
-      return;
-    }
+   if (!response.ok) {
+  const errorData = await response.json();
+
+  console.error("SAVE ERROR:", errorData);
+
+  alert(JSON.stringify(errorData));
+
+  return;
+}
 
     const savedExpense = await response.json();
     const newExpense: ExpenseItem = {
@@ -289,10 +301,34 @@ const handleDeleteExpense = async (
       )
       : 0;
 
+
   const totalCount = filteredExpenses.length;
   const categoryCount = new Set(
     filteredExpenses.map((expense) => expense.category)
   ).size;
+  const monthlyChangeLabel = "↔ Stable";
+
+const categoryData = Object.entries(
+  filteredExpenses.reduce((acc, expense) => {
+    acc[expense.category] =
+      (acc[expense.category] || 0) +
+      Number(expense.amount);
+
+    return acc;
+  }, {} as Record<string, number>)
+)
+  .map(([category, amount]) => ({
+    category,
+    amount,
+    percentage:
+      totalExpenses > 0
+        ? (
+            (amount / totalExpenses) *
+            100
+          ).toFixed(1)
+        : "0",
+  }))
+  .sort((a, b) => b.amount - a.amount);
 
   if (isViewMode && viewExpense) {
     return (
@@ -492,11 +528,12 @@ const handleDeleteExpense = async (
 
   {/* Right Side - Summary */}
   <ExpenseStats
-    totalExpenses={totalExpenses}
-    totalCount={totalCount}
-    highestExpense={highestExpense}
-    categoryCount={categoryCount}
-  />
+  totalExpenses={totalExpenses}
+  totalCount={totalCount}
+  highestExpense={highestExpense}
+  monthlyChangeLabel={monthlyChangeLabel}
+  categories={categoryData}
+/>
 
 </div>
 
@@ -622,12 +659,27 @@ const handleDeleteExpense = async (
                     className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white disabled:opacity-50"
                   >
                     {categories.map((categoryOption) => (
-                      <option key={categoryOption} value={categoryOption}>
-                        {categoryOption}
-                      </option>
-                    ))}
-                    {!categories.includes("Other") && <option value="Other">Other</option>}
+  <option key={categoryOption} value={categoryOption}>
+    {categoryOption}
+  </option>
+))}
+
+<option value="__new__">
+  ➕ Add New Category
+</option>
                   </select>
+                  {category === "__new__" && (
+  <input
+    type="text"
+    placeholder="Enter category name"
+    value={customCategory}
+    onChange={(e) =>
+      setCustomCategory(e.target.value)
+    }
+    className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white mt-3"
+  />
+)}
+
 
                   <input
                     type="date"
@@ -646,16 +698,6 @@ const handleDeleteExpense = async (
                     className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white disabled:opacity-50"
                   />
 
-                  {category === "Other" && (
-                    <input
-                      type="text"
-                      placeholder="Custom category"
-                      value={customCategory}
-                      onChange={(e) => setCustomCategory(e.target.value)}
-                      disabled={isViewMode}
-                      className="w-full bg-[#020817] border border-slate-700 rounded-xl px-4 py-3 text-white disabled:opacity-50"
-                    />
-                  )}
 
                   {/* SAVE BUTTON (hide in view mode) */}
                   {!isViewMode && (

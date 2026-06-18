@@ -240,43 +240,12 @@
         </div>
       </div>
 
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
-        {topCategories.map(
-          (item) => (
-            <div
-              key={
-                item.category
-              }
-              className="rounded-3xl bg-[#020817] border border-slate-800 p-4"
-            >
-              <p className="text-slate-400 text-xs uppercase tracking-[0.25em]">
-                {item.category}
-              </p>
-
-              <p className="mt-2 text-xl font-semibold text-white">
-                ₹
-                {item.amount.toLocaleString(
-                  "en-IN"
-                )}
-              </p>
-
-              <p className="text-emerald-400 text-sm mt-1">
-                {
-                  categoryPercentages[
-                    item.category
-                  ]
-                }
-                % of spending
-              </p>
-            </div>
-          )
-        )}
-      </div>
+      
     </div>
-    <div className="grid lg:grid-cols-[2.2fr_1fr] gap-10 mt-10 px-6 pb-8 items-center">
+    <div className="grid lg:grid-cols-[1.8fr_1.2fr] gap-8 mt-8 px-6 pb-8 items-center">
 
   {/* Bar Chart */}
-  <div className="h-[340px] flex items-center">
+  <div className="h-[420px]">
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data}>
         <CartesianGrid
@@ -331,15 +300,15 @@
   </div>
 
   {/* Donut Chart */}
-  <div className="h-[340px] flex flex-col items-center justify-center">
-  <ResponsiveContainer width="100%" height="85%">
+  <div className="h-[420px] flex flex-col items-center justify-center">
+  <ResponsiveContainer width="100%" height="100%">
     <PieChart>
       <Pie
         data={data}
         dataKey="amount"
         nameKey="category"
-        innerRadius={60}
-        outerRadius={90}
+        innerRadius={80}
+        outerRadius={120}
       >
         {data.map((_, index) => (
           <Cell
@@ -358,26 +327,7 @@
     </PieChart>
   </ResponsiveContainer>
 
-  <div className="mt-2 flex flex-wrap justify-center gap-3">
-    {data.map((item, index) => (
-      <div
-        key={item.category}
-        className="flex items-center gap-2 text-xs text-slate-300"
-      >
-        <span
-          className="h-3 w-3 rounded-full"
-          style={{
-            backgroundColor:
-              COLORS[index % COLORS.length],
-          }}
-        />
-        {item.category}
-      </div>
-    ))}
-  </div>
-</div>
-
-  <div className="mt-4 flex flex-wrap justify-center gap-4">
+    <div className="mt-4 flex flex-wrap justify-center gap-4">
   {data.map((item, index) => (
     <div
       key={item.category}
@@ -390,17 +340,13 @@
             COLORS[index % COLORS.length],
         }}
       />
-
       {item.category}
     </div>
   ))}
 </div>
-
+  </div>
 </div>
 
-  
-  </div>
-
-
+</div>
   );
   }
