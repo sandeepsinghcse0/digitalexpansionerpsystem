@@ -23,10 +23,3 @@ export default function CustomerHeader({ onAddCustomer }: CustomerHeaderProps) {
     </div>
   );
 }
-        className="bg-blue-600 px-4 py-2 rounded-lg"
-      
-        Add Customer
-      </button>
-    </div>
-  );
-
