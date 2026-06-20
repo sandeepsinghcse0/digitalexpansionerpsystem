@@ -92,6 +92,7 @@ const handler = NextAuth({
                 business_name:
                   user.name || "Google User",
                 email: user.email,
+                updated_at: new Date(),
               },
             });
 
@@ -101,6 +102,7 @@ const handler = NextAuth({
               email: user.email,
               password: "",
               tenant_id: tenant.id,
+              updated_at: new Date(),
             },
           });
         }

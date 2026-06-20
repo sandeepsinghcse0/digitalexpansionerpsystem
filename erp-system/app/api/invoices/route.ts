@@ -25,6 +25,7 @@ export async function POST(request: Request) {
         data: {
           business_name: body.sellerDetails?.businessName || body.customerDetails?.companyName || "",
           email: body.sellerDetails?.email || `tenant-${Date.now()}@local`,
+          updated_at: new Date(),
         },
       });
     }
@@ -104,6 +105,7 @@ export async function POST(request: Request) {
         phone: body.customerDetails?.phone || null,
         gst_number: body.customerDetails?.gstNumber || null,
         status: "ACTIVE",
+        updated_at: new Date(),
       },
     });
 
@@ -124,12 +126,13 @@ export async function POST(request: Request) {
         notes: body.notes || null,
         terms: body.terms || null,
         created_by: creator?.id ?? 1,
+        updated_at: new Date(),
       },
     });
 
     const unit =
-      (await prisma.unitOfMeasure.findFirst({ where: { symbol: "PCS" } })) ||
-      (await prisma.unitOfMeasure.create({
+      (await prisma.unitofmeasure.findFirst({ where: { symbol: "PCS" } })) ||
+      (await prisma.unitofmeasure.create({
         data: {
           name: "Piece",
           symbol: "PCS",
@@ -142,7 +145,7 @@ export async function POST(request: Request) {
       const subtotalValue = quantity * rate;
       const gstPercent = Number(item.gstRate ?? item.gstPercent ?? 0);
 
-      let gstRate = await prisma.gstRate.findFirst({
+      let gstRate = await prisma.gstrate.findFirst({
         where: {
           tenant_id: tenant.id,
           percentage: gstPercent,
@@ -150,11 +153,12 @@ export async function POST(request: Request) {
       });
 
       if (!gstRate) {
-        gstRate = await prisma.gstRate.create({
+        gstRate = await prisma.gstrate.create({
           data: {
             tenant_id: tenant.id,
             percentage: gstPercent,
             name: `GST ${gstPercent}%`,
+            updated_at: new Date(),
           },
         });
       }
@@ -178,11 +182,12 @@ export async function POST(request: Request) {
             selling_price: rate,
             gst_rate_id: gstRate.id,
             quantity_in_stock: 0,
+            updated_at: new Date(),
           },
         });
       }
 
-      await prisma.invoiceItem.create({
+      await prisma.invoiceitem.create({
         data: {
           invoice_id: invoice.id,
           product_id: product.id,
@@ -193,6 +198,7 @@ export async function POST(request: Request) {
           tax_amount: 0,
           total_amount: subtotalValue,
           description: item.description || null,
+          updated_at: new Date(),
         },
       });
     }

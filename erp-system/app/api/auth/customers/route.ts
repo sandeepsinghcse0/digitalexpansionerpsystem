@@ -28,24 +28,21 @@ export async function POST(request: NextRequest) {
         data: {
           business_name: "Default Tenant",
           email: `tenant-${Date.now()}@example.com`,
+          updated_at: new Date(),
         },
       }));
 
     const customer = await prisma.customer.create({
-  data: {
-    tenant_id: 1, // replace with logged-in tenant later
-
-    name: body.name,
-
-    email: body.email || null,
-
-    phone: body.phone || null,
-
-    gst_number: body.gstNumber || null,
-
-    status: body.status || "ACTIVE",
-  },
-});
+      data: {
+        tenant_id: 1, // replace with logged-in tenant later
+        name: body.name,
+        email: body.email || null,
+        phone: body.phone || null,
+        gst_number: body.gstNumber || null,
+        status: body.status || "ACTIVE",
+        updated_at: new Date(),
+      },
+    });
 
     return NextResponse.json(customer);
   } catch (error) {

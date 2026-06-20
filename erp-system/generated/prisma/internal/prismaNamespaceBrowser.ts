@@ -51,25 +51,27 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Tenant: 'Tenant',
-  User: 'User',
-  Organization: 'Organization',
-  Address: 'Address',
-  Customer: 'Customer',
-  ProductCategory: 'ProductCategory',
-  UnitOfMeasure: 'UnitOfMeasure',
-  GstRate: 'GstRate',
-  Product: 'Product',
-  Supplier: 'Supplier',
-  Inventory: 'Inventory',
-  StockTransfer: 'StockTransfer',
-  Invoice: 'Invoice',
+  customer: 'customer',
+  expense: 'expense',
+  expensecategory: 'expensecategory',
+  gstrate: 'gstrate',
+  inventory: 'inventory',
+  invoice: 'invoice',
+  invoiceitem: 'invoiceitem',
+  organization: 'organization',
+  payment: 'payment',
+  product: 'product',
+  productcategory: 'productcategory',
+  purchaseorder: 'purchaseorder',
+  stocktransfer: 'stocktransfer',
+  supplier: 'supplier',
+  tenant: 'tenant',
+  unitofmeasure: 'unitofmeasure',
+  SellerProfile: 'SellerProfile',
+  InvoiceCustomerProfile: 'InvoiceCustomerProfile',
   InvoiceDraft: 'InvoiceDraft',
-  InvoiceItem: 'InvoiceItem',
-  Payment: 'Payment',
-  PurchaseOrder: 'PurchaseOrder',
-  ExpenseCategory: 'ExpenseCategory',
-  Expense: 'Expense'
+  address: 'address',
+  user: 'user'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -86,74 +88,6 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
-
-
-export const TenantScalarFieldEnum = {
-  id: 'id',
-  business_name: 'business_name',
-  email: 'email',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  status: 'status',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type TenantScalarFieldEnum = (typeof TenantScalarFieldEnum)[keyof typeof TenantScalarFieldEnum]
-
-
-export const UserScalarFieldEnum = {
-  id: 'id',
-  email: 'email',
-  name: 'name',
-  password: 'password',
-  role: 'role',
-  tenant_id: 'tenant_id',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const OrganizationScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  name: 'name',
-  email: 'email',
-  phone: 'phone',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  cin_number: 'cin_number',
-  bank_account: 'bank_account',
-  ifsc_code: 'ifsc_code',
-  status: 'status',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
-
-
-export const AddressScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  customer_id: 'customer_id',
-  supplier_id: 'supplier_id',
-  organization_id: 'organization_id',
-  street: 'street',
-  street2: 'street2',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country',
-  address_type: 'address_type',
-  is_primary: 'is_primary',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
 export const CustomerScalarFieldEnum = {
@@ -175,29 +109,35 @@ export const CustomerScalarFieldEnum = {
 export type CustomerScalarFieldEnum = (typeof CustomerScalarFieldEnum)[keyof typeof CustomerScalarFieldEnum]
 
 
-export const ProductCategoryScalarFieldEnum = {
+export const ExpenseScalarFieldEnum = {
   id: 'id',
   tenant_id: 'tenant_id',
-  name: 'name',
+  category_id: 'category_id',
   description: 'description',
+  amount: 'amount',
+  expense_date: 'expense_date',
+  created_by: 'created_by',
+  attachment_url: 'attachment_url',
+  notes: 'notes',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const
 
-export type ProductCategoryScalarFieldEnum = (typeof ProductCategoryScalarFieldEnum)[keyof typeof ProductCategoryScalarFieldEnum]
+export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
 
 
-export const UnitOfMeasureScalarFieldEnum = {
+export const ExpensecategoryScalarFieldEnum = {
   id: 'id',
+  tenant_id: 'tenant_id',
   name: 'name',
-  symbol: 'symbol',
+  description: 'description',
   created_at: 'created_at'
 } as const
 
-export type UnitOfMeasureScalarFieldEnum = (typeof UnitOfMeasureScalarFieldEnum)[keyof typeof UnitOfMeasureScalarFieldEnum]
+export type ExpensecategoryScalarFieldEnum = (typeof ExpensecategoryScalarFieldEnum)[keyof typeof ExpensecategoryScalarFieldEnum]
 
 
-export const GstRateScalarFieldEnum = {
+export const GstrateScalarFieldEnum = {
   id: 'id',
   tenant_id: 'tenant_id',
   percentage: 'percentage',
@@ -208,7 +148,101 @@ export const GstRateScalarFieldEnum = {
   updated_at: 'updated_at'
 } as const
 
-export type GstRateScalarFieldEnum = (typeof GstRateScalarFieldEnum)[keyof typeof GstRateScalarFieldEnum]
+export type GstrateScalarFieldEnum = (typeof GstrateScalarFieldEnum)[keyof typeof GstrateScalarFieldEnum]
+
+
+export const InventoryScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  product_id: 'product_id',
+  quantity_available: 'quantity_available',
+  quantity_reserved: 'quantity_reserved',
+  quantity_damaged: 'quantity_damaged',
+  last_stock_update: 'last_stock_update',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InventoryScalarFieldEnum = (typeof InventoryScalarFieldEnum)[keyof typeof InventoryScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  customer_id: 'customer_id',
+  invoice_number: 'invoice_number',
+  invoice_date: 'invoice_date',
+  due_date: 'due_date',
+  status: 'status',
+  penalty_amount: 'penalty_amount',
+  subtotal: 'subtotal',
+  tax_amount: 'tax_amount',
+  total_amount: 'total_amount',
+  notes: 'notes',
+  terms: 'terms',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  seller_profile_id: 'seller_profile_id',
+  customer_profile_id: 'customer_profile_id'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const InvoiceitemScalarFieldEnum = {
+  id: 'id',
+  invoice_id: 'invoice_id',
+  product_id: 'product_id',
+  gst_rate_id: 'gst_rate_id',
+  quantity: 'quantity',
+  unit_price: 'unit_price',
+  subtotal: 'subtotal',
+  tax_amount: 'tax_amount',
+  total_amount: 'total_amount',
+  description: 'description',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InvoiceitemScalarFieldEnum = (typeof InvoiceitemScalarFieldEnum)[keyof typeof InvoiceitemScalarFieldEnum]
+
+
+export const OrganizationScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  cin_number: 'cin_number',
+  bank_account: 'bank_account',
+  ifsc_code: 'ifsc_code',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
+
+
+export const PaymentScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  invoice_id: 'invoice_id',
+  customer_id: 'customer_id',
+  payment_amount: 'payment_amount',
+  payment_date: 'payment_date',
+  payment_method: 'payment_method',
+  reference_number: 'reference_number',
+  notes: 'notes',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
 
 
 export const ProductScalarFieldEnum = {
@@ -233,6 +267,55 @@ export const ProductScalarFieldEnum = {
 export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
 
 
+export const ProductcategoryScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  name: 'name',
+  description: 'description',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ProductcategoryScalarFieldEnum = (typeof ProductcategoryScalarFieldEnum)[keyof typeof ProductcategoryScalarFieldEnum]
+
+
+export const PurchaseorderScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  supplier_id: 'supplier_id',
+  po_number: 'po_number',
+  po_date: 'po_date',
+  expected_delivery: 'expected_delivery',
+  actual_delivery: 'actual_delivery',
+  status: 'status',
+  subtotal: 'subtotal',
+  tax_amount: 'tax_amount',
+  total_amount: 'total_amount',
+  notes: 'notes',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type PurchaseorderScalarFieldEnum = (typeof PurchaseorderScalarFieldEnum)[keyof typeof PurchaseorderScalarFieldEnum]
+
+
+export const StocktransferScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  product_id: 'product_id',
+  transfer_type: 'transfer_type',
+  quantity: 'quantity',
+  reference_type: 'reference_type',
+  reference_id: 'reference_id',
+  notes: 'notes',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type StocktransferScalarFieldEnum = (typeof StocktransferScalarFieldEnum)[keyof typeof StocktransferScalarFieldEnum]
+
+
 export const SupplierScalarFieldEnum = {
   id: 'id',
   tenant_id: 'tenant_id',
@@ -250,57 +333,72 @@ export const SupplierScalarFieldEnum = {
 export type SupplierScalarFieldEnum = (typeof SupplierScalarFieldEnum)[keyof typeof SupplierScalarFieldEnum]
 
 
-export const InventoryScalarFieldEnum = {
+export const TenantScalarFieldEnum = {
   id: 'id',
-  tenant_id: 'tenant_id',
-  product_id: 'product_id',
-  quantity_available: 'quantity_available',
-  quantity_reserved: 'quantity_reserved',
-  quantity_damaged: 'quantity_damaged',
-  last_stock_update: 'last_stock_update',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type InventoryScalarFieldEnum = (typeof InventoryScalarFieldEnum)[keyof typeof InventoryScalarFieldEnum]
-
-
-export const StockTransferScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  product_id: 'product_id',
-  transfer_type: 'transfer_type',
-  quantity: 'quantity',
-  reference_type: 'reference_type',
-  reference_id: 'reference_id',
-  notes: 'notes',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type StockTransferScalarFieldEnum = (typeof StockTransferScalarFieldEnum)[keyof typeof StockTransferScalarFieldEnum]
-
-
-export const InvoiceScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  customer_id: 'customer_id',
-  invoice_number: 'invoice_number',
-  invoice_date: 'invoice_date',
-  due_date: 'due_date',
+  business_name: 'business_name',
+  email: 'email',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
   status: 'status',
-  penalty_amount: 'penalty_amount',
-  subtotal: 'subtotal',
-  tax_amount: 'tax_amount',
-  total_amount: 'total_amount',
-  notes: 'notes',
-  terms: 'terms',
-  created_by: 'created_by',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const
 
-export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+export type TenantScalarFieldEnum = (typeof TenantScalarFieldEnum)[keyof typeof TenantScalarFieldEnum]
+
+
+export const UnitofmeasureScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  symbol: 'symbol',
+  created_at: 'created_at'
+} as const
+
+export type UnitofmeasureScalarFieldEnum = (typeof UnitofmeasureScalarFieldEnum)[keyof typeof UnitofmeasureScalarFieldEnum]
+
+
+export const SellerProfileScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  business_name: 'business_name',
+  contact_name: 'contact_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  bank_account: 'bank_account',
+  ifsc_code: 'ifsc_code',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type SellerProfileScalarFieldEnum = (typeof SellerProfileScalarFieldEnum)[keyof typeof SellerProfileScalarFieldEnum]
+
+
+export const InvoiceCustomerProfileScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  customer_name: 'customer_name',
+  company_name: 'company_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InvoiceCustomerProfileScalarFieldEnum = (typeof InvoiceCustomerProfileScalarFieldEnum)[keyof typeof InvoiceCustomerProfileScalarFieldEnum]
 
 
 export const InvoiceDraftScalarFieldEnum = {
@@ -327,89 +425,39 @@ export const InvoiceDraftScalarFieldEnum = {
 export type InvoiceDraftScalarFieldEnum = (typeof InvoiceDraftScalarFieldEnum)[keyof typeof InvoiceDraftScalarFieldEnum]
 
 
-export const InvoiceItemScalarFieldEnum = {
-  id: 'id',
-  invoice_id: 'invoice_id',
-  product_id: 'product_id',
-  gst_rate_id: 'gst_rate_id',
-  quantity: 'quantity',
-  unit_price: 'unit_price',
-  subtotal: 'subtotal',
-  tax_amount: 'tax_amount',
-  total_amount: 'total_amount',
-  description: 'description',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type InvoiceItemScalarFieldEnum = (typeof InvoiceItemScalarFieldEnum)[keyof typeof InvoiceItemScalarFieldEnum]
-
-
-export const PaymentScalarFieldEnum = {
+export const AddressScalarFieldEnum = {
   id: 'id',
   tenant_id: 'tenant_id',
-  invoice_id: 'invoice_id',
   customer_id: 'customer_id',
-  payment_amount: 'payment_amount',
-  payment_date: 'payment_date',
-  payment_method: 'payment_method',
-  reference_number: 'reference_number',
-  notes: 'notes',
-  status: 'status',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type PaymentScalarFieldEnum = (typeof PaymentScalarFieldEnum)[keyof typeof PaymentScalarFieldEnum]
-
-
-export const PurchaseOrderScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
   supplier_id: 'supplier_id',
-  po_number: 'po_number',
-  po_date: 'po_date',
-  expected_delivery: 'expected_delivery',
-  actual_delivery: 'actual_delivery',
-  status: 'status',
-  subtotal: 'subtotal',
-  tax_amount: 'tax_amount',
-  total_amount: 'total_amount',
-  notes: 'notes',
-  created_by: 'created_by',
+  organization_id: 'organization_id',
+  street: 'street',
+  street2: 'street2',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  address_type: 'address_type',
+  is_primary: 'is_primary',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const
 
-export type PurchaseOrderScalarFieldEnum = (typeof PurchaseOrderScalarFieldEnum)[keyof typeof PurchaseOrderScalarFieldEnum]
+export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
-export const ExpenseCategoryScalarFieldEnum = {
+export const UserScalarFieldEnum = {
   id: 'id',
-  tenant_id: 'tenant_id',
+  email: 'email',
   name: 'name',
-  description: 'description',
-  created_at: 'created_at'
-} as const
-
-export type ExpenseCategoryScalarFieldEnum = (typeof ExpenseCategoryScalarFieldEnum)[keyof typeof ExpenseCategoryScalarFieldEnum]
-
-
-export const ExpenseScalarFieldEnum = {
-  id: 'id',
+  password: 'password',
+  role: 'role',
   tenant_id: 'tenant_id',
-  category_id: 'category_id',
-  description: 'description',
-  amount: 'amount',
-  expense_date: 'expense_date',
-  created_by: 'created_by',
-  attachment_url: 'attachment_url',
-  notes: 'notes',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const
 
-export type ExpenseScalarFieldEnum = (typeof ExpenseScalarFieldEnum)[keyof typeof ExpenseScalarFieldEnum]
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -436,27 +484,61 @@ export const NullsOrder = {
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
-export const TenantOrderByRelevanceFieldEnum = {
-  business_name: 'business_name',
+export const customerOrderByRelevanceFieldEnum = {
+  name: 'name',
   email: 'email',
+  phone: 'phone',
+  mobile: 'mobile',
   gst_number: 'gst_number',
   pan_number: 'pan_number',
-  status: 'status'
+  payment_terms: 'payment_terms'
 } as const
 
-export type TenantOrderByRelevanceFieldEnum = (typeof TenantOrderByRelevanceFieldEnum)[keyof typeof TenantOrderByRelevanceFieldEnum]
+export type customerOrderByRelevanceFieldEnum = (typeof customerOrderByRelevanceFieldEnum)[keyof typeof customerOrderByRelevanceFieldEnum]
 
 
-export const UserOrderByRelevanceFieldEnum = {
-  email: 'email',
+export const expenseOrderByRelevanceFieldEnum = {
+  description: 'description',
+  attachment_url: 'attachment_url',
+  notes: 'notes'
+} as const
+
+export type expenseOrderByRelevanceFieldEnum = (typeof expenseOrderByRelevanceFieldEnum)[keyof typeof expenseOrderByRelevanceFieldEnum]
+
+
+export const expensecategoryOrderByRelevanceFieldEnum = {
   name: 'name',
-  password: 'password'
+  description: 'description'
 } as const
 
-export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
+export type expensecategoryOrderByRelevanceFieldEnum = (typeof expensecategoryOrderByRelevanceFieldEnum)[keyof typeof expensecategoryOrderByRelevanceFieldEnum]
 
 
-export const OrganizationOrderByRelevanceFieldEnum = {
+export const gstrateOrderByRelevanceFieldEnum = {
+  name: 'name',
+  description: 'description'
+} as const
+
+export type gstrateOrderByRelevanceFieldEnum = (typeof gstrateOrderByRelevanceFieldEnum)[keyof typeof gstrateOrderByRelevanceFieldEnum]
+
+
+export const invoiceOrderByRelevanceFieldEnum = {
+  invoice_number: 'invoice_number',
+  notes: 'notes',
+  terms: 'terms'
+} as const
+
+export type invoiceOrderByRelevanceFieldEnum = (typeof invoiceOrderByRelevanceFieldEnum)[keyof typeof invoiceOrderByRelevanceFieldEnum]
+
+
+export const invoiceitemOrderByRelevanceFieldEnum = {
+  description: 'description'
+} as const
+
+export type invoiceitemOrderByRelevanceFieldEnum = (typeof invoiceitemOrderByRelevanceFieldEnum)[keyof typeof invoiceitemOrderByRelevanceFieldEnum]
+
+
+export const organizationOrderByRelevanceFieldEnum = {
   name: 'name',
   email: 'email',
   phone: 'phone',
@@ -468,95 +550,118 @@ export const OrganizationOrderByRelevanceFieldEnum = {
   status: 'status'
 } as const
 
-export type OrganizationOrderByRelevanceFieldEnum = (typeof OrganizationOrderByRelevanceFieldEnum)[keyof typeof OrganizationOrderByRelevanceFieldEnum]
+export type organizationOrderByRelevanceFieldEnum = (typeof organizationOrderByRelevanceFieldEnum)[keyof typeof organizationOrderByRelevanceFieldEnum]
 
 
-export const AddressOrderByRelevanceFieldEnum = {
-  street: 'street',
-  street2: 'street2',
+export const paymentOrderByRelevanceFieldEnum = {
+  payment_method: 'payment_method',
+  reference_number: 'reference_number',
+  notes: 'notes'
+} as const
+
+export type paymentOrderByRelevanceFieldEnum = (typeof paymentOrderByRelevanceFieldEnum)[keyof typeof paymentOrderByRelevanceFieldEnum]
+
+
+export const productOrderByRelevanceFieldEnum = {
+  sku: 'sku',
+  name: 'name',
+  description: 'description'
+} as const
+
+export type productOrderByRelevanceFieldEnum = (typeof productOrderByRelevanceFieldEnum)[keyof typeof productOrderByRelevanceFieldEnum]
+
+
+export const productcategoryOrderByRelevanceFieldEnum = {
+  name: 'name',
+  description: 'description'
+} as const
+
+export type productcategoryOrderByRelevanceFieldEnum = (typeof productcategoryOrderByRelevanceFieldEnum)[keyof typeof productcategoryOrderByRelevanceFieldEnum]
+
+
+export const purchaseorderOrderByRelevanceFieldEnum = {
+  po_number: 'po_number',
+  status: 'status',
+  notes: 'notes'
+} as const
+
+export type purchaseorderOrderByRelevanceFieldEnum = (typeof purchaseorderOrderByRelevanceFieldEnum)[keyof typeof purchaseorderOrderByRelevanceFieldEnum]
+
+
+export const stocktransferOrderByRelevanceFieldEnum = {
+  transfer_type: 'transfer_type',
+  reference_type: 'reference_type',
+  notes: 'notes'
+} as const
+
+export type stocktransferOrderByRelevanceFieldEnum = (typeof stocktransferOrderByRelevanceFieldEnum)[keyof typeof stocktransferOrderByRelevanceFieldEnum]
+
+
+export const supplierOrderByRelevanceFieldEnum = {
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  payment_terms: 'payment_terms'
+} as const
+
+export type supplierOrderByRelevanceFieldEnum = (typeof supplierOrderByRelevanceFieldEnum)[keyof typeof supplierOrderByRelevanceFieldEnum]
+
+
+export const tenantOrderByRelevanceFieldEnum = {
+  business_name: 'business_name',
+  email: 'email',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  status: 'status'
+} as const
+
+export type tenantOrderByRelevanceFieldEnum = (typeof tenantOrderByRelevanceFieldEnum)[keyof typeof tenantOrderByRelevanceFieldEnum]
+
+
+export const unitofmeasureOrderByRelevanceFieldEnum = {
+  name: 'name',
+  symbol: 'symbol'
+} as const
+
+export type unitofmeasureOrderByRelevanceFieldEnum = (typeof unitofmeasureOrderByRelevanceFieldEnum)[keyof typeof unitofmeasureOrderByRelevanceFieldEnum]
+
+
+export const SellerProfileOrderByRelevanceFieldEnum = {
+  business_name: 'business_name',
+  contact_name: 'contact_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  bank_account: 'bank_account',
+  ifsc_code: 'ifsc_code'
+} as const
+
+export type SellerProfileOrderByRelevanceFieldEnum = (typeof SellerProfileOrderByRelevanceFieldEnum)[keyof typeof SellerProfileOrderByRelevanceFieldEnum]
+
+
+export const InvoiceCustomerProfileOrderByRelevanceFieldEnum = {
+  customer_name: 'customer_name',
+  company_name: 'company_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
   city: 'city',
   state: 'state',
   postal_code: 'postal_code',
   country: 'country'
 } as const
 
-export type AddressOrderByRelevanceFieldEnum = (typeof AddressOrderByRelevanceFieldEnum)[keyof typeof AddressOrderByRelevanceFieldEnum]
-
-
-export const CustomerOrderByRelevanceFieldEnum = {
-  name: 'name',
-  email: 'email',
-  phone: 'phone',
-  mobile: 'mobile',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  payment_terms: 'payment_terms'
-} as const
-
-export type CustomerOrderByRelevanceFieldEnum = (typeof CustomerOrderByRelevanceFieldEnum)[keyof typeof CustomerOrderByRelevanceFieldEnum]
-
-
-export const ProductCategoryOrderByRelevanceFieldEnum = {
-  name: 'name',
-  description: 'description'
-} as const
-
-export type ProductCategoryOrderByRelevanceFieldEnum = (typeof ProductCategoryOrderByRelevanceFieldEnum)[keyof typeof ProductCategoryOrderByRelevanceFieldEnum]
-
-
-export const UnitOfMeasureOrderByRelevanceFieldEnum = {
-  name: 'name',
-  symbol: 'symbol'
-} as const
-
-export type UnitOfMeasureOrderByRelevanceFieldEnum = (typeof UnitOfMeasureOrderByRelevanceFieldEnum)[keyof typeof UnitOfMeasureOrderByRelevanceFieldEnum]
-
-
-export const GstRateOrderByRelevanceFieldEnum = {
-  name: 'name',
-  description: 'description'
-} as const
-
-export type GstRateOrderByRelevanceFieldEnum = (typeof GstRateOrderByRelevanceFieldEnum)[keyof typeof GstRateOrderByRelevanceFieldEnum]
-
-
-export const ProductOrderByRelevanceFieldEnum = {
-  sku: 'sku',
-  name: 'name',
-  description: 'description'
-} as const
-
-export type ProductOrderByRelevanceFieldEnum = (typeof ProductOrderByRelevanceFieldEnum)[keyof typeof ProductOrderByRelevanceFieldEnum]
-
-
-export const SupplierOrderByRelevanceFieldEnum = {
-  name: 'name',
-  email: 'email',
-  phone: 'phone',
-  gst_number: 'gst_number',
-  pan_number: 'pan_number',
-  payment_terms: 'payment_terms'
-} as const
-
-export type SupplierOrderByRelevanceFieldEnum = (typeof SupplierOrderByRelevanceFieldEnum)[keyof typeof SupplierOrderByRelevanceFieldEnum]
-
-
-export const StockTransferOrderByRelevanceFieldEnum = {
-  transfer_type: 'transfer_type',
-  reference_type: 'reference_type',
-  notes: 'notes'
-} as const
-
-export type StockTransferOrderByRelevanceFieldEnum = (typeof StockTransferOrderByRelevanceFieldEnum)[keyof typeof StockTransferOrderByRelevanceFieldEnum]
-
-
-export const InvoiceOrderByRelevanceFieldEnum = {
-  invoice_number: 'invoice_number',
-  notes: 'notes',
-  terms: 'terms'
-} as const
-
-export type InvoiceOrderByRelevanceFieldEnum = (typeof InvoiceOrderByRelevanceFieldEnum)[keyof typeof InvoiceOrderByRelevanceFieldEnum]
+export type InvoiceCustomerProfileOrderByRelevanceFieldEnum = (typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum)[keyof typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum]
 
 
 export const JsonNullValueFilter = {
@@ -585,44 +690,23 @@ export const InvoiceDraftOrderByRelevanceFieldEnum = {
 export type InvoiceDraftOrderByRelevanceFieldEnum = (typeof InvoiceDraftOrderByRelevanceFieldEnum)[keyof typeof InvoiceDraftOrderByRelevanceFieldEnum]
 
 
-export const InvoiceItemOrderByRelevanceFieldEnum = {
-  description: 'description'
+export const addressOrderByRelevanceFieldEnum = {
+  street: 'street',
+  street2: 'street2',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country'
 } as const
 
-export type InvoiceItemOrderByRelevanceFieldEnum = (typeof InvoiceItemOrderByRelevanceFieldEnum)[keyof typeof InvoiceItemOrderByRelevanceFieldEnum]
+export type addressOrderByRelevanceFieldEnum = (typeof addressOrderByRelevanceFieldEnum)[keyof typeof addressOrderByRelevanceFieldEnum]
 
 
-export const PaymentOrderByRelevanceFieldEnum = {
-  payment_method: 'payment_method',
-  reference_number: 'reference_number',
-  notes: 'notes'
-} as const
-
-export type PaymentOrderByRelevanceFieldEnum = (typeof PaymentOrderByRelevanceFieldEnum)[keyof typeof PaymentOrderByRelevanceFieldEnum]
-
-
-export const PurchaseOrderOrderByRelevanceFieldEnum = {
-  po_number: 'po_number',
-  status: 'status',
-  notes: 'notes'
-} as const
-
-export type PurchaseOrderOrderByRelevanceFieldEnum = (typeof PurchaseOrderOrderByRelevanceFieldEnum)[keyof typeof PurchaseOrderOrderByRelevanceFieldEnum]
-
-
-export const ExpenseCategoryOrderByRelevanceFieldEnum = {
+export const userOrderByRelevanceFieldEnum = {
+  email: 'email',
   name: 'name',
-  description: 'description'
+  password: 'password'
 } as const
 
-export type ExpenseCategoryOrderByRelevanceFieldEnum = (typeof ExpenseCategoryOrderByRelevanceFieldEnum)[keyof typeof ExpenseCategoryOrderByRelevanceFieldEnum]
-
-
-export const ExpenseOrderByRelevanceFieldEnum = {
-  description: 'description',
-  attachment_url: 'attachment_url',
-  notes: 'notes'
-} as const
-
-export type ExpenseOrderByRelevanceFieldEnum = (typeof ExpenseOrderByRelevanceFieldEnum)[keyof typeof ExpenseOrderByRelevanceFieldEnum]
+export type userOrderByRelevanceFieldEnum = (typeof userOrderByRelevanceFieldEnum)[keyof typeof userOrderByRelevanceFieldEnum]
 

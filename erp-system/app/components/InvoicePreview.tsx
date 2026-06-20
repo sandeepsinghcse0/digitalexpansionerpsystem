@@ -62,9 +62,14 @@ export default function InvoicePreview({
 }: InvoicePreviewProps) {
   if (!open) return null;
 
-  const subtotal = items.reduce((sum, item) => sum + item.qty * item.rate, 0);
-  const gst = subtotal * 0.18;
-  const total = subtotal + gst;
+  const visibleItems = items.filter(
+    (item) =>
+      item.description?.trim() || item.qty > 0 || item.rate > 0 || item.gstRate > 0
+  );
+
+  const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
+  const gst = visibleItems.reduce((sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100), 0);
+  const total = subtotal + gst + penaltyAmount;
   const billToName = customerName || customerDetails.customerName || "Customer";
 
   return (
@@ -193,9 +198,15 @@ export default function InvoicePreview({
               <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="mb-2 flex justify-between text-[14px] text-slate-700">
-              <span>GST (18%)</span>
+              <span>GST</span>
               <span>₹{gst.toFixed(2)}</span>
             </div>
+            {penaltyAmount > 0 && (
+              <div className="mb-2 flex justify-between text-[14px] text-red-600">
+                <span>Overdue Penalty</span>
+                <span>₹{penaltyAmount.toFixed(2)}</span>
+              </div>
+            )}
             <hr className="my-2" />
             <div className="flex justify-between text-[16px] font-bold text-slate-900">
               <span>Total</span>

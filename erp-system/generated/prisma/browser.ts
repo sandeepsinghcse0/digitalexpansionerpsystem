@@ -18,97 +18,107 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
- * Model Tenant
+ * Model customer
  * 
  */
-export type Tenant = Prisma.TenantModel
+export type customer = Prisma.customerModel
 /**
- * Model User
+ * Model expense
  * 
  */
-export type User = Prisma.UserModel
+export type expense = Prisma.expenseModel
 /**
- * Model Organization
+ * Model expensecategory
  * 
  */
-export type Organization = Prisma.OrganizationModel
+export type expensecategory = Prisma.expensecategoryModel
 /**
- * Model Address
+ * Model gstrate
  * 
  */
-export type Address = Prisma.AddressModel
+export type gstrate = Prisma.gstrateModel
 /**
- * Model Customer
+ * Model inventory
  * 
  */
-export type Customer = Prisma.CustomerModel
+export type inventory = Prisma.inventoryModel
 /**
- * Model ProductCategory
+ * Model invoice
  * 
  */
-export type ProductCategory = Prisma.ProductCategoryModel
+export type invoice = Prisma.invoiceModel
 /**
- * Model UnitOfMeasure
+ * Model invoiceitem
  * 
  */
-export type UnitOfMeasure = Prisma.UnitOfMeasureModel
+export type invoiceitem = Prisma.invoiceitemModel
 /**
- * Model GstRate
+ * Model organization
  * 
  */
-export type GstRate = Prisma.GstRateModel
+export type organization = Prisma.organizationModel
 /**
- * Model Product
+ * Model payment
  * 
  */
-export type Product = Prisma.ProductModel
+export type payment = Prisma.paymentModel
 /**
- * Model Supplier
+ * Model product
  * 
  */
-export type Supplier = Prisma.SupplierModel
+export type product = Prisma.productModel
 /**
- * Model Inventory
+ * Model productcategory
  * 
  */
-export type Inventory = Prisma.InventoryModel
+export type productcategory = Prisma.productcategoryModel
 /**
- * Model StockTransfer
+ * Model purchaseorder
  * 
  */
-export type StockTransfer = Prisma.StockTransferModel
+export type purchaseorder = Prisma.purchaseorderModel
 /**
- * Model Invoice
+ * Model stocktransfer
  * 
  */
-export type Invoice = Prisma.InvoiceModel
+export type stocktransfer = Prisma.stocktransferModel
+/**
+ * Model supplier
+ * 
+ */
+export type supplier = Prisma.supplierModel
+/**
+ * Model tenant
+ * 
+ */
+export type tenant = Prisma.tenantModel
+/**
+ * Model unitofmeasure
+ * 
+ */
+export type unitofmeasure = Prisma.unitofmeasureModel
+/**
+ * Model SellerProfile
+ * 
+ */
+export type SellerProfile = Prisma.SellerProfileModel
+/**
+ * Model InvoiceCustomerProfile
+ * 
+ */
+export type InvoiceCustomerProfile = Prisma.InvoiceCustomerProfileModel
 /**
  * Model InvoiceDraft
  * 
  */
 export type InvoiceDraft = Prisma.InvoiceDraftModel
 /**
- * Model InvoiceItem
+ * Model address
  * 
  */
-export type InvoiceItem = Prisma.InvoiceItemModel
+export type address = Prisma.addressModel
 /**
- * Model Payment
+ * Model user
  * 
  */
-export type Payment = Prisma.PaymentModel
-/**
- * Model PurchaseOrder
- * 
- */
-export type PurchaseOrder = Prisma.PurchaseOrderModel
-/**
- * Model ExpenseCategory
- * 
- */
-export type ExpenseCategory = Prisma.ExpenseCategoryModel
-/**
- * Model Expense
- * 
- */
-export type Expense = Prisma.ExpenseModel
+export type user = Prisma.userModel

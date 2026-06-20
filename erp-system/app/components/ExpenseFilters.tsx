@@ -65,7 +65,7 @@ export default function ExpenseFilters({
 
 <DatePicker
   selected={selectedDate}
-  onChange={(date) =>
+  onChange={(date: Date | null) =>
     setSelectedDate(date)
   }
   dateFormat="dd/MM/yyyy"
