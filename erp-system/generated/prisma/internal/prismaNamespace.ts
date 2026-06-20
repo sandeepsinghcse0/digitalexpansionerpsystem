@@ -384,7 +384,6 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
-  address: 'address',
   customer: 'customer',
   expense: 'expense',
   expensecategory: 'expensecategory',
@@ -401,6 +400,10 @@ export const ModelName = {
   supplier: 'supplier',
   tenant: 'tenant',
   unitofmeasure: 'unitofmeasure',
+  SellerProfile: 'SellerProfile',
+  InvoiceCustomerProfile: 'InvoiceCustomerProfile',
+  InvoiceDraft: 'InvoiceDraft',
+  address: 'address',
   user: 'user'
 } as const
 
@@ -417,76 +420,10 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "address" | "customer" | "expense" | "expensecategory" | "gstrate" | "inventory" | "invoice" | "invoiceitem" | "organization" | "payment" | "product" | "productcategory" | "purchaseorder" | "stocktransfer" | "supplier" | "tenant" | "unitofmeasure" | "user"
+    modelProps: "customer" | "expense" | "expensecategory" | "gstrate" | "inventory" | "invoice" | "invoiceitem" | "organization" | "payment" | "product" | "productcategory" | "purchaseorder" | "stocktransfer" | "supplier" | "tenant" | "unitofmeasure" | "sellerProfile" | "invoiceCustomerProfile" | "invoiceDraft" | "address" | "user"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
-    address: {
-      payload: Prisma.$addressPayload<ExtArgs>
-      fields: Prisma.addressFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.addressFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.addressFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
-        }
-        findFirst: {
-          args: Prisma.addressFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.addressFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
-        }
-        findMany: {
-          args: Prisma.addressFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>[]
-        }
-        create: {
-          args: Prisma.addressCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
-        }
-        createMany: {
-          args: Prisma.addressCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        delete: {
-          args: Prisma.addressDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
-        }
-        update: {
-          args: Prisma.addressUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
-        }
-        deleteMany: {
-          args: Prisma.addressDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.addressUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        upsert: {
-          args: Prisma.addressUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
-        }
-        aggregate: {
-          args: Prisma.AddressAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateAddress>
-        }
-        groupBy: {
-          args: Prisma.addressGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AddressGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.addressCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AddressCountAggregateOutputType> | number
-        }
-      }
-    }
     customer: {
       payload: Prisma.$customerPayload<ExtArgs>
       fields: Prisma.customerFieldRefs
@@ -1543,6 +1480,270 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    SellerProfile: {
+      payload: Prisma.$SellerProfilePayload<ExtArgs>
+      fields: Prisma.SellerProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SellerProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SellerProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.SellerProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SellerProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        findMany: {
+          args: Prisma.SellerProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>[]
+        }
+        create: {
+          args: Prisma.SellerProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        createMany: {
+          args: Prisma.SellerProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.SellerProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        update: {
+          args: Prisma.SellerProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.SellerProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SellerProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.SellerProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SellerProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.SellerProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSellerProfile>
+        }
+        groupBy: {
+          args: Prisma.SellerProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SellerProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SellerProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    InvoiceCustomerProfile: {
+      payload: Prisma.$InvoiceCustomerProfilePayload<ExtArgs>
+      fields: Prisma.InvoiceCustomerProfileFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvoiceCustomerProfileFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvoiceCustomerProfileFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        findFirst: {
+          args: Prisma.InvoiceCustomerProfileFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvoiceCustomerProfileFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        findMany: {
+          args: Prisma.InvoiceCustomerProfileFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>[]
+        }
+        create: {
+          args: Prisma.InvoiceCustomerProfileCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        createMany: {
+          args: Prisma.InvoiceCustomerProfileCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.InvoiceCustomerProfileDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        update: {
+          args: Prisma.InvoiceCustomerProfileUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        deleteMany: {
+          args: Prisma.InvoiceCustomerProfileDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvoiceCustomerProfileUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.InvoiceCustomerProfileUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceCustomerProfilePayload>
+        }
+        aggregate: {
+          args: Prisma.InvoiceCustomerProfileAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvoiceCustomerProfile>
+        }
+        groupBy: {
+          args: Prisma.InvoiceCustomerProfileGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceCustomerProfileGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvoiceCustomerProfileCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceCustomerProfileCountAggregateOutputType> | number
+        }
+      }
+    }
+    InvoiceDraft: {
+      payload: Prisma.$InvoiceDraftPayload<ExtArgs>
+      fields: Prisma.InvoiceDraftFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvoiceDraftFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvoiceDraftFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        findFirst: {
+          args: Prisma.InvoiceDraftFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvoiceDraftFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        findMany: {
+          args: Prisma.InvoiceDraftFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>[]
+        }
+        create: {
+          args: Prisma.InvoiceDraftCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        createMany: {
+          args: Prisma.InvoiceDraftCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.InvoiceDraftDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        update: {
+          args: Prisma.InvoiceDraftUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvoiceDraftDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvoiceDraftUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.InvoiceDraftUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoiceDraftPayload>
+        }
+        aggregate: {
+          args: Prisma.InvoiceDraftAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvoiceDraft>
+        }
+        groupBy: {
+          args: Prisma.InvoiceDraftGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceDraftGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvoiceDraftCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceDraftCountAggregateOutputType> | number
+        }
+      }
+    }
+    address: {
+      payload: Prisma.$addressPayload<ExtArgs>
+      fields: Prisma.addressFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.addressFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.addressFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
+        }
+        findFirst: {
+          args: Prisma.addressFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.addressFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
+        }
+        findMany: {
+          args: Prisma.addressFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>[]
+        }
+        create: {
+          args: Prisma.addressCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
+        }
+        createMany: {
+          args: Prisma.addressCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.addressDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
+        }
+        update: {
+          args: Prisma.addressUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
+        }
+        deleteMany: {
+          args: Prisma.addressDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.addressUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.addressUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$addressPayload>
+        }
+        aggregate: {
+          args: Prisma.AddressAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAddress>
+        }
+        groupBy: {
+          args: Prisma.addressGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AddressGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.addressCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AddressCountAggregateOutputType> | number
+        }
+      }
+    }
     user: {
       payload: Prisma.$userPayload<ExtArgs>
       fields: Prisma.userFieldRefs
@@ -1648,27 +1849,6 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const AddressScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  customer_id: 'customer_id',
-  supplier_id: 'supplier_id',
-  organization_id: 'organization_id',
-  street: 'street',
-  street2: 'street2',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country',
-  address_type: 'address_type',
-  is_primary: 'is_primary',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
-
-
 export const CustomerScalarFieldEnum = {
   id: 'id',
   tenant_id: 'tenant_id',
@@ -1753,6 +1933,7 @@ export const InvoiceScalarFieldEnum = {
   invoice_date: 'invoice_date',
   due_date: 'due_date',
   status: 'status',
+  penalty_amount: 'penalty_amount',
   subtotal: 'subtotal',
   tax_amount: 'tax_amount',
   total_amount: 'total_amount',
@@ -1760,7 +1941,9 @@ export const InvoiceScalarFieldEnum = {
   terms: 'terms',
   created_by: 'created_by',
   created_at: 'created_at',
-  updated_at: 'updated_at'
+  updated_at: 'updated_at',
+  seller_profile_id: 'seller_profile_id',
+  customer_profile_id: 'customer_profile_id'
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
@@ -1933,6 +2116,95 @@ export const UnitofmeasureScalarFieldEnum = {
 export type UnitofmeasureScalarFieldEnum = (typeof UnitofmeasureScalarFieldEnum)[keyof typeof UnitofmeasureScalarFieldEnum]
 
 
+export const SellerProfileScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  business_name: 'business_name',
+  contact_name: 'contact_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  bank_account: 'bank_account',
+  ifsc_code: 'ifsc_code',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type SellerProfileScalarFieldEnum = (typeof SellerProfileScalarFieldEnum)[keyof typeof SellerProfileScalarFieldEnum]
+
+
+export const InvoiceCustomerProfileScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  customer_name: 'customer_name',
+  company_name: 'company_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InvoiceCustomerProfileScalarFieldEnum = (typeof InvoiceCustomerProfileScalarFieldEnum)[keyof typeof InvoiceCustomerProfileScalarFieldEnum]
+
+
+export const InvoiceDraftScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  invoice_number: 'invoice_number',
+  invoice_date: 'invoice_date',
+  due_date: 'due_date',
+  status: 'status',
+  penalty_amount: 'penalty_amount',
+  subtotal: 'subtotal',
+  tax_amount: 'tax_amount',
+  total_amount: 'total_amount',
+  notes: 'notes',
+  terms: 'terms',
+  seller_details: 'seller_details',
+  customer_details: 'customer_details',
+  items: 'items',
+  created_by: 'created_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InvoiceDraftScalarFieldEnum = (typeof InvoiceDraftScalarFieldEnum)[keyof typeof InvoiceDraftScalarFieldEnum]
+
+
+export const AddressScalarFieldEnum = {
+  id: 'id',
+  tenant_id: 'tenant_id',
+  customer_id: 'customer_id',
+  supplier_id: 'supplier_id',
+  organization_id: 'organization_id',
+  street: 'street',
+  street2: 'street2',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  address_type: 'address_type',
+  is_primary: 'is_primary',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
+
+
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -1955,24 +2227,20 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
-
-
-export const addressOrderByRelevanceFieldEnum = {
-  street: 'street',
-  street2: 'street2',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country'
-} as const
-
-export type addressOrderByRelevanceFieldEnum = (typeof addressOrderByRelevanceFieldEnum)[keyof typeof addressOrderByRelevanceFieldEnum]
 
 
 export const customerOrderByRelevanceFieldEnum = {
@@ -2119,6 +2387,80 @@ export const unitofmeasureOrderByRelevanceFieldEnum = {
 export type unitofmeasureOrderByRelevanceFieldEnum = (typeof unitofmeasureOrderByRelevanceFieldEnum)[keyof typeof unitofmeasureOrderByRelevanceFieldEnum]
 
 
+export const SellerProfileOrderByRelevanceFieldEnum = {
+  business_name: 'business_name',
+  contact_name: 'contact_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country',
+  bank_account: 'bank_account',
+  ifsc_code: 'ifsc_code'
+} as const
+
+export type SellerProfileOrderByRelevanceFieldEnum = (typeof SellerProfileOrderByRelevanceFieldEnum)[keyof typeof SellerProfileOrderByRelevanceFieldEnum]
+
+
+export const InvoiceCustomerProfileOrderByRelevanceFieldEnum = {
+  customer_name: 'customer_name',
+  company_name: 'company_name',
+  email: 'email',
+  phone: 'phone',
+  gst_number: 'gst_number',
+  pan_number: 'pan_number',
+  address: 'address',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country'
+} as const
+
+export type InvoiceCustomerProfileOrderByRelevanceFieldEnum = (typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum)[keyof typeof InvoiceCustomerProfileOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+export const InvoiceDraftOrderByRelevanceFieldEnum = {
+  invoice_number: 'invoice_number',
+  notes: 'notes',
+  terms: 'terms'
+} as const
+
+export type InvoiceDraftOrderByRelevanceFieldEnum = (typeof InvoiceDraftOrderByRelevanceFieldEnum)[keyof typeof InvoiceDraftOrderByRelevanceFieldEnum]
+
+
+export const addressOrderByRelevanceFieldEnum = {
+  street: 'street',
+  street2: 'street2',
+  city: 'city',
+  state: 'state',
+  postal_code: 'postal_code',
+  country: 'country'
+} as const
+
+export type addressOrderByRelevanceFieldEnum = (typeof addressOrderByRelevanceFieldEnum)[keyof typeof addressOrderByRelevanceFieldEnum]
+
+
 export const userOrderByRelevanceFieldEnum = {
   email: 'email',
   name: 'name',
@@ -2149,16 +2491,16 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
 
 
 /**
- * Reference to a field of type 'address_address_type'
+ * Reference to a field of type 'Float'
  */
-export type Enumaddress_address_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'address_address_type'>
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 
 /**
- * Reference to a field of type 'Boolean'
+ * Reference to a field of type 'customer_status'
  */
-export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+export type Enumcustomer_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'customer_status'>
     
 
 
@@ -2170,16 +2512,9 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 
 
 /**
- * Reference to a field of type 'Float'
+ * Reference to a field of type 'Boolean'
  */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'customer_status'
- */
-export type Enumcustomer_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'customer_status'>
+export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
     
 
 
@@ -2208,6 +2543,27 @@ export type Enumproduct_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'supplier_status'
  */
 export type Enumsupplier_statusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'supplier_status'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'address_address_type'
+ */
+export type Enumaddress_address_typeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'address_address_type'>
     
 
 
@@ -2327,7 +2683,6 @@ export type PrismaClientOptions = ({
   queryPlanCacheMaxSize?: number
 }
 export type GlobalOmitConfig = {
-  address?: Prisma.addressOmit
   customer?: Prisma.customerOmit
   expense?: Prisma.expenseOmit
   expensecategory?: Prisma.expensecategoryOmit
@@ -2344,6 +2699,10 @@ export type GlobalOmitConfig = {
   supplier?: Prisma.supplierOmit
   tenant?: Prisma.tenantOmit
   unitofmeasure?: Prisma.unitofmeasureOmit
+  sellerProfile?: Prisma.SellerProfileOmit
+  invoiceCustomerProfile?: Prisma.InvoiceCustomerProfileOmit
+  invoiceDraft?: Prisma.InvoiceDraftOmit
+  address?: Prisma.addressOmit
   user?: Prisma.userOmit
 }
 

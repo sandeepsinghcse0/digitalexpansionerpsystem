@@ -8,7 +8,6 @@
  *
  * 🟢 You can import this file directly.
  */
-export type * from './models/address'
 export type * from './models/customer'
 export type * from './models/expense'
 export type * from './models/expensecategory'
@@ -25,5 +24,9 @@ export type * from './models/stocktransfer'
 export type * from './models/supplier'
 export type * from './models/tenant'
 export type * from './models/unitofmeasure'
+export type * from './models/SellerProfile'
+export type * from './models/InvoiceCustomerProfile'
+export type * from './models/InvoiceDraft'
+export type * from './models/address'
 export type * from './models/user'
 export type * from './commonInputTypes'

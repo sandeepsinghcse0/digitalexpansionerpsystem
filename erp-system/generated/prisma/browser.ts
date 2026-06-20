@@ -18,11 +18,6 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
- * Model address
- * 
- */
-export type address = Prisma.addressModel
-/**
  * Model customer
  * 
  */
@@ -102,6 +97,26 @@ export type tenant = Prisma.tenantModel
  * 
  */
 export type unitofmeasure = Prisma.unitofmeasureModel
+/**
+ * Model SellerProfile
+ * 
+ */
+export type SellerProfile = Prisma.SellerProfileModel
+/**
+ * Model InvoiceCustomerProfile
+ * 
+ */
+export type InvoiceCustomerProfile = Prisma.InvoiceCustomerProfileModel
+/**
+ * Model InvoiceDraft
+ * 
+ */
+export type InvoiceDraft = Prisma.InvoiceDraftModel
+/**
+ * Model address
+ * 
+ */
+export type address = Prisma.addressModel
 /**
  * Model user
  * 

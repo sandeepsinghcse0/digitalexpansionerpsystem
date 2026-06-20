@@ -3,12 +3,14 @@
 type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
+  onEdit?: () => void;
   onDownloadPDF?: () => void;
   customerName: string;
   invoiceNumber: string;
   invoiceDate: string;
   dueDate: string;
   status: string;
+  penaltyAmount?: number;
   notes: string;
   sellerDetails: {
     businessName: string;
@@ -38,18 +40,21 @@ type InvoicePreviewProps = {
     description: string;
     qty: number;
     rate: number;
+    gstRate: number;
   }[];
 };
 
 export default function InvoicePreview({
   open,
   onClose,
+  onEdit,
   onDownloadPDF,
   customerName,
   invoiceNumber,
   invoiceDate,
   dueDate,
   status,
+  penaltyAmount = 0,
   notes,
   sellerDetails,
   customerDetails,
@@ -66,7 +71,7 @@ export default function InvoicePreview({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
       <div
         id="invoice-preview"
-        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8"
+        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8 font-sans text-base leading-6"
       >
         <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-start md:justify-between">
           <div className="space-y-1">
@@ -86,6 +91,14 @@ export default function InvoicePreview({
           </div>
 
           <div className="flex gap-3">
+            {onEdit ? (
+              <button
+                onClick={onEdit}
+                className="bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-600"
+              >
+                Edit
+              </button>
+            ) : null}
             {onDownloadPDF ? (
               <button
                 onClick={onDownloadPDF}
@@ -123,7 +136,9 @@ export default function InvoicePreview({
 
             <p>{invoiceNumber}</p>
             <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
-            <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            {status !== "PAID" && (
+              <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            )}
             <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
           </div>
         </div>
@@ -141,22 +156,33 @@ export default function InvoicePreview({
 
         <table className="w-full border border-slate-300 text-left text-[14px]">
           <thead>
-            <tr className="bg-slate-100 text-slate-900">
-              <th className="border border-slate-300 p-3 font-semibold">Description</th>
-              <th className="border border-slate-300 p-3 font-semibold">Qty</th>
-              <th className="border border-slate-300 p-3 font-semibold">Rate</th>
-              <th className="border border-slate-300 p-3 font-semibold">Amount</th>
+            <tr className="bg-slate-100">
+              <th className="p-3 border">Description</th>
+              <th className="p-3 border">Qty</th>
+              <th className="p-3 border">Rate</th>
+              <th className="p-3 border">GST %</th>
+              <th className="p-3 border">Taxable</th>
+              <th className="p-3 border">GST</th>
+              <th className="p-3 border">Total</th>
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
-              <tr key={`${item.description}-${index}`} className="text-slate-700">
-                <td className="border border-slate-300 p-3">{item.description}</td>
-                <td className="border border-slate-300 p-3">{item.qty}</td>
-                <td className="border border-slate-300 p-3">₹{Number(item.rate || 0).toFixed(2)}</td>
-                <td className="border border-slate-300 p-3">₹{(item.qty * item.rate).toFixed(2)}</td>
-              </tr>
-            ))}
+            {visibleItems.map((item, index) => {
+              const taxable = item.qty * item.rate;
+              const gst = taxable * ((item.gstRate ?? 18) / 100);
+              const rowTotal = taxable + gst;
+              return (
+                <tr key={index}>
+                  <td className="border p-3">{item.description}</td>
+                  <td className="border p-3">{item.qty}</td>
+                  <td className="border p-3">₹{item.rate.toFixed(2)}</td>
+                  <td className="border p-3">{(item.gstRate ?? 18).toFixed(2)}%</td>
+                  <td className="border p-3">₹{taxable.toFixed(2)}</td>
+                  <td className="border p-3">₹{gst.toFixed(2)}</td>
+                  <td className="border p-3">₹{rowTotal.toFixed(2)}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
