@@ -64,6 +64,20 @@ export async function POST(request: Request) {
       );
     }
 
+    if (Number(cost_price) <= 0) {
+      return NextResponse.json(
+        { error: "Cost price must be greater than 0." },
+        { status: 400 }
+      );
+    }
+
+    if (Number(selling_price) <= 0) {
+      return NextResponse.json(
+        { error: "Selling price must be greater than 0." },
+        { status: 400 }
+      );
+    }
+
     // Get the active tenant
     let tenant = await prisma.tenant.findFirst();
     if (!tenant) {

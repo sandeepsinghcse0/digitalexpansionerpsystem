@@ -3,6 +3,16 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+type Category = {
+  id: number;
+  name: string;
+};
+
+type Supplier = {
+  id: number;
+  name: string;
+};
+
 type InventoryItem = {
   id: number;
   quantity_available: number;
@@ -14,13 +24,10 @@ type InventoryItem = {
     cost_price: number;
     selling_price: number;
     status: string;
-    category?: {
-      name: string;
-    } | null;
-    supplier?: {
-      name: string;
-    } | null;
+    category?: Category | null;
+    supplier?: Supplier | null;
     unitofmeasure?: {
+      id: number;
       name: string;
       symbol: string;
     } | null;
@@ -31,11 +38,19 @@ export default function InventoryPage() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Dropdown lists
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+
   // Edit Modal State
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editName, setEditName] = useState("");
   const [editStock, setEditStock] = useState("");
   const [editPrice, setEditPrice] = useState("");
+  const [editCostPrice, setEditCostPrice] = useState("");
+  const [editCategoryId, setEditCategoryId] = useState("");
+  const [editSupplierId, setEditSupplierId] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -62,12 +77,28 @@ export default function InventoryPage() {
         setInventory([]);
         setLoading(false);
       });
+
+    // Fetch categories and suppliers
+    fetch("/api/inventory/metadata")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch metadata");
+        return res.json();
+      })
+      .then((data) => {
+        setCategories(data.categories || []);
+        setSuppliers(data.suppliers || []);
+      })
+      .catch((err) => console.error("Failed to load metadata", err));
   }, []);
 
   const handleEditClick = (item: InventoryItem) => {
     setSelectedItem(item);
+    setEditName(item.product.name);
     setEditStock(item.quantity_available.toString());
     setEditPrice(item.product.selling_price.toString());
+    setEditCostPrice(item.product.cost_price.toString());
+    setEditCategoryId(item.product.category?.id?.toString() || "");
+    setEditSupplierId(item.product.supplier?.id?.toString() || "");
     setEditStatus(item.product.status);
     setEditError(null);
     setIsEditModalOpen(true);
@@ -79,13 +110,22 @@ export default function InventoryPage() {
 
     const stock = parseInt(editStock, 10);
     const price = parseFloat(editPrice);
+    const cost = parseFloat(editCostPrice);
 
+    if (!editName.trim()) {
+      setEditError("Product name is required.");
+      return;
+    }
     if (isNaN(stock) || stock < 0) {
       setEditError("Stock quantity must be a non-negative integer.");
       return;
     }
-    if (isNaN(price) || price < 0) {
-      setEditError("Selling price must be a non-negative number.");
+    if (isNaN(cost) || cost <= 0) {
+      setEditError("Cost price must be greater than 0.");
+      return;
+    }
+    if (isNaN(price) || price <= 0) {
+      setEditError("Selling price must be greater than 0.");
       return;
     }
 
@@ -99,6 +139,10 @@ export default function InventoryPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          name: editName.trim(),
+          category_id: editCategoryId ? parseInt(editCategoryId, 10) : null,
+          supplier_id: editSupplierId ? parseInt(editSupplierId, 10) : null,
+          cost_price: cost,
           selling_price: price,
           status: editStatus,
           quantity_available: stock,
@@ -110,6 +154,8 @@ export default function InventoryPage() {
         throw new Error(data.error || "Failed to update product details");
       }
 
+      const updatedProduct = data.product;
+
       // Update state locally
       setInventory((prev) =>
         prev.map((item) => {
@@ -119,8 +165,18 @@ export default function InventoryPage() {
               quantity_available: stock,
               product: {
                 ...item.product,
-                selling_price: price,
-                status: editStatus,
+                name: updatedProduct.name,
+                cost_price: updatedProduct.cost_price,
+                selling_price: updatedProduct.selling_price,
+                status: updatedProduct.status,
+                category: updatedProduct.productcategory ? {
+                  id: updatedProduct.productcategory.id,
+                  name: updatedProduct.productcategory.name
+                } : null,
+                supplier: updatedProduct.supplier ? {
+                  id: updatedProduct.supplier.id,
+                  name: updatedProduct.supplier.name
+                } : null,
               },
             };
           }
@@ -159,7 +215,7 @@ export default function InventoryPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-extrabold bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent tracking-tight">
             Inventory Management
           </h1>
 
@@ -170,24 +226,24 @@ export default function InventoryPage() {
 
         <Link
           href="/inventory/add"
-          className="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-xl font-medium transition duration-200 shadow-lg hover:shadow-blue-500/20"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 px-5 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
         >
           + Add Product
         </Link>
       </div>
 
       {/* Inventory Tabs */}
-      <div className="flex gap-4 mb-8">
+      <div className="flex gap-2 p-1.5 bg-[#071028]/60 backdrop-blur-md border border-slate-800/80 rounded-2xl w-fit mb-8 shadow-inner">
         <Link
           href="/inventory"
-          className="bg-blue-600 px-5 py-3 rounded-xl font-medium transition duration-200"
+          className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 shadow-md shadow-blue-500/10 text-sm"
         >
           Products
         </Link>
 
         <Link
           href="/inventory/suppliers"
-          className="bg-[#071028] border border-slate-800 px-5 py-3 rounded-xl font-medium hover:bg-slate-800 transition duration-200"
+          className="text-slate-400 hover:text-white px-5 py-2.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-800/40 text-sm"
         >
           Suppliers
         </Link>
@@ -195,49 +251,53 @@ export default function InventoryPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6 shadow-xl">
-          <h3 className="text-slate-400 text-sm">
+        <div className="relative overflow-hidden bg-gradient-to-b from-[#091535]/80 to-[#071028]/80 border border-slate-800 hover:border-blue-500/30 rounded-2xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-blue-500/30 via-indigo-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <h3 className="text-slate-400 text-sm font-medium tracking-wide">
             Total Products
           </h3>
 
-          <p className="text-3xl font-bold mt-2">
+          <p className="text-3xl font-extrabold mt-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
             {totalProducts}
           </p>
         </div>
 
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6 shadow-xl">
-          <h3 className="text-slate-400 text-sm">
+        <div className="relative overflow-hidden bg-gradient-to-b from-[#091535]/80 to-[#071028]/80 border border-slate-800 hover:border-green-500/30 rounded-2xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-green-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <h3 className="text-slate-400 text-sm font-medium tracking-wide">
             In Stock
           </h3>
 
-          <p className="text-3xl font-bold mt-2 text-green-400">
+          <p className="text-3xl font-extrabold mt-2 bg-gradient-to-r from-green-400 to-emerald-300 bg-clip-text text-transparent">
             {inStock}
           </p>
         </div>
 
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6 shadow-xl">
-          <h3 className="text-slate-400 text-sm">
+        <div className="relative overflow-hidden bg-gradient-to-b from-[#091535]/80 to-[#071028]/80 border border-slate-800 hover:border-yellow-500/30 rounded-2xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-yellow-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <h3 className="text-slate-400 text-sm font-medium tracking-wide">
             Low Stock
           </h3>
 
-          <p className="text-3xl font-bold mt-2 text-yellow-400">
+          <p className="text-3xl font-extrabold mt-2 bg-gradient-to-r from-yellow-400 to-amber-300 bg-clip-text text-transparent">
             {lowStock}
           </p>
         </div>
 
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6 shadow-xl">
-          <h3 className="text-slate-400 text-sm">
+        <div className="relative overflow-hidden bg-gradient-to-b from-[#091535]/80 to-[#071028]/80 border border-slate-800 hover:border-red-500/30 rounded-2xl p-6 shadow-xl transition-all duration-300 hover:-translate-y-1 group">
+          <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-red-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <h3 className="text-slate-400 text-sm font-medium tracking-wide">
             Out Of Stock
           </h3>
 
-          <p className="text-3xl font-bold mt-2 text-red-400">
+          <p className="text-3xl font-extrabold mt-2 bg-gradient-to-r from-red-400 to-rose-300 bg-clip-text text-transparent">
             {outOfStock}
           </p>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-[#071028] border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-gradient-to-b from-[#071028]/80 to-[#040b1e]/80 backdrop-blur-xl border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
         <table className="w-full">
           <thead>
             <tr className="border-b border-slate-800 bg-[#0c1938]/40">
@@ -285,7 +345,7 @@ export default function InventoryPage() {
                 return (
                   <tr
                     key={item.id}
-                    className="border-b border-slate-800 hover:bg-[#0c1836]/30 transition duration-150"
+                    className="border-b border-slate-800 hover:bg-[#0c1836]/40 transition duration-150"
                   >
                     <td className="p-4 font-mono text-slate-400 text-sm">
                       {item.product.id}
@@ -325,7 +385,7 @@ export default function InventoryPage() {
                     <td className="p-4 text-right pr-8">
                       <button
                         onClick={() => handleEditClick(item)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-blue-500/10"
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-blue-500/15"
                       >
                         Edit
                       </button>
@@ -341,14 +401,14 @@ export default function InventoryPage() {
       {/* Edit Product Modal */}
       {isEditModalOpen && selectedItem && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="bg-[#071028] border border-slate-800 rounded-3xl p-6 md:p-8 max-w-xl w-full relative shadow-2xl overflow-y-auto max-h-[90vh]">
+          <div className="bg-[#071028]/95 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-6 md:p-8 max-w-xl w-full relative shadow-2xl overflow-y-auto max-h-[90vh]">
             {/* Background Glow */}
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">
+                <h2 className="text-2xl font-extrabold bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent tracking-tight">
                   Edit Product Details
                 </h2>
                 <p className="text-slate-400 text-sm mt-1">
@@ -376,6 +436,18 @@ export default function InventoryPage() {
                 <h3 className="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-2">Editable Details</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Product Name */}
+                  <div className="flex flex-col md:col-span-2">
+                    <label className="text-slate-300 text-xs font-semibold mb-2">Product Name *</label>
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-all duration-200"
+                      required
+                    />
+                  </div>
+
                   {/* Stock */}
                   <div className="flex flex-col">
                     <label className="text-slate-300 text-xs font-semibold mb-2">Stock (Quantity Available) *</label>
@@ -384,7 +456,36 @@ export default function InventoryPage() {
                       min="0"
                       value={editStock}
                       onChange={(e) => setEditStock(e.target.value)}
-                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition"
+                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-all duration-200"
+                      required
+                    />
+                  </div>
+
+                  {/* Status */}
+                  <div className="flex flex-col">
+                    <label className="text-slate-300 text-xs font-semibold mb-2">Status *</label>
+                    <select
+                      value={editStatus}
+                      onChange={(e) => setEditStatus(e.target.value)}
+                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-all duration-200 cursor-pointer"
+                      required
+                    >
+                      <option value="ACTIVE">ACTIVE</option>
+                      <option value="INACTIVE">INACTIVE</option>
+                      <option value="DISCONTINUED">DISCONTINUED</option>
+                    </select>
+                  </div>
+
+                  {/* Cost Price */}
+                  <div className="flex flex-col">
+                    <label className="text-slate-300 text-xs font-semibold mb-2">Cost Price (₹) *</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={editCostPrice}
+                      onChange={(e) => setEditCostPrice(e.target.value)}
+                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-all duration-200"
                       required
                     />
                   </div>
@@ -395,26 +496,45 @@ export default function InventoryPage() {
                     <input
                       type="number"
                       step="0.01"
-                      min="0"
+                      min="0.01"
                       value={editPrice}
                       onChange={(e) => setEditPrice(e.target.value)}
-                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition"
+                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-all duration-200"
                       required
                     />
                   </div>
 
-                  {/* Status */}
-                  <div className="flex flex-col md:col-span-2">
-                    <label className="text-slate-300 text-xs font-semibold mb-2">Status *</label>
+                  {/* Category */}
+                  <div className="flex flex-col">
+                    <label className="text-slate-300 text-xs font-semibold mb-2">Category</label>
                     <select
-                      value={editStatus}
-                      onChange={(e) => setEditStatus(e.target.value)}
-                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition cursor-pointer"
-                      required
+                      value={editCategoryId}
+                      onChange={(e) => setEditCategoryId(e.target.value)}
+                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-all duration-200 cursor-pointer"
                     >
-                      <option value="ACTIVE">ACTIVE</option>
-                      <option value="INACTIVE">INACTIVE</option>
-                      <option value="DISCONTINUED">DISCONTINUED</option>
+                      <option value="">Select Category</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Supplier */}
+                  <div className="flex flex-col">
+                    <label className="text-slate-300 text-xs font-semibold mb-2">Supplier</label>
+                    <select
+                      value={editSupplierId}
+                      onChange={(e) => setEditSupplierId(e.target.value)}
+                      className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none transition-all duration-200 cursor-pointer"
+                    >
+                      <option value="">Select Supplier</option>
+                      {suppliers.map((sup) => (
+                        <option key={sup.id} value={sup.id}>
+                          {sup.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -433,10 +553,6 @@ export default function InventoryPage() {
                     <span className="text-slate-500 block mb-0.5">SKU</span>
                     <span className="text-slate-300 font-mono">{selectedItem.product.sku}</span>
                   </div>
-                  <div className="col-span-2">
-                    <span className="text-slate-500 block mb-0.5">Product Name</span>
-                    <span className="text-slate-300 font-medium">{selectedItem.product.name}</span>
-                  </div>
                   {selectedItem.product.description && (
                     <div className="col-span-2">
                       <span className="text-slate-500 block mb-0.5">Description</span>
@@ -444,24 +560,12 @@ export default function InventoryPage() {
                     </div>
                   )}
                   <div>
-                    <span className="text-slate-500 block mb-0.5">Category</span>
-                    <span className="text-slate-300">{selectedItem.product.category?.name || "N/A"}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block mb-0.5">Supplier</span>
-                    <span className="text-slate-300">{selectedItem.product.supplier?.name || "N/A"}</span>
-                  </div>
-                  <div>
                     <span className="text-slate-500 block mb-0.5">Unit of Measure</span>
                     <span className="text-slate-300">
                       {selectedItem.product.unitofmeasure 
                         ? `${selectedItem.product.unitofmeasure.name} (${selectedItem.product.unitofmeasure.symbol})`
                         : "N/A"}
                     </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500 block mb-0.5">Cost Price</span>
-                    <span className="text-slate-300 font-mono">₹{selectedItem.product.cost_price.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -479,7 +583,7 @@ export default function InventoryPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[100px] text-sm"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[100px] text-sm"
                 >
                   {saving ? (
                     <>

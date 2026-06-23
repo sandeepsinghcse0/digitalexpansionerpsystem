@@ -17,23 +17,58 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { selling_price, status, quantity_available } = body;
+    const { name, category_id, supplier_id, cost_price, selling_price, status, quantity_available } = body;
 
     // Use transaction to update both product and inventory
     const updatedProduct = await prisma.$transaction(async (tx) => {
-      // 1. Update product details (selling_price and status) if provided
+      // 1. Update product details if provided
       const prodUpdateData: any = {};
-      if (selling_price !== undefined) {
-        prodUpdateData.selling_price = Number(selling_price);
+      
+      if (name !== undefined) {
+        if (!name.trim()) {
+          throw new Error("Product name is required.");
+        }
+        prodUpdateData.name = name.trim();
       }
+      
+      if (category_id !== undefined) {
+        prodUpdateData.category_id = category_id ? Number(category_id) : null;
+      }
+      
+      if (supplier_id !== undefined) {
+        prodUpdateData.supplier_id = supplier_id ? Number(supplier_id) : null;
+      }
+
+      if (cost_price !== undefined) {
+        const costVal = Number(cost_price);
+        if (costVal <= 0) {
+          throw new Error("Cost price must be greater than 0.");
+        }
+        prodUpdateData.cost_price = costVal;
+      }
+
+      if (selling_price !== undefined) {
+        const sellVal = Number(selling_price);
+        if (sellVal <= 0) {
+          throw new Error("Selling price must be greater than 0.");
+        }
+        prodUpdateData.selling_price = sellVal;
+      }
+
       if (status !== undefined) {
         prodUpdateData.status = status;
       }
+
       prodUpdateData.updated_at = new Date();
 
       const updatedProd = await tx.product.update({
         where: { id: productId },
         data: prodUpdateData,
+        include: {
+          productcategory: true,
+          supplier: true,
+          unitofmeasure: true,
+        },
       });
 
       // 2. Update inventory quantity_available if provided
