@@ -61,3 +61,68 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id?: string }> }
+) {
+  const { id } = await params;
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "Missing supplier ID" },
+      { status: 400 }
+    );
+  }
+
+  const supplierId = Number(id);
+  if (Number.isNaN(supplierId)) {
+    return NextResponse.json(
+      { error: "Invalid supplier ID" },
+      { status: 400 }
+    );
+  }
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete associated purchase orders
+      await tx.purchaseorder.deleteMany({
+        where: {
+          supplier_id: supplierId,
+        },
+      });
+
+      // 2. Delete associated addresses (though set to cascade, doing explicitly is safer)
+      await tx.address.deleteMany({
+        where: {
+          supplier_id: supplierId,
+        },
+      });
+
+      // 3. Set product supplier_id to null
+      await tx.product.updateMany({
+        where: {
+          supplier_id: supplierId,
+        },
+        data: {
+          supplier_id: null,
+        },
+      });
+
+      // 4. Delete the supplier itself
+      await tx.supplier.delete({
+        where: {
+          id: supplierId,
+        },
+      });
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("Error deleting supplier:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to delete supplier" },
+      { status: 500 }
+    );
+  }
+}

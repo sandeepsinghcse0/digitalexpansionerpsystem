@@ -134,8 +134,8 @@ export default function AddProductPage() {
     if (costPrice.trim() === "" || Number.isNaN(cost)) {
       tempErrors.cost_price = "Cost price is required.";
       isValid = false;
-    } else if (cost < 0) {
-      tempErrors.cost_price = "Cost price cannot be negative.";
+    } else if (cost <= 0) {
+      tempErrors.cost_price = "Cost price must be greater than 0.";
       isValid = false;
     }
 
@@ -144,8 +144,8 @@ export default function AddProductPage() {
     if (sellingPrice.trim() === "" || Number.isNaN(sell)) {
       tempErrors.selling_price = "Selling price is required.";
       isValid = false;
-    } else if (sell < 0) {
-      tempErrors.selling_price = "Selling price cannot be negative.";
+    } else if (sell <= 0) {
+      tempErrors.selling_price = "Selling price must be greater than 0.";
       isValid = false;
     }
 
@@ -238,7 +238,7 @@ export default function AddProductPage() {
           <span className="group-hover:-translate-x-1 transition-transform">←</span>
           <span>Back to Products</span>
         </Link>
-        <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-300 bg-clip-text text-transparent">
           Add New Product
         </h1>
         <p className="text-slate-400 mt-2">
@@ -250,36 +250,38 @@ export default function AddProductPage() {
       <div className="max-w-4xl mx-auto">
         {errors.api && (
           <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl mb-6 text-sm flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
             <span>{errors.api}</span>
           </div>
         )}
 
         {loadingMetadata ? (
-          <div className="bg-[#071028]/60 backdrop-blur-xl border border-slate-800 rounded-3xl p-12 flex flex-col items-center justify-center space-y-4">
+          <div className="bg-gradient-to-b from-[#071028]/80 to-[#040b1e]/80 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-12 flex flex-col items-center justify-center space-y-4">
             <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
             <p className="text-slate-400 text-sm font-medium animate-pulse">Loading form configurations...</p>
           </div>
         ) : (
           <form
             onSubmit={handleSubmit}
-            className="bg-[#071028]/60 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
+            className="bg-gradient-to-b from-[#071028]/80 to-[#040b1e]/80 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {/* Form Glow Blobs */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative z-10">
               {/* Product Name */}
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>Product Name</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. Wireless Mouse"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
-                    errors.name ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${errors.name ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 />
                 {errors.name && (
                   <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.name}</span>
@@ -290,16 +292,14 @@ export default function AddProductPage() {
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>SKU (Stock Keeping Unit)</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="text"
                   placeholder="e.g. WM-102-BL"
                   value={sku}
                   onChange={(e) => setSku(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
-                    errors.sku ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${errors.sku ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 />
                 {errors.sku && (
                   <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.sku}</span>
@@ -314,7 +314,7 @@ export default function AddProductPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                  className="bg-[#020817]/70 backdrop-blur-sm border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none transition-all duration-200 resize-none"
                 />
               </div>
 
@@ -324,7 +324,7 @@ export default function AddProductPage() {
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer"
+                  className="bg-[#020817]/70 backdrop-blur-sm border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-white focus:outline-none transition-all duration-200 cursor-pointer"
                 >
                   <option value="">Select Category</option>
                   {categories
@@ -351,9 +351,8 @@ export default function AddProductPage() {
                     placeholder="Category add"
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
-                    className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
-                      errors.category_id ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                    }`}
+                    className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${errors.category_id ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                      }`}
                   />
                   {errors.category_id && (
                     <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.category_id}</span>
@@ -367,7 +366,7 @@ export default function AddProductPage() {
                 <select
                   value={supplierId}
                   onChange={(e) => setSupplierId(e.target.value)}
-                  className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer"
+                  className="bg-[#020817]/70 backdrop-blur-sm border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-white focus:outline-none transition-all duration-200 cursor-pointer"
                 >
                   <option value="">Select Supplier</option>
                   {suppliers.map((sup) => (
@@ -382,14 +381,12 @@ export default function AddProductPage() {
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>Unit of Measure</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <select
                   value={unitId}
                   onChange={(e) => setUnitId(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer ${
-                    errors.unit_id ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 cursor-pointer ${errors.unit_id ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 >
                   {units.map((unit) => (
                     <option key={unit.id} value={unit.id}>
@@ -406,14 +403,12 @@ export default function AddProductPage() {
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>GST Rate</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <select
                   value={gstRateId}
                   onChange={(e) => setGstRateId(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer ${
-                    errors.gst_rate_id ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 cursor-pointer ${errors.gst_rate_id ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 >
                   {gstRates.map((rate) => (
                     <option key={rate.id} value={rate.id}>
@@ -430,18 +425,16 @@ export default function AddProductPage() {
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>Cost Price (₹)</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="number"
                   step="0.01"
-                  min="0"
+                  min="0.01"
                   placeholder="0.00"
                   value={costPrice}
                   onChange={(e) => setCostPrice(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
-                    errors.cost_price ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${errors.cost_price ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 />
                 {errors.cost_price && (
                   <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.cost_price}</span>
@@ -452,18 +445,16 @@ export default function AddProductPage() {
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>Selling Price (₹)</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="number"
                   step="0.01"
-                  min="0"
+                  min="0.01"
                   placeholder="0.00"
                   value={sellingPrice}
                   onChange={(e) => setSellingPrice(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
-                    errors.selling_price ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${errors.selling_price ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 />
                 {errors.selling_price && (
                   <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.selling_price}</span>
@@ -474,7 +465,6 @@ export default function AddProductPage() {
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>Quantity in Stock</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="number"
@@ -482,9 +472,8 @@ export default function AddProductPage() {
                   placeholder="0"
                   value={quantityInStock}
                   onChange={(e) => setQuantityInStock(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
-                    errors.quantity_in_stock ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${errors.quantity_in_stock ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 />
                 {errors.quantity_in_stock && (
                   <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.quantity_in_stock}</span>
@@ -495,7 +484,6 @@ export default function AddProductPage() {
               <div className="flex flex-col">
                 <label className="text-slate-300 text-sm font-semibold mb-2 flex items-center">
                   <span>Reorder Level</span>
-                  <span className="text-red-500 ml-1">*</span>
                 </label>
                 <input
                   type="number"
@@ -503,9 +491,8 @@ export default function AddProductPage() {
                   placeholder="0"
                   value={reorderLevel}
                   onChange={(e) => setReorderLevel(e.target.value)}
-                  className={`bg-[#020817] border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all ${
-                    errors.reorder_level ? "border-red-500/50" : "border-slate-800 focus:border-blue-500/80"
-                  }`}
+                  className={`bg-[#020817]/70 backdrop-blur-sm border rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 ${errors.reorder_level ? "border-red-500/50 focus:border-red-500" : "border-slate-800 focus:border-blue-500/80"
+                    }`}
                 />
                 {errors.reorder_level && (
                   <span className="text-red-500 text-xs mt-1.5 font-medium">{errors.reorder_level}</span>
@@ -518,7 +505,7 @@ export default function AddProductPage() {
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="bg-[#020817] border border-slate-800 focus:border-blue-500/80 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all cursor-pointer"
+                  className="bg-[#020817]/70 backdrop-blur-sm border border-slate-800 focus:border-blue-500/80 focus:ring-2 focus:ring-blue-500/20 rounded-xl px-4 py-3 text-white focus:outline-none transition-all duration-200 cursor-pointer"
                 >
                   <option value="ACTIVE">ACTIVE</option>
                   <option value="INACTIVE">INACTIVE</option>
@@ -528,19 +515,19 @@ export default function AddProductPage() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end items-center gap-4 border-t border-slate-800/80 pt-6 mt-8">
+            <div className="flex justify-end items-center gap-4 border-t border-slate-800/80 pt-6 mt-8 relative z-10">
               <button
                 type="button"
                 onClick={() => router.push("/inventory")}
                 disabled={submitting}
-                className="bg-transparent hover:bg-slate-800 text-slate-400 hover:text-white px-6 py-3 rounded-xl font-semibold transition border border-slate-800 hover:border-slate-700 disabled:opacity-50"
+                className="bg-transparent hover:bg-slate-800/40 text-slate-400 hover:text-white px-6 py-3 rounded-xl font-semibold transition border border-slate-850 hover:border-slate-800 disabled:opacity-50 cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold transition-all shadow-lg hover:shadow-blue-500/20 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px]"
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-blue-500/25 disabled:opacity-50 flex items-center justify-center gap-2 min-w-[140px] cursor-pointer"
               >
                 {submitting ? (
                   <>
