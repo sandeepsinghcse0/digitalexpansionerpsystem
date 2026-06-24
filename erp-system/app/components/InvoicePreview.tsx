@@ -1,135 +1,250 @@
 "use client";
 
-import { useEffect, MouseEvent } from "react";
-import InvoiceDocument, { InvoiceDocumentProps } from "./InvoiceDocument";
-
-type InvoicePreviewProps = InvoiceDocumentProps & {
+type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
   onEdit?: () => void;
   onDownloadPDF?: () => void;
+  customerName: string;
+  invoiceNumber: string;
+  invoiceDate: string;
   dueDate: string;
   status: string;
+  penaltyAmount?: number;
   notes: string;
-};
-
-const StatusBadge = ({ status }: { status: string }) => {
-  const currentStatus = (status || "DRAFT").toUpperCase();
-  let bg = "bg-slate-100 text-slate-700 border-slate-200";
-  let dotBg = "bg-slate-500";
-
-  if (currentStatus === "PAID") {
-    bg = "bg-emerald-50 text-emerald-700 border-emerald-200";
-    dotBg = "bg-emerald-500 animate-pulse";
-  } else if (currentStatus === "UNPAID") {
-    bg = "bg-rose-50 text-rose-700 border-rose-200";
-    dotBg = "bg-rose-500 animate-pulse";
-  } else if (currentStatus === "OVERDUE") {
-    bg = "bg-amber-50 text-amber-700 border-amber-200";
-    dotBg = "bg-amber-500 animate-pulse";
-  }
-
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full border ${bg}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${dotBg}`} />
-      {currentStatus}
-    </span>
-  );
+  sellerDetails: {
+    businessName: string;
+    contactName: string;
+    email: string;
+    phone: string;
+    gstNumber: string;
+    panNumber: string;
+    address: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+  customerDetails: {
+    customerName: string;
+    companyName: string;
+    email: string;
+    phone: string;
+    gstNumber: string;
+    panNumber: string;
+    address: string;
+    city: string;
+    state: string;
+    postalCode: string;
+  };
+  items: {
+    description: string;
+    qty: number;
+    rate: number;
+    gstRate: number;
+  }[];
 };
 
 export default function InvoicePreview({
   open,
   onClose,
   onDownloadPDF,
-  status,
   customerName,
   invoiceNumber,
   invoiceDate,
-  penaltyAmount,
+  dueDate,
+  status,
+  penaltyAmount = 0,
+  notes,
   sellerDetails,
   customerDetails,
   items,
-  showTransportDetails = false,
 }: InvoicePreviewProps) {
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-    if (open) {
-      window.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-    }
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [open, onClose]);
-
   if (!open) return null;
 
-  const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
+  const visibleItems = items.filter(
+    (item) => item.description?.trim() || item.qty > 0 || item.rate > 0 || item.gstRate > 0
+  );
 
-  const statusText = status || "DRAFT";
+  const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
+
+  const gstTotal = visibleItems.reduce(
+    (sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100),
+    0
+  );
+
+  const total = subtotal + gstTotal + penaltyAmount;
+
+  const billToName = customerName || customerDetails.customerName || "Customer";
+
+  // breakdown by GST rate
+  const gstBreakdown = visibleItems.reduce((map: Record<string, { taxable: number; gst: number }>, item) => {
+    const rate = String(item.gstRate ?? 18);
+    const taxable = item.qty * item.rate;
+    const gst = taxable * ((item.gstRate ?? 18) / 100);
+    if (!map[rate]) map[rate] = { taxable: 0, gst: 0 };
+    map[rate].taxable += taxable;
+    map[rate].gst += gst;
+    return map;
+  }, {} as Record<string, { taxable: number; gst: number }>);
 
   return (
-    <div
-      onClick={handleBackdropClick}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 md:p-6"
-    >
-      <div className="relative w-full max-w-[860px] max-h-[95vh] bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="px-6 py-4 bg-slate-900 border-b border-slate-800 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-white tracking-tight">Invoice Preview</h2>
-            <StatusBadge status={statusText} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+      <div
+        id="invoice-preview"
+        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8 font-sans text-base leading-6"
+      >
+        <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+              {sellerDetails.businessName || "Seller Name"}
+            </h1>
+            <p className="text-[15px] font-medium text-slate-700">
+              {sellerDetails.contactName || "Seller Contact"}
+            </p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.email}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.phone}</p>
+            <p className="text-[14px] text-slate-600">
+              {[sellerDetails.address, sellerDetails.city, sellerDetails.state, sellerDetails.postalCode]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {onEdit && (
+
+          <div className="flex gap-3">
+            {onEdit ? (
               <button
                 onClick={onEdit}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl transition-all"
+                className="bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-600"
               >
                 Edit
               </button>
-            )}
-            {onDownloadPDF && (
+            ) : null}
+            {onDownloadPDF ? (
               <button
                 onClick={onDownloadPDF}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/20 rounded-xl transition-all"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
               >
                 Download PDF
               </button>
-            )}
+            ) : null}
+
             <button
               onClick={onClose}
-              className="inline-flex items-center justify-center p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-all"
-              aria-label="Close preview"
+              className="bg-red-500 text-white px-4 py-2 rounded-lg"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              Close
             </button>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950 flex justify-center items-start">
-          <InvoiceDocument
-            id="invoice-preview"
-            customerName={customerName}
-            invoiceNumber={invoiceNumber}
-            invoiceDate={invoiceDate}
-            penaltyAmount={penaltyAmount}
-            sellerDetails={sellerDetails}
-            customerDetails={customerDetails}
-            items={items}
-            showTransportDetails={showTransportDetails}
-          />
+        <div className="mb-8 grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h2 className="mb-2 text-lg font-semibold uppercase tracking-wide text-slate-900">Bill From</h2>
+            <p className="text-[14px] font-semibold text-slate-800">{sellerDetails.businessName || "Seller"}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.contactName}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.email}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.phone}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.address}</p>
+            <p className="text-[14px] text-slate-600">GST: {sellerDetails.gstNumber || ""}</p>
+            <p className="text-[14px] text-slate-600">PAN: {sellerDetails.panNumber || ""}</p>
+          </div>
+
+          <div className="text-right">
+            <h2 className="font-bold text-xl">
+              Invoice
+            </h2>
+
+            <p>{invoiceNumber}</p>
+            <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
+            {status !== "PAID" && (
+              <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            )}
+            <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
+          </div>
         </div>
+
+        <div className="mb-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <h2 className="mb-2 text-lg font-semibold uppercase tracking-wide text-slate-900">Bill To</h2>
+          <p className="text-[14px] font-semibold text-slate-800">{billToName}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.companyName}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.email}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.phone}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.address}</p>
+          <p className="text-[14px] text-slate-600">GST: {customerDetails.gstNumber || ""}</p>
+          <p className="text-[14px] text-slate-600">PAN: {customerDetails.panNumber || ""}</p>
+        </div>
+
+        <table className="w-full border border-slate-300 text-left text-[14px]">
+          <thead>
+            <tr className="bg-slate-100">
+              <th className="p-3 border">Description</th>
+              <th className="p-3 border">Qty</th>
+              <th className="p-3 border">Rate</th>
+              <th className="p-3 border">GST %</th>
+              <th className="p-3 border">Taxable</th>
+              <th className="p-3 border">GST</th>
+              <th className="p-3 border">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleItems.map((item, index) => {
+              const taxable = item.qty * item.rate;
+              const gst = taxable * ((item.gstRate ?? 18) / 100);
+              const rowTotal = taxable + gst;
+              return (
+                <tr key={index}>
+                  <td className="border p-3">{item.description}</td>
+                  <td className="border p-3">{item.qty}</td>
+                  <td className="border p-3">₹{item.rate.toFixed(2)}</td>
+                  <td className="border p-3">{(item.gstRate ?? 18).toFixed(2)}%</td>
+                  <td className="border p-3">₹{taxable.toFixed(2)}</td>
+                  <td className="border p-3">₹{gst.toFixed(2)}</td>
+                  <td className="border p-3">₹{rowTotal.toFixed(2)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <div className="mt-8 flex justify-end">
+          <div className="w-75">
+            <div className="flex justify-between mb-2">
+              <span>Subtotal</span>
+              <span>₹{subtotal.toFixed(2)}</span>
+            </div>
+
+            {Object.entries(gstBreakdown).map(([rate, data]) => (
+              <div key={rate} className="flex justify-between mb-2">
+                <span>GST ({rate}%)</span>
+                <span>₹{data.gst.toFixed(2)}</span>
+              </div>
+            ))}
+
+            {penaltyAmount > 0 ? (
+              <>
+                <div className="flex justify-between mb-2 text-red-600">
+                  <span>Overdue Penalty (No GST)</span>
+                  <span>₹{penaltyAmount.toFixed(2)}</span>
+                </div>
+                <hr className="my-2 border-slate-200" />
+              </>
+            ) : (
+              <hr className="my-2 border-slate-200" />
+            )}
+
+            <div className="flex justify-between font-bold text-2xl">
+              <span>Total</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {notes ? (
+          <div className="mt-8 rounded-xl border border-slate-200/50 bg-slate-50 p-4">
+            <h3 className="font-semibold mb-2">Notes</h3>
+            <p className="text-sm text-slate-700">{notes}</p>
+          </div>
+        ) : null}
       </div>
     </div>
   );
