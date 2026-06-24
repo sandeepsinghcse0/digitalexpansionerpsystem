@@ -68,15 +68,17 @@ export default function InvoiceForm() {
       gstRate: 18,
     },
   ]);
-
   const [showPreview, setShowPreview] = useState(false);
   const [invoiceNumber, setInvoiceNumber] = useState(() => generateUniqueInvoiceNumber());
   const [invoiceDate, setInvoiceDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [dueDate, setDueDate] = useState("");
+  const [customerName, setCustomerName] = useState("");
   const [status, setStatus] = useState("DRAFT");
+  const [penaltyAmount, setPenaltyAmount] = useState(0);
   const [sellerDetails, setSellerDetails] = useState(emptySellerDetails);
   const [customerDetails, setCustomerDetails] = useState(emptyCustomerDetails);
   const [notes, setNotes] = useState("");
+  const [draftId, setDraftId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const searchParams = useSearchParams();
   const loadedDraftIdRef = useRef<string | null>(null);
@@ -485,16 +487,20 @@ const visibleItems = items.filter((item) => item.description?.trim() || item.rat
     setIsSaving(true);
 
     try {
-      const response = await fetch("/api/invoices", {
+      const saveUrl = "/api/invoice-drafts";
+
+      const response = await fetch(saveUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          id: draftId || undefined,
           invoiceNumber,
           invoiceDate,
           dueDate,
           status,
+          penaltyAmount,
           sellerDetails,
           customerDetails,
           subtotal,
@@ -511,7 +517,16 @@ const visibleItems = items.filter((item) => item.description?.trim() || item.rat
         throw new Error(result.message || "Unable to save invoice");
       }
 
-      alert("Invoice saved successfully");
+      if (result.draft?.id) {
+        setDraftId(String(result.draft.id));
+        if (typeof window !== "undefined") {
+          const url = new URL(window.location.href);
+          url.searchParams.set("draftId", String(result.draft.id));
+          window.history.replaceState({}, "", url.toString());
+        }
+      }
+
+      alert("Invoice draft saved successfully");
     } catch (error) {
       console.error(error);
       alert(error instanceof Error ? error.message : "Unable to save invoice");
@@ -622,8 +637,45 @@ const visibleItems = items.filter((item) => item.description?.trim() || item.rat
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Optional notes" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
       </div>
 
+      {(status === "UNPAID" || status === "OVERDUE") && (
+        <div className="rounded-3xl bg-[#071028] p-6">
+          <h2 className="mb-4 text-xl font-bold text-white">Payment Details</h2>
+          <p className="text-sm text-slate-300 mb-4">
+            {status === "UNPAID"
+              ? "Due date is enabled only for unpaid invoices."
+              : "Overdue invoices require a penalty amount. This penalty is added to the invoice total without GST."
+            }
+          </p>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300">Penalty Amount</label>
+              <input
+                type="number"
+                min="0"
+                value={penaltyAmount}
+                onChange={(e) => setPenaltyAmount(Number(e.target.value))}
+                placeholder="Enter overdue penalty"
+                disabled={status !== "OVERDUE"}
+                className="w-full rounded-xl bg-slate-900 p-3 text-white disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <InvoiceItem items={items} setItems={setItems} />
-      <InvoiceSummary items={items} />
+      <InvoiceSummary items={items} penaltyAmount={penaltyAmount} />
+
+      {validationErrors.length > 0 ? (
+        <div className="rounded-3xl border border-red-400 bg-red-950/20 p-4 text-sm text-red-200">
+          <div className="font-semibold text-red-100 mb-2">Please fix the following issues before saving:</div>
+          <ul className="list-disc space-y-1 pl-5">
+            {validationErrors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap gap-4">
         <button
@@ -657,12 +709,14 @@ const visibleItems = items.filter((item) => item.description?.trim() || item.rat
       <InvoicePreview
         open={showPreview}
         onClose={() => setShowPreview(false)}
+        onEdit={() => setShowPreview(false)}
         onDownloadPDF={downloadPDF}
-        customerName={customerDetails.customerName}
+        customerName={customerName || customerDetails.customerName}
         invoiceNumber={invoiceNumber}
         invoiceDate={invoiceDate}
         dueDate={dueDate}
         status={status}
+        penaltyAmount={penaltyAmount}
         notes={notes}
         sellerDetails={sellerDetails}
         customerDetails={customerDetails}

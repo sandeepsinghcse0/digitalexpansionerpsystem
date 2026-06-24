@@ -3,13 +3,28 @@ import { prisma } from "@/lib/db/prisma";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id?: string }> }
 ) {
   const { id } = await params;
 
+  if (!id) {
+    return NextResponse.json(
+      { error: "Missing expense id" },
+      { status: 400 }
+    );
+  }
+
+  const expenseId = Number(id);
+  if (Number.isNaN(expenseId)) {
+    return NextResponse.json(
+      { error: "Invalid expense id" },
+      { status: 400 }
+    );
+  }
+
   await prisma.expense.delete({
     where: {
-      id: Number(id),
+      id: expenseId,
     },
   });
 
@@ -19,14 +34,21 @@ export async function DELETE(
 }
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id?: string }> }
 ) {
   const { id } = await params;
+
+  if (!id) {
+    return NextResponse.json(
+      { error: "Missing expense id" },
+      { status: 400 }
+    );
+  }
 
   const body = await request.json();
 
   const categoryRecord =
-    await prisma.expenseCategory.findFirst({
+    await prisma.expensecategory.findFirst({
       where: {
         name: body.category,
       },
@@ -49,8 +71,17 @@ export async function PUT(
       expense_date: new Date(body.date),
       notes: body.notes || null,
       category_id: categoryRecord.id,
+      updated_at: new Date(),
+    },
+    include: {
+      expensecategory: true,
     },
   });
 
-  return NextResponse.json(expense);
+  const mappedExpense = {
+    ...expense,
+    category: (expense as any).expensecategory,
+  };
+
+  return NextResponse.json(mappedExpense);
 }

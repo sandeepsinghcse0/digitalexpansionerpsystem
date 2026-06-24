@@ -9,36 +9,7 @@
 * 🟢 You can import this file directly.
 */
 
-export const UserRole = {
-  ADMIN: 'ADMIN',
-  MANAGER: 'MANAGER',
-  USER: 'USER',
-  ACCOUNTANT: 'ACCOUNTANT',
-  VIEWER: 'VIEWER'
-} as const
-
-export type UserRole = (typeof UserRole)[keyof typeof UserRole]
-
-
-export const CustomerStatus = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  SUSPENDED: 'SUSPENDED'
-} as const
-
-export type CustomerStatus = (typeof CustomerStatus)[keyof typeof CustomerStatus]
-
-
-export const ProductStatus = {
-  ACTIVE: 'ACTIVE',
-  INACTIVE: 'INACTIVE',
-  DISCONTINUED: 'DISCONTINUED'
-} as const
-
-export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus]
-
-
-export const InvoiceStatus = {
+export const invoice_status = {
   DRAFT: 'DRAFT',
   SENT: 'SENT',
   VIEWED: 'VIEWED',
@@ -48,24 +19,62 @@ export const InvoiceStatus = {
   CANCELLED: 'CANCELLED'
 } as const
 
-export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus]
+export type invoice_status = (typeof invoice_status)[keyof typeof invoice_status]
 
 
-export const PaymentStatus = {
+export const supplier_status = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type supplier_status = (typeof supplier_status)[keyof typeof supplier_status]
+
+
+export const payment_status = {
   PENDING: 'PENDING',
   COMPLETED: 'COMPLETED',
   FAILED: 'FAILED',
   REFUNDED: 'REFUNDED'
 } as const
 
-export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus]
+export type payment_status = (typeof payment_status)[keyof typeof payment_status]
 
 
-export const AddressType = {
+export const customer_status = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type customer_status = (typeof customer_status)[keyof typeof customer_status]
+
+
+export const address_address_type = {
   BILLING: 'BILLING',
   SHIPPING: 'SHIPPING',
   OFFICE: 'OFFICE',
   OTHER: 'OTHER'
 } as const
 
-export type AddressType = (typeof AddressType)[keyof typeof AddressType]
+export type address_address_type = (typeof address_address_type)[keyof typeof address_address_type]
+
+
+export const product_status = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  DISCONTINUED: 'DISCONTINUED'
+} as const
+
+export type product_status = (typeof product_status)[keyof typeof product_status]
+
+
+export const user_role = {
+  ADMIN: 'ADMIN',
+  MANAGER: 'MANAGER',
+  USER: 'USER',
+  ACCOUNTANT: 'ACCOUNTANT',
+  VIEWER: 'VIEWER'
+} as const
+
+export type user_role = (typeof user_role)[keyof typeof user_role]

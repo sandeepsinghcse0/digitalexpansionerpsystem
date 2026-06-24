@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import InvoiceForm from "../../components/InvoiceForm";
 
 export default function CreateInvoicePage() {
@@ -7,7 +8,9 @@ export default function CreateInvoicePage() {
         Create Invoice
       </h1>
 
-      <InvoiceForm />
+      <Suspense fallback={<div className="text-white">Loading invoice form...</div>}>
+        <InvoiceForm />
+      </Suspense>
     </div>
   );
 }

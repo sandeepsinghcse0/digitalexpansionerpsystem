@@ -1,94 +1,358 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
 }
-
 datasource db {
   provider = "mysql"
 }
 
-// ============= ENUMS =============
-enum UserRole {
-  ADMIN
-  MANAGER
-  USER
-  ACCOUNTANT
-  VIEWER
-}
 
-enum CustomerStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-}
-
-enum ProductStatus {
-  ACTIVE
-  INACTIVE
-  DISCONTINUED
-}
-
-enum InvoiceStatus {
-  DRAFT
-  SENT
-  VIEWED
-  PAID
-  PARTIALLY_PAID
-  OVERDUE
-  CANCELLED
-}
-
-enum PaymentStatus {
-  PENDING
-  COMPLETED
-  FAILED
-  REFUNDED
-}
-
-enum AddressType {
-  BILLING
-  SHIPPING
-  OFFICE
-  OTHER
-}
-
-// ============= TENANT & USER =============
-model Tenant {
-  id            Int     @id @default(autoincrement())
-  business_name String
-  email         String  @unique
+model customer {
+  id            Int             @id @default(autoincrement())
+  tenant_id     Int
+  name          String
+  email         String?
+  phone         String?
+  mobile        String?
   gst_number    String?
   pan_number    String?
-  status        String  @default("ACTIVE")
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  credit_limit  Float           @default(0)
+  payment_terms String?
+  status        customer_status @default(ACTIVE)
+  created_at    DateTime        @default(now())
+  updated_at    DateTime
+  address       address[]
+  tenant        tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Customer_tenant_id_fkey")
+  invoice       invoice[]
+  payment       payment[]
+
+  @@unique([tenant_id, email], map: "Customer_tenant_id_email_key")
+  @@index([gst_number], map: "Customer_gst_number_idx")
+  @@index([tenant_id], map: "Customer_tenant_id_idx")
+}
+
+model expense {
+  id              Int             @id @default(autoincrement())
+  tenant_id       Int
+  category_id     Int
+  description     String
+  amount          Float
+  expense_date    DateTime        @default(now())
+  created_by      Int
+  attachment_url  String?
+  notes           String?
+  created_at      DateTime        @default(now())
+  updated_at      DateTime
+  expensecategory expensecategory @relation(fields: [category_id], references: [id], map: "Expense_category_id_fkey")
+  tenant          tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Expense_tenant_id_fkey")
+
+  @@index([category_id], map: "Expense_category_id_idx")
+  @@index([expense_date], map: "Expense_expense_date_idx")
+  @@index([tenant_id], map: "Expense_tenant_id_idx")
+}
+
+model expensecategory {
+  id          Int       @id @default(autoincrement())
+  tenant_id   Int
+  name        String
+  description String?
+  created_at  DateTime  @default(now())
+  expense     expense[]
+  tenant      tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "ExpenseCategory_tenant_id_fkey")
+
+  @@unique([tenant_id, name], map: "ExpenseCategory_tenant_id_name_key")
+  @@index([tenant_id], map: "ExpenseCategory_tenant_id_idx")
+}
+
+model gstrate {
+  id          Int           @id @default(autoincrement())
+  tenant_id   Int
+  percentage  Float
+  name        String
+  description String?
+  is_active   Boolean       @default(true)
+  created_at  DateTime      @default(now())
+  updated_at  DateTime
+  tenant      tenant        @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "GstRate_tenant_id_fkey")
+  invoiceitem invoiceitem[]
+  product     product[]
+
+  @@unique([tenant_id, percentage], map: "GstRate_tenant_id_percentage_key")
+  @@index([tenant_id], map: "GstRate_tenant_id_idx")
+}
+
+model inventory {
+  id                 Int      @id @default(autoincrement())
+  tenant_id          Int
+  product_id         Int      @unique(map: "Inventory_product_id_key")
+  quantity_available Int
+  quantity_reserved  Int      @default(0)
+  quantity_damaged   Int      @default(0)
+  last_stock_update  DateTime @default(now())
+  created_at         DateTime @default(now())
+  updated_at         DateTime
+  product            product  @relation(fields: [product_id], references: [id], onDelete: Cascade, map: "Inventory_product_id_fkey")
+  tenant             tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Inventory_tenant_id_fkey")
+
+  @@index([product_id], map: "Inventory_product_id_idx")
+  @@index([tenant_id], map: "Inventory_tenant_id_idx")
+}
+
+model invoice {
+  id             Int            @id @default(autoincrement())
+  tenant_id      Int
+  customer_id    Int
+  invoice_number String
+  invoice_date   DateTime       @default(now())
+  due_date       DateTime?
+  status         invoice_status @default(DRAFT)
+  penalty_amount Float          @default(0)
+  subtotal       Float          @default(0)
+  tax_amount     Float          @default(0)
+  total_amount   Float          @default(0)
+  notes          String?
+  terms          String?
+  created_by     Int
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  customer       customer       @relation(fields: [customer_id], references: [id], onDelete: Restrict, map: "Invoice_customer_id_fkey")
+  tenant         tenant         @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Invoice_tenant_id_fkey")
   
-  users                User[]
-  organization         Organization?
-  customers            Customer[]
-  seller_profiles      SellerProfile[]
+  seller_profile_id   Int?
+  customer_profile_id Int?
+  seller_profile      SellerProfile? @relation("InvoiceSellerProfile", fields: [seller_profile_id], references: [id], onDelete: SetNull)
+  customer_profile    InvoiceCustomerProfile? @relation("InvoiceCustomerProfile", fields: [customer_profile_id], references: [id], onDelete: SetNull)
+
+  invoiceitem    invoiceitem[]
+  payment        payment[]
+
+  @@unique([tenant_id, invoice_number], map: "Invoice_tenant_id_invoice_number_key")
+  @@index([customer_id], map: "Invoice_customer_id_idx")
+  @@index([invoice_date], map: "Invoice_invoice_date_idx")
+  @@index([status], map: "Invoice_status_idx")
+  @@index([tenant_id], map: "Invoice_tenant_id_idx")
+}
+
+model invoiceitem {
+  id           Int      @id @default(autoincrement())
+  invoice_id   Int
+  product_id   Int
+  gst_rate_id  Int
+  quantity     Float
+  unit_price   Float
+  subtotal     Float
+  tax_amount   Float
+  total_amount Float
+  description  String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime
+  gstrate      gstrate  @relation(fields: [gst_rate_id], references: [id], map: "InvoiceItem_gst_rate_id_fkey")
+  invoice      invoice  @relation(fields: [invoice_id], references: [id], onDelete: Cascade, map: "InvoiceItem_invoice_id_fkey")
+  product      product  @relation(fields: [product_id], references: [id], map: "InvoiceItem_product_id_fkey")
+
+  @@index([gst_rate_id], map: "InvoiceItem_gst_rate_id_fkey")
+  @@index([invoice_id], map: "InvoiceItem_invoice_id_idx")
+  @@index([product_id], map: "InvoiceItem_product_id_idx")
+}
+
+model organization {
+  id           Int       @id @default(autoincrement())
+  tenant_id    Int       @unique(map: "Organization_tenant_id_key")
+  name         String
+  email        String
+  phone        String?
+  gst_number   String?   @unique(map: "Organization_gst_number_key")
+  pan_number   String?   @unique(map: "Organization_pan_number_key")
+  cin_number   String?
+  bank_account String?
+  ifsc_code    String?
+  status       String    @default("ACTIVE")
+  created_at   DateTime  @default(now())
+  updated_at   DateTime
+  address      address[]
+  tenant       tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Organization_tenant_id_fkey")
+
+  @@index([gst_number], map: "Organization_gst_number_idx")
+}
+
+model payment {
+  id               Int            @id @default(autoincrement())
+  tenant_id        Int
+  invoice_id       Int?
+  customer_id      Int
+  payment_amount   Float
+  payment_date     DateTime       @default(now())
+  payment_method   String
+  reference_number String?
+  notes            String?
+  status           payment_status @default(PENDING)
+  created_at       DateTime       @default(now())
+  updated_at       DateTime
+  customer         customer       @relation(fields: [customer_id], references: [id], map: "Payment_customer_id_fkey")
+  invoice          invoice?       @relation(fields: [invoice_id], references: [id], map: "Payment_invoice_id_fkey")
+  tenant           tenant         @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Payment_tenant_id_fkey")
+
+  @@index([customer_id], map: "Payment_customer_id_idx")
+  @@index([invoice_id], map: "Payment_invoice_id_idx")
+  @@index([payment_date], map: "Payment_payment_date_idx")
+  @@index([tenant_id], map: "Payment_tenant_id_idx")
+}
+
+model product {
+  id                Int              @id @default(autoincrement())
+  tenant_id         Int
+  sku               String
+  name              String
+  description       String?
+  category_id       Int?
+  supplier_id       Int?
+  unit_id           Int
+  cost_price        Float
+  selling_price     Float
+  quantity_in_stock Int              @default(0)
+  reorder_level     Int              @default(0)
+  gst_rate_id       Int
+  status            product_status   @default(ACTIVE)
+  created_at        DateTime         @default(now())
+  updated_at        DateTime
+  inventory         inventory?
+  invoiceitem       invoiceitem[]
+  productcategory   productcategory? @relation(fields: [category_id], references: [id], map: "Product_category_id_fkey")
+  gstrate           gstrate          @relation(fields: [gst_rate_id], references: [id], map: "Product_gst_rate_id_fkey")
+  supplier          supplier?        @relation(fields: [supplier_id], references: [id], map: "Product_supplier_id_fkey")
+  tenant            tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Product_tenant_id_fkey")
+  unitofmeasure     unitofmeasure    @relation(fields: [unit_id], references: [id], map: "Product_unit_id_fkey")
+  stocktransfer     stocktransfer[]
+
+  @@unique([tenant_id, sku], map: "Product_tenant_id_sku_key")
+  @@index([category_id], map: "Product_category_id_idx")
+  @@index([gst_rate_id], map: "Product_gst_rate_id_fkey")
+  @@index([supplier_id], map: "Product_supplier_id_idx")
+  @@index([tenant_id], map: "Product_tenant_id_idx")
+  @@index([unit_id], map: "Product_unit_id_fkey")
+}
+
+model productcategory {
+  id          Int       @id @default(autoincrement())
+  tenant_id   Int
+  name        String
+  description String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime
+  product     product[]
+  tenant      tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "ProductCategory_tenant_id_fkey")
+
+  @@unique([tenant_id, name], map: "ProductCategory_tenant_id_name_key")
+  @@index([tenant_id], map: "ProductCategory_tenant_id_idx")
+}
+
+model purchaseorder {
+  id                Int       @id @default(autoincrement())
+  tenant_id         Int
+  supplier_id       Int
+  po_number         String
+  po_date           DateTime  @default(now())
+  expected_delivery DateTime?
+  actual_delivery   DateTime?
+  status            String    @default("DRAFT")
+  subtotal          Float     @default(0)
+  tax_amount        Float     @default(0)
+  total_amount      Float     @default(0)
+  notes             String?
+  created_by        Int
+  created_at        DateTime  @default(now())
+  updated_at        DateTime
+  supplier          supplier  @relation(fields: [supplier_id], references: [id], map: "PurchaseOrder_supplier_id_fkey")
+  tenant            tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "PurchaseOrder_tenant_id_fkey")
+
+  @@unique([tenant_id, po_number], map: "PurchaseOrder_tenant_id_po_number_key")
+  @@index([supplier_id], map: "PurchaseOrder_supplier_id_idx")
+  @@index([tenant_id], map: "PurchaseOrder_tenant_id_idx")
+}
+
+model stocktransfer {
+  id             Int      @id @default(autoincrement())
+  tenant_id      Int
+  product_id     Int
+  transfer_type  String
+  quantity       Int
+  reference_type String?
+  reference_id   Int?
+  notes          String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime
+  product        product  @relation(fields: [product_id], references: [id], onDelete: Cascade, map: "StockTransfer_product_id_fkey")
+  tenant         tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "StockTransfer_tenant_id_fkey")
+
+  @@index([created_at], map: "StockTransfer_created_at_idx")
+  @@index([product_id], map: "StockTransfer_product_id_idx")
+  @@index([tenant_id], map: "StockTransfer_tenant_id_idx")
+}
+
+model supplier {
+  id            Int             @id @default(autoincrement())
+  tenant_id     Int
+  name          String
+  email         String?
+  phone         String?
+  gst_number    String?
+  pan_number    String?
+  payment_terms String?
+  status        supplier_status @default(ACTIVE)
+  created_at    DateTime        @default(now())
+  updated_at    DateTime
+  address       address[]
+  product       product[]
+  purchaseorder purchaseorder[]
+  tenant        tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Supplier_tenant_id_fkey")
+
+  @@unique([tenant_id, email], map: "Supplier_tenant_id_email_key")
+  @@index([gst_number], map: "Supplier_gst_number_idx")
+  @@index([tenant_id], map: "Supplier_tenant_id_idx")
+}
+
+model tenant {
+  id              Int               @id @default(autoincrement())
+  business_name   String
+  email           String            @unique(map: "Tenant_email_key")
+  gst_number      String?
+  pan_number      String?
+  status          String            @default("ACTIVE")
+  created_at      DateTime          @default(now())
+  updated_at      DateTime
+  address         address[]
+  customer        customer[]
+  expense         expense[]
+  expensecategory expensecategory[]
+  gstrate         gstrate[]
+  inventory       inventory[]
+  invoice         invoice[]
+  organization    organization?
+  payment         payment[]
+  product         product[]
+  productcategory productcategory[]
+  purchaseorder   purchaseorder[]
+  stocktransfer   stocktransfer[]
+  supplier        supplier[]
+  user            user[]
+  
+  seller_profiles           SellerProfile[]
   invoice_customer_profiles InvoiceCustomerProfile[]
-  products             Product[]
-  invoices             Invoice[]
-  payments             Payment[]
-  addresses            Address[]
-  gst_rates            GstRate[]
-  suppliers            Supplier[]
-  purchase_orders      PurchaseOrder[]
-  expenses             Expense[]
-  stock_transfers      StockTransfer[]
-  inventory            Inventory[]
-  product_categories   ProductCategory[]
-  expense_categories   ExpenseCategory[]
-  
-  @@index([email])
+  invoiceDrafts             InvoiceDraft[]
+
+  @@index([email], map: "Tenant_email_idx")
+}
+
+model unitofmeasure {
+  id         Int       @id @default(autoincrement())
+  name       String    @unique(map: "UnitOfMeasure_name_key")
+  symbol     String    @unique(map: "UnitOfMeasure_symbol_key")
+  created_at DateTime  @default(now())
+  product    product[]
 }
 
 model SellerProfile {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   tenant_id     Int
   business_name String
   contact_name  String
@@ -100,20 +364,20 @@ model SellerProfile {
   city          String?
   state         String?
   postal_code   String?
-  country       String  @default("India")
+  country       String   @default("India")
   bank_account  String?
   ifsc_code     String?
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  invoices      Invoice[] @relation("InvoiceSellerProfile")
+  tenant   tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  invoices invoice[] @relation("InvoiceSellerProfile")
 
   @@index([tenant_id])
 }
 
 model InvoiceCustomerProfile {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   tenant_id     Int
   customer_name String
   company_name  String?
@@ -125,395 +389,133 @@ model InvoiceCustomerProfile {
   city          String?
   state         String?
   postal_code   String?
-  country       String  @default("India")
+  country       String   @default("India")
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  invoices      Invoice[] @relation("InvoiceCustomerProfile")
+  tenant   tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
+  invoices invoice[] @relation("InvoiceCustomerProfile")
 
   @@index([tenant_id])
 }
 
-model User {
-  id        Int     @id @default(autoincrement())
-  email     String  @unique
-  name      String
-  password  String
-  role      UserRole @default(USER)
-  tenant_id Int
-  tenant    Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  
-  @@index([tenant_id])
-}
+model InvoiceDraft {
+  id               Int            @id @default(autoincrement())
+  tenant_id        Int
+  invoice_number   String
+  invoice_date     DateTime       @default(now())
+  due_date         DateTime?
+  status           invoice_status @default(DRAFT)
+  penalty_amount   Float          @default(0)
+  subtotal         Float          @default(0)
+  tax_amount       Float          @default(0)
+  total_amount     Float          @default(0)
+  notes            String?
+  terms            String?
+  seller_details   Json?
+  customer_details Json?
+  items            Json?
+  created_by       Int
+  created_at       DateTime       @default(now())
+  updated_at       DateTime       @updatedAt
 
-// ============= ORGANIZATION =============
-model Organization {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int     @unique
-  name          String
-  email         String
-  phone         String?
-  gst_number    String? @unique
-  pan_number    String? @unique
-  cin_number    String? // Corporate Identification Number
-  bank_account  String?
-  ifsc_code     String?
-  status        String  @default("ACTIVE")
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  addresses     Address[] @relation("AddressToOrganization")
-  
-  @@index([gst_number])
-}
+  tenant tenant @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
 
-// ============= ADDRESS =============
-model Address {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  customer_id   Int?
-  supplier_id   Int?
-  organization_id Int?
-  
-  street        String
-  street2       String?
-  city          String
-  state         String
-  postal_code   String
-  country       String  @default("India")
-  address_type  AddressType @default(BILLING)
-  is_primary    Boolean @default(false)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant     @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  customer      Customer?  @relation(fields: [customer_id], references: [id], onDelete: Cascade)
-  supplier      Supplier?  @relation(fields: [supplier_id], references: [id], onDelete: Cascade)
-  organization  Organization? @relation("AddressToOrganization", fields: [organization_id], references: [id], onDelete: Cascade)
-  
-  @@index([tenant_id])
-  @@index([customer_id])
-  @@index([supplier_id])
-  @@index([organization_id])
-}
-
-// ============= CUSTOMER =============
-model Customer {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  name          String
-  email         String?
-  phone         String?
-  mobile        String?
-  gst_number    String?
-  pan_number    String?
-  credit_limit  Float   @default(0)
-  payment_terms String? // e.g., "NET 30", "NET 60"
-  status        CustomerStatus @default(ACTIVE)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant     @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  addresses     Address[]
-  invoices      Invoice[]
-  payments      Payment[]
-  
-  @@unique([tenant_id, email])
-  @@index([tenant_id])
-  @@index([gst_number])
-}
-
-// ============= PRODUCT CATEGORY =============
-model ProductCategory {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  name          String
-  description   String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  products      Product[]
-  
-  @@unique([tenant_id, name])
-  @@index([tenant_id])
-}
-
-// ============= UNIT OF MEASURE =============
-model UnitOfMeasure {
-  id            Int     @id @default(autoincrement())
-  name          String  @unique // e.g., "KG", "LITER", "PIECE", "METER"
-  symbol        String  @unique
-  created_at    DateTime @default(now())
-  
-  products      Product[]
-}
-
-// ============= GST RATE =============
-model GstRate {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  percentage    Float   // e.g., 5, 12, 18, 28
-  name          String  // e.g., "GST 5%", "GST 18%"
-  description   String?
-  is_active     Boolean @default(true)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  products      Product[]
-  invoice_items InvoiceItem[]
-  
-  @@unique([tenant_id, percentage])
-  @@index([tenant_id])
-}
-
-// ============= PRODUCT =============
-model Product {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  sku           String
-  name          String
-  description   String?
-  category_id   Int?
-  supplier_id   Int?
-  unit_id       Int
-  cost_price    Float
-  selling_price Float
-  quantity_in_stock Int @default(0)
-  reorder_level Int   @default(0)
-  gst_rate_id   Int
-  status        ProductStatus @default(ACTIVE)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant          @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  category      ProductCategory? @relation(fields: [category_id], references: [id], onDelete: SetNull)
-  supplier      Supplier?       @relation(fields: [supplier_id], references: [id], onDelete: SetNull)
-  unit           UnitOfMeasure   @relation(fields: [unit_id], references: [id])
-  gst_rate      GstRate         @relation(fields: [gst_rate_id], references: [id])
-  invoice_items InvoiceItem[]
-  inventory     Inventory?
-  stock_transfers StockTransfer[]
-  
-  @@unique([tenant_id, sku])
-  @@index([tenant_id])
-  @@index([category_id])
-  @@index([supplier_id])
-}
-
-// ============= SUPPLIER =============
-model Supplier {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  name          String
-  email         String?
-  phone         String?
-  gst_number    String?
-  pan_number    String?
-  payment_terms String?
-  status        CustomerStatus @default(ACTIVE)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant           @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  addresses     Address[]
-  products      Product[]
-  purchase_orders PurchaseOrder[]
-  
-  @@unique([tenant_id, email])
-  @@index([tenant_id])
-  @@index([gst_number])
-}
-
-// ============= INVENTORY =============
-model Inventory {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  product_id    Int     @unique
-  quantity_available Int
-  quantity_reserved  Int @default(0)
-  quantity_damaged   Int @default(0)
-  last_stock_update DateTime @default(now())
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  
-  @@index([tenant_id])
-  @@index([product_id])
-}
-
-// ============= STOCK TRANSFER =============
-model StockTransfer {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  product_id    Int
-  transfer_type String  // INBOUND, OUTBOUND, ADJUSTMENT
-  quantity      Int
-  reference_type String? // e.g., PURCHASE_ORDER, INVOICE, ADJUSTMENT
-  reference_id  Int?
-  notes         String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  product       Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  
-  @@index([tenant_id])
-  @@index([product_id])
-  @@index([created_at])
-}
-
-// ============= INVOICE =============
-model Invoice {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  customer_id   Int
-  invoice_number String
-  invoice_date  DateTime @default(now())
-  due_date      DateTime?
-  status        InvoiceStatus @default(DRAFT)
-  subtotal      Float   @default(0)
-  tax_amount    Float   @default(0)
-  total_amount  Float   @default(0)
-  notes         String?
-  terms         String?
-  created_by    Int     // User ID
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant       @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  customer      Customer     @relation(fields: [customer_id], references: [id], onDelete: Restrict)
-  seller_profile_id Int?
-  customer_profile_id Int?
-  seller_profile SellerProfile? @relation("InvoiceSellerProfile", fields: [seller_profile_id], references: [id], onDelete: SetNull)
-  customer_profile InvoiceCustomerProfile? @relation("InvoiceCustomerProfile", fields: [customer_profile_id], references: [id], onDelete: SetNull)
-  line_items    InvoiceItem[]
-  payments      Payment[]
-  
   @@unique([tenant_id, invoice_number])
   @@index([tenant_id])
-  @@index([customer_id])
-  @@index([invoice_date])
   @@index([status])
 }
 
-// ============= INVOICE ITEM =============
-model InvoiceItem {
-  id            Int     @id @default(autoincrement())
-  invoice_id    Int
-  product_id    Int
-  gst_rate_id   Int
-  quantity      Float
-  unit_price    Float
-  subtotal      Float  // quantity * unit_price
-  tax_amount    Float
-  total_amount  Float  // subtotal + tax
-  description   String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  invoice       Invoice @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
-  product       Product @relation(fields: [product_id], references: [id], onDelete: Restrict)
-  gst_rate      GstRate @relation(fields: [gst_rate_id], references: [id])
-  
-  @@index([invoice_id])
-  @@index([product_id])
+
+enum invoice_status {
+  DRAFT
+  SENT
+  VIEWED
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
 }
 
-// ============= PAYMENT =============
-model Payment {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  invoice_id    Int?
-  customer_id   Int
-  payment_amount Float
-  payment_date  DateTime @default(now())
-  payment_method String  // e.g., "CASH", "CHEQUE", "BANK_TRANSFER", "CREDIT_CARD"
-  reference_number String?
-  notes         String?
-  status        PaymentStatus @default(PENDING)
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant   @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  invoice       Invoice? @relation(fields: [invoice_id], references: [id], onDelete: SetNull)
-  customer      Customer @relation(fields: [customer_id], references: [id], onDelete: Restrict)
-  
-  @@index([tenant_id])
-  @@index([customer_id])
-  @@index([invoice_id])
-  @@index([payment_date])
+enum supplier_status {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
-// ============= PURCHASE ORDER =============
-model PurchaseOrder {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  supplier_id   Int
-  po_number     String
-  po_date       DateTime @default(now())
-  expected_delivery DateTime?
-  actual_delivery DateTime?
-  status        String  @default("DRAFT") // DRAFT, SENT, RECEIVED, CANCELLED
-  subtotal      Float   @default(0)
-  tax_amount    Float   @default(0)
-  total_amount  Float   @default(0)
-  notes         String?
-  created_by    Int     // User ID
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  supplier      Supplier @relation(fields: [supplier_id], references: [id], onDelete: Restrict)
-  
-  @@unique([tenant_id, po_number])
-  @@index([tenant_id])
-  @@index([supplier_id])
+enum payment_status {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
 }
 
-// ============= EXPENSE CATEGORY =============
-model ExpenseCategory {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  name          String
-  description   String?
-  created_at    DateTime @default(now())
-  
-  tenant        Tenant  @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  expenses      Expense[]
-  
-  @@unique([tenant_id, name])
-  @@index([tenant_id])
+enum customer_status {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
 }
 
-// ============= EXPENSE =============
-model Expense {
-  id            Int     @id @default(autoincrement())
-  tenant_id     Int
-  category_id   Int
-  description   String
-  amount        Float
-  expense_date  DateTime @default(now())
-  created_by    Int     // User ID
-  attachment_url String?
-  notes         String?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  tenant        Tenant         @relation(fields: [tenant_id], references: [id], onDelete: Cascade)
-  category      ExpenseCategory @relation(fields: [category_id], references: [id], onDelete: Restrict)
-  
-  @@index([tenant_id])
-  @@index([category_id])
-  @@index([expense_date])
+enum address_address_type {
+  BILLING
+  SHIPPING
+  OFFICE
+  OTHER
 }
 
+enum product_status {
+  ACTIVE
+  INACTIVE
+  DISCONTINUED
+}
+
+model address {
+  id              Int                  @id @default(autoincrement())
+  tenant_id       Int
+  customer_id     Int?
+  supplier_id     Int?
+  organization_id Int?
+  street          String
+  street2         String?
+  city            String
+  state           String
+  postal_code     String
+  country         String               @default("India")
+  address_type    address_address_type @default(BILLING)
+  is_primary      Boolean              @default(false)
+  created_at      DateTime             @default(now())
+  updated_at      DateTime             @updatedAt
+  customer        customer?            @relation(fields: [customer_id], references: [id], onDelete: Cascade, map: "Address_customer_id_fkey")
+  organization    organization?        @relation(fields: [organization_id], references: [id], onDelete: Cascade, map: "Address_organization_id_fkey")
+  supplier        supplier?            @relation(fields: [supplier_id], references: [id], onDelete: Cascade, map: "Address_supplier_id_fkey")
+  tenant          tenant               @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "Address_tenant_id_fkey")
+
+  @@index([customer_id], map: "Address_customer_id_idx")
+  @@index([organization_id], map: "Address_organization_id_idx")
+  @@index([supplier_id], map: "Address_supplier_id_idx")
+  @@index([tenant_id], map: "Address_tenant_id_idx")
+}
+
+model user {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique(map: "User_email_key")
+  name       String
+  password   String
+  role       user_role @default(USER)
+  tenant_id  Int
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  tenant     tenant    @relation(fields: [tenant_id], references: [id], onDelete: Cascade, map: "User_tenant_id_fkey")
+
+  @@index([tenant_id], map: "User_tenant_id_idx")
+}
+
+enum user_role {
+  ADMIN
+  MANAGER
+  USER
+  ACCOUNTANT
+  VIEWER
+}
 
 

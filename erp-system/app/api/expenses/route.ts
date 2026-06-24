@@ -5,14 +5,19 @@ export async function GET() {
   try {
     const expenses = await prisma.expense.findMany({
       include: {
-        category: true,
+        expensecategory: true,
       },
       orderBy: {
         expense_date: "desc",
       },
     });
 
-    return NextResponse.json(expenses);
+    const mappedExpenses = expenses.map((expense: any) => ({
+      ...expense,
+      category: expense.expensecategory,
+    }));
+
+    return NextResponse.json(mappedExpenses);
   } catch (error) {
     console.error(error);
 
@@ -29,33 +34,59 @@ export async function POST(request: Request) {
 
     console.log("POST BODY:", body);
 
-    const categoryRecord =
-      await prisma.expenseCategory.findFirst({
+    let categoryRecord =
+      await prisma.expensecategory.findFirst({
         where: {
           name: body.category,
         },
       });
 
+    // Ensure a tenant exists (tenant_id is required by schema)
+    let tenantRecord = await prisma.tenant.findUnique({ where: { id: 1 } });
+    if (!tenantRecord) {
+      tenantRecord = await prisma.tenant.create({
+        data: {
+          business_name: "Default Tenant",
+          email: "default@local",
+          updated_at: new Date(),
+        },
+      });
+    }
+
     if (!categoryRecord) {
-      return NextResponse.json(
-        { error: "Category not found" },
-        { status: 400 }
-      );
+      categoryRecord = await prisma.expensecategory.create({
+        data: {
+          tenant_id: tenantRecord.id,
+          name: body.category || "Others",
+          description: body.category
+            ? `${body.category} expenses`
+            : "Auto-created category",
+        },
+      });
     }
 
     const expense = await prisma.expense.create({
       data: {
-        tenant_id: 1,
+        tenant_id: tenantRecord.id,
         category_id: categoryRecord.id,
         description: body.description,
         amount: Number(body.amount),
         expense_date: new Date(body.date),
         created_by: 1,
         notes: body.notes || null,
+        updated_at: new Date(),
+      },
+      include: {
+        expensecategory: true,
       },
     });
 
-    return NextResponse.json(expense);
+    const mappedExpense = {
+      ...expense,
+      category: (expense as any).expensecategory,
+    };
+
+    return NextResponse.json(mappedExpense);
   } catch (error) {
     console.error(error);
 
