@@ -12,44 +12,24 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-<<<<<<< HEAD
-    console.log("========== PRISMA DEBUG ==========");
-    console.log("PRISMA:", prisma);
-    console.log("PRISMA KEYS:", Object.keys(prisma as any));
-    console.log("TENANT:", (prisma as any).tenant);
-=======
     const normalizeAlphaNum = (value?: string) =>
       value ? value.toUpperCase().replace(/[^A-Z0-9]/g, "") : "";
 
     const sanitizeGstNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 15);
     const sanitizePanNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 10);
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 
     let tenant = await prisma.tenant.findFirst();
 
     if (!tenant) {
       tenant = await prisma.tenant.create({
         data: {
-<<<<<<< HEAD
-          business_name:
-            body.sellerDetails?.businessName ||
-            body.customerDetails?.companyName ||
-            "",
-          email:
-            body.sellerDetails?.email ||
-            `tenant-${Date.now()}@local`,
-=======
           business_name: body.sellerDetails?.businessName || body.customerDetails?.companyName || "",
           email: body.sellerDetails?.email || `tenant-${Date.now()}@local`,
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
           updated_at: new Date(),
         },
       });
     }
 
-<<<<<<< HEAD
-    // rest of your code...
-=======
     const generateUniqueInvoiceNumber = async () => {
       let invoiceNumber = "";
       let existing = null;
@@ -113,7 +93,6 @@ export async function POST(request: Request) {
         country: body.customerDetails?.country || "India",
       },
     });
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 
     const customerRecord = await prisma.customer.create({
       data: {
@@ -229,17 +208,17 @@ export async function POST(request: Request) {
       invoice,
     });
   } catch (error: any) {
-  console.error("========== INVOICE ERROR ==========");
-  console.error(error);
-  console.error("MESSAGE:", error?.message);
-  console.error("STACK:", error?.stack);
+    console.error("========== INVOICE ERROR ==========");
+    console.error(error);
+    console.error("MESSAGE:", error?.message);
+    console.error("STACK:", error?.stack);
 
-  return NextResponse.json(
-    {
-      success: false,
-      message: error?.message || "Failed to create invoice",
-    },
-    { status: 500 }
-  );
-}
+    return NextResponse.json(
+      {
+        success: false,
+        message: error?.message || "Failed to create invoice",
+      },
+      { status: 500 }
+    );
+  }
 }

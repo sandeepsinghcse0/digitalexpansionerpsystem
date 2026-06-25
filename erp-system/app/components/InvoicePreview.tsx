@@ -7,11 +7,8 @@ import html2canvas from "html2canvas";
 type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
-<<<<<<< HEAD
-=======
-  onEdit?: () => void;
+onEdit?: () => void;
   onDownloadPDF?: () => void;
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   customerName: string;
   invoiceNumber: string;
   invoiceDate: string;
@@ -54,21 +51,15 @@ type InvoicePreviewProps = {
 export default function InvoicePreview({
   open,
   onClose,
-<<<<<<< HEAD
-=======
-  onEdit,
+onEdit,
   onDownloadPDF,
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   customerName,
   invoiceNumber,
   invoiceDate,
   dueDate,
   status,
-<<<<<<< HEAD
-=======
-  penaltyAmount = 0,
+penaltyAmount = 0,
   notes,
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   sellerDetails,
   customerDetails,
   items,
@@ -77,30 +68,22 @@ export default function InvoicePreview({
 
   if (!open) return null;
 
-<<<<<<< HEAD
-  const subtotal = items.reduce(
-    (sum, item) => sum + item.qty * item.rate,
-    0
+  const visibleItems = items.filter(
+    (item) =>
+      item.description?.trim() || item.qty > 0 || item.rate > 0 || item.gstRate > 0
   );
 
-  const gstTotal = items.reduce(
-    (sum, item) =>
-      sum +
-      item.qty *
-        item.rate *
-        ((item.gstRate ?? 18) / 100),
-    0
-  );
-
-  const total = subtotal + gstTotal;
+  const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
+  const gst = visibleItems.reduce((sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100), 0);
+  const total = subtotal + gst + penaltyAmount;
+  const billToName = customerName || customerDetails.customerName || "Customer";
 
   const handleDownloadPDF = async () => {
     if (isDownloading) return;
-    
     setIsDownloading(true);
+
     try {
       const invoiceElement = document.getElementById("invoice-preview");
-
       if (!invoiceElement) {
         alert("Invoice preview element not found");
         return;
@@ -124,7 +107,6 @@ export default function InvoicePreview({
       // Wait for the DOM to render
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Generate canvas from the cloned element
       const canvas = await html2canvas(clonedInvoice, {
         scale: 2,
         useCORS: true,
@@ -135,26 +117,21 @@ export default function InvoicePreview({
         windowWidth: 1200,
       });
 
-      // Remove temporary container
       document.body.removeChild(tempContainer);
-
-      // Convert canvas to image data
       const imgData = canvas.toDataURL("image/png");
 
-      // Create PDF with proper dimensions
       const pdf = new jsPDF({
         orientation: "portrait",
         unit: "mm",
         format: "a4",
       });
 
-      const pdfWidth = 210; // A4 width in mm
+      const pdfWidth = 210;
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
 
-      // Handle multi-page PDFs
-      let heightLeft = pdfHeight - 297; // A4 height is 297mm
+      let heightLeft = pdfHeight - 297;
       let position = 0;
 
       while (heightLeft > 0) {
@@ -164,7 +141,6 @@ export default function InvoicePreview({
         heightLeft -= 297;
       }
 
-      // Save and download the PDF
       pdf.save(`Invoice-${invoiceNumber}.pdf`);
       alert("PDF downloaded successfully!");
     } catch (error) {
@@ -174,41 +150,6 @@ export default function InvoicePreview({
       setIsDownloading(false);
     }
   };
-
- return (
-  <div className="fixed inset-0 bg-black/70 overflow-auto z-50 p-6">
-    <div
-      id="invoice-preview"
-      className="bg-white text-black w-[1200px] mx-auto border border-black text-[12px]"
-    >
-      {/* HEADER */}
-      <div className="flex justify-between items-start p-4 border-b border-black">
-        <div>
-          <h1 className="text-4xl font-bold text-indigo-900">
-            {sellerDetails.businessName || "DIGITAL EXPANSION"}
-          </h1>
-
-          <div className="bg-teal-600 text-white px-3 py-2 mt-2 font-semibold">
-            Manufacturing & Supply of Precision Press Tool & Room Component
-          </div>
-
-          <div className="mt-3 leading-6">
-            <p>{sellerDetails.address}</p>
-            <p>
-              {sellerDetails.city}, {sellerDetails.state}
-            </p>
-          </div>
-        </div>
-=======
-  const visibleItems = items.filter(
-    (item) =>
-      item.description?.trim() || item.qty > 0 || item.rate > 0 || item.gstRate > 0
-  );
-
-  const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
-  const gst = visibleItems.reduce((sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100), 0);
-  const total = subtotal + gst + penaltyAmount;
-  const billToName = customerName || customerDetails.customerName || "Customer";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
@@ -250,7 +191,6 @@ export default function InvoicePreview({
                 Download PDF
               </button>
             ) : null}
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 
         <div className="text-right">
           <img
@@ -344,119 +284,19 @@ export default function InvoicePreview({
               <span>{invoiceDate}</span>
             </div>
 
-<<<<<<< HEAD
-            <div className="flex justify-between">
-              <span>Status</span>
-              <span>{status}</span>
-            </div>
-=======
-            <p>{invoiceNumber}</p>
+<p>{invoiceNumber}</p>
             <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
             {status !== "PAID" && (
               <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
             )}
             <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
           </div>
         </div>
       </div>
 
       {/* TABLE */}
-      <table className="w-full border-collapse">
+      <table className="w-full border border-slate-300 text-left text-[14px]">
         <thead>
-          <tr>
-            <th className="border border-black p-2">Sr.</th>
-            <th className="border border-black p-2">
-              Product / Service
-            </th>
-            <th className="border border-black p-2">
-              Qty
-            </th>
-            <th className="border border-black p-2">
-              Rate
-            </th>
-            <th className="border border-black p-2">
-              Taxable
-            </th>
-            <th className="border border-black p-2">
-              GST %
-            </th>
-            <th className="border border-black p-2">
-              GST Amt
-            </th>
-            <th className="border border-black p-2">
-              Total
-            </th>
-          </tr>
-        </thead>
-
-<<<<<<< HEAD
-        <tbody>
-          {items.map((item, index) => {
-            const taxable = item.qty * item.rate;
-            const gst =
-              taxable * ((item.gstRate ?? 18) / 100);
-            const rowTotal = taxable + gst;
-
-            return (
-              <tr key={index}>
-                <td className="border border-black p-2 text-center">
-                  {index + 1}
-                </td>
-
-                <td className="border border-black p-2">
-                  {item.description}
-                </td>
-
-                <td className="border border-black p-2 text-center">
-                  {item.qty}
-                </td>
-
-                <td className="border border-black p-2 text-right">
-                  ₹{item.rate.toFixed(2)}
-                </td>
-
-                <td className="border border-black p-2 text-right">
-                  ₹{taxable.toFixed(2)}
-                </td>
-
-                <td className="border border-black p-2 text-center">
-                  {item.gstRate}%
-                </td>
-
-                <td className="border border-black p-2 text-right">
-                  ₹{gst.toFixed(2)}
-                </td>
-
-                <td className="border border-black p-2 text-right">
-                  ₹{rowTotal.toFixed(2)}
-                </td>
-              </tr>
-            );
-          })}
-
-          <tr>
-            <td
-              colSpan={8}
-              className="border border-black h-[300px]"
-            ></td>
-          </tr>
-        </tbody>
-      </table>
-
-      {/* TOTALS */}
-      <div className="grid grid-cols-2 border-t border-black">
-        <div className="border-r border-black p-4">
-          <h3 className="font-bold mb-2">
-            Total In Words
-          </h3>
-
-          <p>
-            Rupees {total.toFixed(2)} Only
-          </p>
-=======
-        <table className="w-full border border-slate-300 text-left text-[14px]">
-          <thead>
             <tr className="bg-slate-100">
               <th className="p-3 border">Description</th>
               <th className="p-3 border">Qty</th>
@@ -508,27 +348,9 @@ export default function InvoicePreview({
               <span>Total</span>
               <span>₹{total.toFixed(2)}</span>
             </div>
-          </div>
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
-        </div>
-
-        <div className="p-4">
-          <div className="flex justify-between">
-            <span>Taxable Amount</span>
-            <span>₹{subtotal.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between mt-2">
-            <span>Total GST</span>
-            <span>₹{gstTotal.toFixed(2)}</span>
-          </div>
-
-          <div className="flex justify-between mt-3 pt-3 border-t font-bold text-xl">
-            <span>Total Amount After Tax</span>
-            <span>₹{total.toFixed(2)}</span>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* BANK */}
       <div className="grid grid-cols-2 border-t border-black">

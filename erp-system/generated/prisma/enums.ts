@@ -9,20 +9,6 @@
 * 🟢 You can import this file directly.
 */
 
-<<<<<<< HEAD
-export const user_role = {
-  ADMIN: 'ADMIN',
-  MANAGER: 'MANAGER',
-  USER: 'USER',
-  ACCOUNTANT: 'ACCOUNTANT',
-  VIEWER: 'VIEWER'
-} as const
-
-export type user_role = (typeof user_role)[keyof typeof user_role]
-
-
-=======
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 export const invoice_status = {
   DRAFT: 'DRAFT',
   SENT: 'SENT',
@@ -81,8 +67,6 @@ export const product_status = {
 } as const
 
 export type product_status = (typeof product_status)[keyof typeof product_status]
-<<<<<<< HEAD
-=======
 
 
 export const user_role = {
@@ -94,4 +78,3 @@ export const user_role = {
 } as const
 
 export type user_role = (typeof user_role)[keyof typeof user_role]
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00

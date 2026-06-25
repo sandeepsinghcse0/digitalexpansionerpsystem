@@ -17,14 +17,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-<<<<<<< HEAD
-
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
-=======
     "baseUrl": ".",
     "ignoreDeprecations": "5.0",
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
     "plugins": [
       {
         "name": "next"

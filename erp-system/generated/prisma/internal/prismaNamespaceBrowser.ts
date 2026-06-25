@@ -51,10 +51,6 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-<<<<<<< HEAD
-  address: 'address',
-=======
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   customer: 'customer',
   expense: 'expense',
   expensecategory: 'expensecategory',
@@ -71,13 +67,10 @@ export const ModelName = {
   supplier: 'supplier',
   tenant: 'tenant',
   unitofmeasure: 'unitofmeasure',
-<<<<<<< HEAD
-=======
   SellerProfile: 'SellerProfile',
   InvoiceCustomerProfile: 'InvoiceCustomerProfile',
   InvoiceDraft: 'InvoiceDraft',
   address: 'address',
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   user: 'user'
 } as const
 
@@ -97,30 +90,6 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-<<<<<<< HEAD
-export const AddressScalarFieldEnum = {
-  id: 'id',
-  tenant_id: 'tenant_id',
-  customer_id: 'customer_id',
-  supplier_id: 'supplier_id',
-  organization_id: 'organization_id',
-  street: 'street',
-  street2: 'street2',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country',
-  address_type: 'address_type',
-  is_primary: 'is_primary',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
-} as const
-
-export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
-
-
-=======
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 export const CustomerScalarFieldEnum = {
   id: 'id',
   tenant_id: 'tenant_id',
@@ -205,10 +174,7 @@ export const InvoiceScalarFieldEnum = {
   invoice_date: 'invoice_date',
   due_date: 'due_date',
   status: 'status',
-<<<<<<< HEAD
-=======
   penalty_amount: 'penalty_amount',
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   subtotal: 'subtotal',
   tax_amount: 'tax_amount',
   total_amount: 'total_amount',
@@ -216,13 +182,9 @@ export const InvoiceScalarFieldEnum = {
   terms: 'terms',
   created_by: 'created_by',
   created_at: 'created_at',
-<<<<<<< HEAD
-  updated_at: 'updated_at'
-=======
   updated_at: 'updated_at',
   seller_profile_id: 'seller_profile_id',
   customer_profile_id: 'customer_profile_id'
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
@@ -395,8 +357,6 @@ export const UnitofmeasureScalarFieldEnum = {
 export type UnitofmeasureScalarFieldEnum = (typeof UnitofmeasureScalarFieldEnum)[keyof typeof UnitofmeasureScalarFieldEnum]
 
 
-<<<<<<< HEAD
-=======
 export const SellerProfileScalarFieldEnum = {
   id: 'id',
   tenant_id: 'tenant_id',
@@ -486,7 +446,6 @@ export const AddressScalarFieldEnum = {
 export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 export const UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
@@ -525,21 +484,6 @@ export const NullsOrder = {
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
-<<<<<<< HEAD
-export const addressOrderByRelevanceFieldEnum = {
-  street: 'street',
-  street2: 'street2',
-  city: 'city',
-  state: 'state',
-  postal_code: 'postal_code',
-  country: 'country'
-} as const
-
-export type addressOrderByRelevanceFieldEnum = (typeof addressOrderByRelevanceFieldEnum)[keyof typeof addressOrderByRelevanceFieldEnum]
-
-
-=======
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 export const customerOrderByRelevanceFieldEnum = {
   name: 'name',
   email: 'email',
@@ -684,8 +628,6 @@ export const unitofmeasureOrderByRelevanceFieldEnum = {
 export type unitofmeasureOrderByRelevanceFieldEnum = (typeof unitofmeasureOrderByRelevanceFieldEnum)[keyof typeof unitofmeasureOrderByRelevanceFieldEnum]
 
 
-<<<<<<< HEAD
-=======
 export const SellerProfileOrderByRelevanceFieldEnum = {
   business_name: 'business_name',
   contact_name: 'contact_name',
@@ -760,7 +702,6 @@ export const addressOrderByRelevanceFieldEnum = {
 export type addressOrderByRelevanceFieldEnum = (typeof addressOrderByRelevanceFieldEnum)[keyof typeof addressOrderByRelevanceFieldEnum]
 
 
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 export const userOrderByRelevanceFieldEnum = {
   email: 'email',
   name: 'name',

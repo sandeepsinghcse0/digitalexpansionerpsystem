@@ -33,35 +33,22 @@ export async function POST(request: NextRequest) {
       }));
 
     const customer = await prisma.customer.create({
-<<<<<<< HEAD
-  data: {
-    tenant_id: 1, // replace with logged-in tenant later
-
-    name: body.name,
-
-    email: body.email || null,
-
-    phone: body.phone || null,
-
-    gst_number: body.gstNumber || null,
-
-    status: body.status || "ACTIVE",
-    
-    updated_at: new Date(),
-  },
-});
-=======
       data: {
         tenant_id: 1, // replace with logged-in tenant later
+
         name: body.name,
+
         email: body.email || null,
+
         phone: body.phone || null,
+
         gst_number: body.gstNumber || null,
+
         status: body.status || "ACTIVE",
+
         updated_at: new Date(),
       },
     });
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 
     return NextResponse.json(customer);
   } catch (error) {
