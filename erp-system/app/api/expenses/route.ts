@@ -12,7 +12,12 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json(expenses);
+    const mappedExpenses = expenses.map((expense: any) => ({
+      ...expense,
+      category: expense.expensecategory,
+    }));
+
+    return NextResponse.json(mappedExpenses);
   } catch (error) {
     console.error(error);
 
@@ -76,7 +81,12 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json(expense);
+    const mappedExpense = {
+      ...expense,
+      category: (expense as any).expensecategory,
+    };
+
+    return NextResponse.json(mappedExpense);
   } catch (error) {
     console.error(error);
 

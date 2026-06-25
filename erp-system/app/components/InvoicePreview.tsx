@@ -7,11 +7,17 @@ import html2canvas from "html2canvas";
 type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
+<<<<<<< HEAD
+=======
+  onEdit?: () => void;
+  onDownloadPDF?: () => void;
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   customerName: string;
   invoiceNumber: string;
   invoiceDate: string;
   dueDate: string;
   status: string;
+  penaltyAmount?: number;
   notes: string;
   sellerDetails: {
     businessName: string;
@@ -48,11 +54,21 @@ type InvoicePreviewProps = {
 export default function InvoicePreview({
   open,
   onClose,
+<<<<<<< HEAD
+=======
+  onEdit,
+  onDownloadPDF,
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   customerName,
   invoiceNumber,
   invoiceDate,
   dueDate,
   status,
+<<<<<<< HEAD
+=======
+  penaltyAmount = 0,
+  notes,
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   sellerDetails,
   customerDetails,
   items,
@@ -61,6 +77,7 @@ export default function InvoicePreview({
 
   if (!open) return null;
 
+<<<<<<< HEAD
   const subtotal = items.reduce(
     (sum, item) => sum + item.qty * item.rate,
     0
@@ -182,6 +199,58 @@ export default function InvoicePreview({
             </p>
           </div>
         </div>
+=======
+  const visibleItems = items.filter(
+    (item) =>
+      item.description?.trim() || item.qty > 0 || item.rate > 0 || item.gstRate > 0
+  );
+
+  const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
+  const gst = visibleItems.reduce((sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100), 0);
+  const total = subtotal + gst + penaltyAmount;
+  const billToName = customerName || customerDetails.customerName || "Customer";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+      <div
+        id="invoice-preview"
+        className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8 font-sans text-base leading-6"
+      >
+        <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-start md:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+              {sellerDetails.businessName || "Seller Name"}
+            </h1>
+            <p className="text-[15px] font-medium text-slate-700">
+              {sellerDetails.contactName || "Seller Contact"}
+            </p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.email}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.phone}</p>
+            <p className="text-[14px] text-slate-600">
+              {[sellerDetails.address, sellerDetails.city, sellerDetails.state, sellerDetails.postalCode]
+                .filter(Boolean)
+                .join(", ")}
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            {onEdit ? (
+              <button
+                onClick={onEdit}
+                className="bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-600"
+              >
+                Edit
+              </button>
+            ) : null}
+            {onDownloadPDF ? (
+              <button
+                onClick={onDownloadPDF}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Download PDF
+              </button>
+            ) : null}
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 
         <div className="text-right">
           <img
@@ -275,10 +344,19 @@ export default function InvoicePreview({
               <span>{invoiceDate}</span>
             </div>
 
+<<<<<<< HEAD
             <div className="flex justify-between">
               <span>Status</span>
               <span>{status}</span>
             </div>
+=======
+            <p>{invoiceNumber}</p>
+            <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
+            {status !== "PAID" && (
+              <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
+            )}
+            <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
           </div>
         </div>
       </div>
@@ -312,6 +390,7 @@ export default function InvoicePreview({
           </tr>
         </thead>
 
+<<<<<<< HEAD
         <tbody>
           {items.map((item, index) => {
             const taxable = item.qty * item.rate;
@@ -375,6 +454,62 @@ export default function InvoicePreview({
           <p>
             Rupees {total.toFixed(2)} Only
           </p>
+=======
+        <table className="w-full border border-slate-300 text-left text-[14px]">
+          <thead>
+            <tr className="bg-slate-100">
+              <th className="p-3 border">Description</th>
+              <th className="p-3 border">Qty</th>
+              <th className="p-3 border">Rate</th>
+              <th className="p-3 border">GST %</th>
+              <th className="p-3 border">Taxable</th>
+              <th className="p-3 border">GST</th>
+              <th className="p-3 border">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {visibleItems.map((item, index) => {
+              const taxable = item.qty * item.rate;
+              const gst = taxable * ((item.gstRate ?? 18) / 100);
+              const rowTotal = taxable + gst;
+              return (
+                <tr key={index}>
+                  <td className="border p-3">{item.description}</td>
+                  <td className="border p-3">{item.qty}</td>
+                  <td className="border p-3">₹{item.rate.toFixed(2)}</td>
+                  <td className="border p-3">{(item.gstRate ?? 18).toFixed(2)}%</td>
+                  <td className="border p-3">₹{taxable.toFixed(2)}</td>
+                  <td className="border p-3">₹{gst.toFixed(2)}</td>
+                  <td className="border p-3">₹{rowTotal.toFixed(2)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+
+        <div className="mt-8 flex justify-end">
+          <div className="w-75">
+            <div className="flex justify-between mb-2">
+              <span>Subtotal</span>
+              <span>₹{subtotal.toFixed(2)}</span>
+            </div>
+            <div className="mb-2 flex justify-between text-[14px] text-slate-700">
+              <span>GST</span>
+              <span>₹{gst.toFixed(2)}</span>
+            </div>
+            {penaltyAmount > 0 && (
+              <div className="mb-2 flex justify-between text-[14px] text-red-600">
+                <span>Overdue Penalty</span>
+                <span>₹{penaltyAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <hr className="my-2" />
+            <div className="flex justify-between text-[16px] font-bold text-slate-900">
+              <span>Total</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
+          </div>
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
         </div>
 
         <div className="p-4">

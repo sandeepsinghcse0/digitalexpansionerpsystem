@@ -12,16 +12,25 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
+<<<<<<< HEAD
     console.log("========== PRISMA DEBUG ==========");
     console.log("PRISMA:", prisma);
     console.log("PRISMA KEYS:", Object.keys(prisma as any));
     console.log("TENANT:", (prisma as any).tenant);
+=======
+    const normalizeAlphaNum = (value?: string) =>
+      value ? value.toUpperCase().replace(/[^A-Z0-9]/g, "") : "";
+
+    const sanitizeGstNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 15);
+    const sanitizePanNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 10);
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 
     let tenant = await prisma.tenant.findFirst();
 
     if (!tenant) {
       tenant = await prisma.tenant.create({
         data: {
+<<<<<<< HEAD
           business_name:
             body.sellerDetails?.businessName ||
             body.customerDetails?.companyName ||
@@ -29,12 +38,82 @@ export async function POST(request: Request) {
           email:
             body.sellerDetails?.email ||
             `tenant-${Date.now()}@local`,
+=======
+          business_name: body.sellerDetails?.businessName || body.customerDetails?.companyName || "",
+          email: body.sellerDetails?.email || `tenant-${Date.now()}@local`,
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
           updated_at: new Date(),
         },
       });
     }
 
+<<<<<<< HEAD
     // rest of your code...
+=======
+    const generateUniqueInvoiceNumber = async () => {
+      let invoiceNumber = "";
+      let existing = null;
+      let attempts = 0;
+
+      do {
+        invoiceNumber = String(Math.floor(100000 + Math.random() * 900000));
+        existing = await prisma.invoice.findFirst({
+          where: {
+            tenant_id: tenant.id,
+            invoice_number: invoiceNumber,
+          },
+        });
+        attempts += 1;
+      } while (existing && attempts < 10);
+
+      if (existing) {
+        throw new Error("Unable to generate a unique invoice number. Please try again.");
+      }
+
+      return invoiceNumber;
+    };
+
+    const invoiceNumber =
+      body.invoiceNumber && /^[0-9]{6}$/.test(body.invoiceNumber)
+        ? body.invoiceNumber
+        : await generateUniqueInvoiceNumber();
+
+    const sellerProfile = await prisma.sellerProfile.create({
+      data: {
+        tenant_id: tenant.id,
+        business_name: body.sellerDetails?.businessName || "",
+        contact_name: body.sellerDetails?.contactName || "",
+        email: body.sellerDetails?.email || null,
+        phone: body.sellerDetails?.phone || null,
+        gst_number: body.sellerDetails?.gstNumber || null,
+        pan_number: body.sellerDetails?.panNumber || null,
+        address: body.sellerDetails?.address || null,
+        city: body.sellerDetails?.city || null,
+        state: body.sellerDetails?.state || null,
+        postal_code: body.sellerDetails?.postalCode || null,
+        country: body.sellerDetails?.country || "India",
+        bank_account: body.sellerDetails?.bankAccount || null,
+        ifsc_code: body.sellerDetails?.ifscCode || null,
+      },
+    });
+
+    const customerProfile = await prisma.invoiceCustomerProfile.create({
+      data: {
+        tenant_id: tenant.id,
+        customer_name: body.customerDetails?.customerName || "",
+        company_name: body.customerDetails?.companyName || null,
+        email: body.customerDetails?.email || null,
+        phone: body.customerDetails?.phone || null,
+        gst_number: body.customerDetails?.gstNumber || null,
+        pan_number: body.customerDetails?.panNumber || null,
+        address: body.customerDetails?.address || null,
+        city: body.customerDetails?.city || null,
+        state: body.customerDetails?.state || null,
+        postal_code: body.customerDetails?.postalCode || null,
+        country: body.customerDetails?.country || "India",
+      },
+    });
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 
     const customerRecord = await prisma.customer.create({
       data: {
@@ -57,10 +136,11 @@ export async function POST(request: Request) {
       data: {
         tenant_id: tenant.id,
         customer_id: customerRecord.id,
-        invoice_number: body.invoiceNumber || `INV-${Date.now()}`,
+        invoice_number: invoiceNumber,
         invoice_date: new Date(body.invoiceDate || new Date()),
         due_date: body.dueDate ? new Date(body.dueDate) : null,
         status: (body.status || "DRAFT").toUpperCase(),
+        penalty_amount: Number(body.penaltyAmount || 0),
         subtotal: Number(body.subtotal || 0),
         tax_amount: Number(body.taxAmount || 0),
         total_amount: Number(body.totalAmount || 0),
@@ -84,7 +164,7 @@ export async function POST(request: Request) {
       const quantity = Number(item.qty || 0);
       const rate = Number(item.rate || 0);
       const subtotalValue = quantity * rate;
-      const gstPercent = Number(item.gstPercent || 0);
+      const gstPercent = Number(item.gstRate ?? item.gstPercent ?? 0);
 
       let gstRate = await prisma.gstrate.findFirst({
         where: {

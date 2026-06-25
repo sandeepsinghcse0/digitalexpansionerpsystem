@@ -3,9 +3,9 @@ import { prisma } from "@/lib/db/prisma";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id?: string } }
+  { params }: { params: Promise<{ id?: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   if (!id) {
     return NextResponse.json(
@@ -34,9 +34,9 @@ export async function DELETE(
 }
 export async function PUT(
   request: Request,
-  { params }: { params: { id?: string } }
+  { params }: { params: Promise<{ id?: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   if (!id) {
     return NextResponse.json(
@@ -71,11 +71,17 @@ export async function PUT(
       expense_date: new Date(body.date),
       notes: body.notes || null,
       category_id: categoryRecord.id,
+      updated_at: new Date(),
     },
     include: {
       expensecategory: true,
     },
   });
 
-  return NextResponse.json(expense);
+  const mappedExpense = {
+    ...expense,
+    category: (expense as any).expensecategory,
+  };
+
+  return NextResponse.json(mappedExpense);
 }

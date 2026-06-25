@@ -18,6 +18,7 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+<<<<<<< HEAD
  * Model address
  * 
  */
@@ -106,4 +107,109 @@ export type unitofmeasure = Prisma.unitofmeasureModel
  * Model user
  * 
  */
+=======
+ * Model customer
+ * 
+ */
+export type customer = Prisma.customerModel
+/**
+ * Model expense
+ * 
+ */
+export type expense = Prisma.expenseModel
+/**
+ * Model expensecategory
+ * 
+ */
+export type expensecategory = Prisma.expensecategoryModel
+/**
+ * Model gstrate
+ * 
+ */
+export type gstrate = Prisma.gstrateModel
+/**
+ * Model inventory
+ * 
+ */
+export type inventory = Prisma.inventoryModel
+/**
+ * Model invoice
+ * 
+ */
+export type invoice = Prisma.invoiceModel
+/**
+ * Model invoiceitem
+ * 
+ */
+export type invoiceitem = Prisma.invoiceitemModel
+/**
+ * Model organization
+ * 
+ */
+export type organization = Prisma.organizationModel
+/**
+ * Model payment
+ * 
+ */
+export type payment = Prisma.paymentModel
+/**
+ * Model product
+ * 
+ */
+export type product = Prisma.productModel
+/**
+ * Model productcategory
+ * 
+ */
+export type productcategory = Prisma.productcategoryModel
+/**
+ * Model purchaseorder
+ * 
+ */
+export type purchaseorder = Prisma.purchaseorderModel
+/**
+ * Model stocktransfer
+ * 
+ */
+export type stocktransfer = Prisma.stocktransferModel
+/**
+ * Model supplier
+ * 
+ */
+export type supplier = Prisma.supplierModel
+/**
+ * Model tenant
+ * 
+ */
+export type tenant = Prisma.tenantModel
+/**
+ * Model unitofmeasure
+ * 
+ */
+export type unitofmeasure = Prisma.unitofmeasureModel
+/**
+ * Model SellerProfile
+ * 
+ */
+export type SellerProfile = Prisma.SellerProfileModel
+/**
+ * Model InvoiceCustomerProfile
+ * 
+ */
+export type InvoiceCustomerProfile = Prisma.InvoiceCustomerProfileModel
+/**
+ * Model InvoiceDraft
+ * 
+ */
+export type InvoiceDraft = Prisma.InvoiceDraftModel
+/**
+ * Model address
+ * 
+ */
+export type address = Prisma.addressModel
+/**
+ * Model user
+ * 
+ */
+>>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
 export type user = Prisma.userModel
