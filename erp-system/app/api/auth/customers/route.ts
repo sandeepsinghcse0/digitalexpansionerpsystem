@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
         data: {
           business_name: "Default Tenant",
           email: `tenant-${Date.now()}@example.com`,
+          updated_at: new Date(),
         },
       }));
 
@@ -44,6 +45,8 @@ export async function POST(request: NextRequest) {
     gst_number: body.gstNumber || null,
 
     status: body.status || "ACTIVE",
+    
+    updated_at: new Date(),
   },
 });
 

@@ -39,6 +39,7 @@ export async function POST(request: Request) {
         pan_number: body.pan_number || null,
         payment_terms: body.payment_terms || null,
         status: body.status || "ACTIVE",
+        updated_at: new Date(),
       },
     });
 

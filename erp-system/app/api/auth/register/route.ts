@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
         data: {
           business_name: "Default",
           email: email,
+          updated_at: new Date(),
         },
       });
     }
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
         email,
         password: hashedPassword,
         tenant_id: tenant.id,
+        updated_at: new Date(),
       },
     });
 

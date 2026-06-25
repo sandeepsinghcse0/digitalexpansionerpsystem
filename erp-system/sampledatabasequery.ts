@@ -5,6 +5,7 @@ async function main() {
     data: {
       business_name: "Sample Org",
       email: "sample@prisma.io",
+      updated_at: new Date(),
     },
   });
 
@@ -14,6 +15,7 @@ async function main() {
       email: "alice@prisma.io",
       password: "password123",
       tenant_id: tenant.id,
+      updated_at: new Date(),
     },
   });
 
