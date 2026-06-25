@@ -311,11 +311,7 @@ export type userCreateInput = {
   password: string
   role?: $Enums.user_role
   created_at?: Date | string
-<<<<<<< HEAD
-  updated_at: Date | string
-=======
   updated_at?: Date | string
->>>>>>> da0a1f7ba57a8f394ac82a2b256b415c730f7c00
   tenant: Prisma.tenantCreateNestedOneWithoutUserInput
 }
 
@@ -327,7 +323,7 @@ export type userUncheckedCreateInput = {
   role?: $Enums.user_role
   tenant_id: number
   created_at?: Date | string
-  updated_at: Date | string
+  updated_at?: Date | string
 }
 
 export type userUpdateInput = {
@@ -359,7 +355,7 @@ export type userCreateManyInput = {
   role?: $Enums.user_role
   tenant_id: number
   created_at?: Date | string
-  updated_at: Date | string
+  updated_at?: Date | string
 }
 
 export type userUpdateManyMutationInput = {
@@ -493,7 +489,7 @@ export type userCreateWithoutTenantInput = {
   password: string
   role?: $Enums.user_role
   created_at?: Date | string
-  updated_at: Date | string
+  updated_at?: Date | string
 }
 
 export type userUncheckedCreateWithoutTenantInput = {
@@ -503,7 +499,7 @@ export type userUncheckedCreateWithoutTenantInput = {
   password: string
   role?: $Enums.user_role
   created_at?: Date | string
-  updated_at: Date | string
+  updated_at?: Date | string
 }
 
 export type userCreateOrConnectWithoutTenantInput = {
@@ -553,7 +549,7 @@ export type userCreateManyTenantInput = {
   password: string
   role?: $Enums.user_role
   created_at?: Date | string
-  updated_at: Date | string
+  updated_at?: Date | string
 }
 
 export type userUpdateWithoutTenantInput = {
