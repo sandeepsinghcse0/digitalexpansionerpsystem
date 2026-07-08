@@ -74,8 +74,14 @@ penaltyAmount = 0,
   );
 
   const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
-  const gst = visibleItems.reduce((sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100), 0);
-  const total = subtotal + gst + penaltyAmount;
+
+  const gstTotal = visibleItems.reduce(
+    (sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100),
+    0
+  );
+
+  const total = subtotal + gstTotal + penaltyAmount;
+
   const billToName = customerName || customerDetails.customerName || "Customer";
 
   const handleDownloadPDF = async () => {
@@ -157,6 +163,7 @@ penaltyAmount = 0,
         id="invoice-preview"
         className="bg-white text-black w-225 max-h-[90vh] overflow-y-auto rounded-2xl p-8 font-sans text-base leading-6"
       >
+        {/* Header: Seller Info + Action Buttons */}
         <div className="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-6 md:flex-row md:items-start md:justify-between">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight text-slate-900">
@@ -227,6 +234,17 @@ penaltyAmount = 0,
         </div>
       </div>
 
+        {/* Bill From + Invoice Meta */}
+        <div className="mb-8 grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <h2 className="mb-2 text-lg font-semibold uppercase tracking-wide text-slate-900">Bill From</h2>
+            <p className="text-[14px] font-semibold text-slate-800">{sellerDetails.businessName || "Seller"}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.contactName}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.email}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.phone}</p>
+            <p className="text-[14px] text-slate-600">{sellerDetails.address}</p>
+            <p className="text-[14px] text-slate-600">GST: {sellerDetails.gstNumber || ""}</p>
+            <p className="text-[14px] text-slate-600">PAN: {sellerDetails.panNumber || ""}</p>
       {/* PAN + TITLE */}
       <div className="grid grid-cols-3 border-b border-black">
         <div className="p-2 border-r border-black font-bold">
@@ -294,9 +312,21 @@ penaltyAmount = 0,
         </div>
       </div>
 
-      {/* TABLE */}
-      <table className="w-full border border-slate-300 text-left text-[14px]">
-        <thead>
+        {/* Bill To */}
+        <div className="mb-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <h2 className="mb-2 text-lg font-semibold uppercase tracking-wide text-slate-900">Bill To</h2>
+          <p className="text-[14px] font-semibold text-slate-800">{billToName}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.companyName}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.email}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.phone}</p>
+          <p className="text-[14px] text-slate-600">{customerDetails.address}</p>
+          <p className="text-[14px] text-slate-600">GST: {customerDetails.gstNumber || ""}</p>
+          <p className="text-[14px] text-slate-600">PAN: {customerDetails.panNumber || ""}</p>
+        </div>
+
+        {/* Items Table */}
+        <table className="w-full border border-slate-300 text-left text-[14px]">
+          <thead>
             <tr className="bg-slate-100">
               <th className="p-3 border">Description</th>
               <th className="p-3 border">Qty</th>
@@ -327,24 +357,34 @@ penaltyAmount = 0,
           </tbody>
         </table>
 
+        {/* Summary */}
         <div className="mt-8 flex justify-end">
           <div className="w-75">
             <div className="flex justify-between mb-2">
               <span>Subtotal</span>
               <span>₹{subtotal.toFixed(2)}</span>
             </div>
-            <div className="mb-2 flex justify-between text-[14px] text-slate-700">
-              <span>GST</span>
-              <span>₹{gst.toFixed(2)}</span>
-            </div>
-            {penaltyAmount > 0 && (
-              <div className="mb-2 flex justify-between text-[14px] text-red-600">
-                <span>Overdue Penalty</span>
-                <span>₹{penaltyAmount.toFixed(2)}</span>
+
+            {Object.entries(gstBreakdown).map(([rate, data]) => (
+              <div key={rate} className="mb-2 flex justify-between text-[14px] text-slate-700">
+                <span>GST ({rate}%)</span>
+                <span>₹{data.gst.toFixed(2)}</span>
               </div>
+            ))}
+
+            {penaltyAmount > 0 ? (
+              <>
+                <div className="flex justify-between mb-2 text-red-600">
+                  <span>Overdue Penalty (No GST)</span>
+                  <span>₹{penaltyAmount.toFixed(2)}</span>
+                </div>
+                <hr className="my-2 border-slate-200" />
+              </>
+            ) : (
+              <hr className="my-2 border-slate-200" />
             )}
-            <hr className="my-2" />
-            <div className="flex justify-between text-[16px] font-bold text-slate-900">
+
+            <div className="flex justify-between font-bold text-2xl">
               <span>Total</span>
               <span>₹{total.toFixed(2)}</span>
             </div>
