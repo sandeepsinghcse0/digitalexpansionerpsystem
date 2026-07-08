@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import InvoiceItem from "./InvoiceItem";
 import InvoiceSummary from "./InvoiceSummary";
 import InvoicePreview from "./InvoicePreview";
-import jsPDF from "jspdf";
 
 const emptySellerDetails = {
   businessName: "",
@@ -83,9 +82,9 @@ export default function InvoiceForm() {
   const searchParams = useSearchParams();
   const loadedDraftIdRef = useRef<string | null>(null);
 
-const visibleItems = items.filter((item) => item.description?.trim() || item.rate > 0);
-      const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
-      const taxAmount = visibleItems.reduce((sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100), 0);
+  const visibleItems = items.filter((item) => item.description?.trim() || item.rate > 0);
+  const subtotal = visibleItems.reduce((sum, item) => sum + item.qty * item.rate, 0);
+  const taxAmount = visibleItems.reduce((sum, item) => sum + item.qty * item.rate * ((item.gstRate ?? 18) / 100), 0);
   const totalAmount = subtotal + taxAmount + penaltyAmount;
 
   const validateInvoiceForm = () => {
@@ -168,13 +167,13 @@ const visibleItems = items.filter((item) => item.description?.trim() || item.rat
           Array.isArray(draft.items) && draft.items.length
             ? draft.items
             : [
-                {
-                  description: "",
-                  qty: 1,
-                  rate: 0,
-                  gstRate: 18,
-                },
-              ]
+              {
+                description: "",
+                qty: 1,
+                rate: 0,
+                gstRate: 18,
+              },
+            ]
         );
       })
       .catch((error) => {
@@ -481,6 +480,35 @@ const visibleItems = items.filter((item) => item.description?.trim() || item.rat
       console.error(error);
       alert("Unable to generate PDF right now.");
     }
+    if (customerDetails.gstNumber && !gstRegex.test(customerDetails.gstNumber)) {
+      errors.push("Customer GST number must be 15 uppercase alphanumeric characters.");
+    }
+    if (sellerDetails.panNumber && !panRegex.test(sellerDetails.panNumber)) {
+      errors.push("Seller PAN number must be 10 uppercase alphanumeric characters.");
+    }
+    if (customerDetails.panNumber && !panRegex.test(customerDetails.panNumber)) {
+      errors.push("Customer PAN number must be 10 uppercase alphanumeric characters.");
+    }
+    if (invoiceDate && Number.isNaN(Date.parse(invoiceDate))) {
+      errors.push("Invoice date must be a valid date.");
+    }
+    if (dueDate && Number.isNaN(Date.parse(dueDate))) {
+      errors.push("Due date must be a valid date.");
+    }
+    if (invoiceDate && dueDate && new Date(dueDate) < new Date(invoiceDate)) {
+      errors.push("Due date cannot be earlier than the invoice date.");
+    }
+
+    return errors;
+  };
+
+  const validationErrors = validateInvoiceForm();
+
+  const downloadPDF = () => {
+    if (!showPreview) {
+      setShowPreview(true);
+      alert("Please click 'Download PDF' from the preview modal.");
+    }
   };
 
   const handleSave = async () => {
@@ -665,6 +693,17 @@ const visibleItems = items.filter((item) => item.description?.trim() || item.rat
 
       <InvoiceItem items={items} setItems={setItems} />
       <InvoiceSummary items={items} penaltyAmount={penaltyAmount} />
+
+      {validationErrors.length > 0 ? (
+        <div className="rounded-3xl border border-red-400 bg-red-950/20 p-4 text-sm text-red-200">
+          <div className="font-semibold text-red-100 mb-2">Please fix the following issues before saving:</div>
+          <ul className="list-disc space-y-1 pl-5">
+            {validationErrors.map((error, index) => (
+              <li key={index}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       {validationErrors.length > 0 ? (
         <div className="rounded-3xl border border-red-400 bg-red-950/20 p-4 text-sm text-red-200">

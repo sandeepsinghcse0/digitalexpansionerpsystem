@@ -207,12 +207,16 @@ export async function POST(request: Request) {
       success: true,
       invoice,
     });
-  } catch (error) {
-    console.error("Invoice create error:", error);
+  } catch (error: any) {
+    console.error("========== INVOICE ERROR ==========");
+    console.error(error);
+    console.error("MESSAGE:", error?.message);
+    console.error("STACK:", error?.stack);
+
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to create invoice",
+        message: error?.message || "Failed to create invoice",
       },
       { status: 500 }
     );

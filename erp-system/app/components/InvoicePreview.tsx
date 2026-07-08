@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
 type InvoicePreviewProps = {
   open: boolean;
   onClose: () => void;
-  onEdit?: () => void;
+onEdit?: () => void;
   onDownloadPDF?: () => void;
   customerName: string;
   invoiceNumber: string;
@@ -47,19 +51,21 @@ type InvoicePreviewProps = {
 export default function InvoicePreview({
   open,
   onClose,
-  onEdit,
+onEdit,
   onDownloadPDF,
   customerName,
   invoiceNumber,
   invoiceDate,
   dueDate,
   status,
-  penaltyAmount = 0,
+penaltyAmount = 0,
   notes,
   sellerDetails,
   customerDetails,
   items,
 }: InvoicePreviewProps) {
+  const [isDownloading, setIsDownloading] = useState(false);
+
   if (!open) return null;
 
   const visibleItems = items.filter(
@@ -78,19 +84,78 @@ export default function InvoicePreview({
 
   const billToName = customerName || customerDetails.customerName || "Customer";
 
-  // Breakdown by GST rate
-  const gstBreakdown = visibleItems.reduce(
-    (map: Record<string, { taxable: number; gst: number }>, item) => {
-      const rate = String(item.gstRate ?? 18);
-      const taxable = item.qty * item.rate;
-      const gst = taxable * ((item.gstRate ?? 18) / 100);
-      if (!map[rate]) map[rate] = { taxable: 0, gst: 0 };
-      map[rate].taxable += taxable;
-      map[rate].gst += gst;
-      return map;
-    },
-    {} as Record<string, { taxable: number; gst: number }>
-  );
+  const handleDownloadPDF = async () => {
+    if (isDownloading) return;
+    setIsDownloading(true);
+
+    try {
+      const invoiceElement = document.getElementById("invoice-preview");
+      if (!invoiceElement) {
+        alert("Invoice preview element not found");
+        return;
+      }
+
+      // Create a clone of the invoice
+      const clonedInvoice = invoiceElement.cloneNode(true) as HTMLElement;
+      
+      // Create a temporary container
+      const tempContainer = document.createElement("div");
+      tempContainer.style.position = "fixed";
+      tempContainer.style.left = "-9999px";
+      tempContainer.style.top = "0";
+      tempContainer.style.width = "1200px";
+      tempContainer.style.backgroundColor = "#ffffff";
+      tempContainer.style.zIndex = "-1";
+      
+      tempContainer.appendChild(clonedInvoice);
+      document.body.appendChild(tempContainer);
+
+      // Wait for the DOM to render
+      await new Promise((resolve) => setTimeout(resolve, 300));
+
+      const canvas = await html2canvas(clonedInvoice, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        windowHeight: clonedInvoice.scrollHeight,
+        windowWidth: 1200,
+      });
+
+      document.body.removeChild(tempContainer);
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      const pdfWidth = 210;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      let heightLeft = pdfHeight - 297;
+      let position = 0;
+
+      while (heightLeft > 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+        heightLeft -= 297;
+      }
+
+      pdf.save(`Invoice-${invoiceNumber}.pdf`);
+      alert("PDF downloaded successfully!");
+    } catch (error) {
+      console.error("PDF Download Error:", error);
+      alert("Failed to download PDF. Please try again.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
@@ -133,14 +198,41 @@ export default function InvoicePreview({
                 Download PDF
               </button>
             ) : null}
+
+        <div className="text-right">
+          <img
+            src="/logo.png"
+            alt="logo"
+            className="w-24 ml-auto mb-3"
+          />
+
+          <p>Tel : {sellerDetails.phone}</p>
+          <p>Web : {sellerDetails.email}</p>
+
+          {isDownloading ? (
             <button
-              onClick={onClose}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg"
+              disabled
+              className="mt-3 bg-blue-600 text-white px-4 py-2 rounded opacity-50 cursor-not-allowed"
             >
-              Close
+              Downloading...
             </button>
-          </div>
+          ) : (
+            <button
+              onClick={handleDownloadPDF}
+              className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Download PDF
+            </button>
+          )}
+
+          <button
+            onClick={onClose}
+            className="mt-3 ml-2 bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Close
+          </button>
         </div>
+      </div>
 
         {/* Bill From + Invoice Meta */}
         <div className="mb-8 grid gap-8 md:grid-cols-[1.1fr_0.9fr]">
@@ -153,11 +245,64 @@ export default function InvoicePreview({
             <p className="text-[14px] text-slate-600">{sellerDetails.address}</p>
             <p className="text-[14px] text-slate-600">GST: {sellerDetails.gstNumber || ""}</p>
             <p className="text-[14px] text-slate-600">PAN: {sellerDetails.panNumber || ""}</p>
+      {/* PAN + TITLE */}
+      <div className="grid grid-cols-3 border-b border-black">
+        <div className="p-2 border-r border-black font-bold">
+          PAN : {sellerDetails.panNumber}
+        </div>
+
+        <div className="p-2 border-r border-black text-center font-bold text-2xl">
+          TAX INVOICE
+        </div>
+
+        <div className="p-2 text-center font-bold">
+          ORIGINAL FOR RECIPIENT
+        </div>
+      </div>
+
+      {/* CUSTOMER + INVOICE */}
+      <div className="grid grid-cols-2 border-b border-black">
+        <div className="border-r border-black">
+          <div className="font-bold text-center border-b border-black p-2">
+            Customer Detail
           </div>
 
-          <div className="text-right">
-            <h2 className="font-bold text-xl">Invoice</h2>
-            <p>{invoiceNumber}</p>
+          <div className="p-3 space-y-2">
+            <p>
+              <b>M/S :</b> {customerName}
+            </p>
+
+            <p>
+              <b>Address :</b> {customerDetails.address}
+            </p>
+
+            <p>
+              <b>Phone :</b> {customerDetails.phone}
+            </p>
+
+            <p>
+              <b>GSTIN :</b> {customerDetails.gstNumber}
+            </p>
+
+            <p>
+              <b>Place Of Supply :</b> {customerDetails.state}
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <div className="p-3 space-y-2">
+            <div className="flex justify-between">
+              <span>Invoice No</span>
+              <span>{invoiceNumber}</span>
+            </div>
+
+            <div className="flex justify-between">
+              <span>Invoice Date</span>
+              <span>{invoiceDate}</span>
+            </div>
+
+<p>{invoiceNumber}</p>
             <p className="text-sm text-gray-600">Date: {invoiceDate || new Date().toLocaleDateString()}</p>
             {status !== "PAID" && (
               <p className="text-sm text-gray-600">Due: {dueDate || "—"}</p>
@@ -165,6 +310,7 @@ export default function InvoicePreview({
             <p className="text-sm text-gray-600">Status: {status || "DRAFT"}</p>
           </div>
         </div>
+      </div>
 
         {/* Bill To */}
         <div className="mb-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -242,17 +388,57 @@ export default function InvoicePreview({
               <span>Total</span>
               <span>₹{total.toFixed(2)}</span>
             </div>
+            </div>
           </div>
         </div>
 
-        {/* Notes */}
-        {notes ? (
-          <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <h3 className="mb-2 text-[15px] font-semibold text-slate-900">Notes</h3>
-            <p className="text-[14px] leading-6 text-slate-700">{notes}</p>
-          </div>
-        ) : null}
+      {/* BANK */}
+      <div className="grid grid-cols-2 border-t border-black">
+        <div className="border-r border-black p-4">
+          <h3 className="font-bold mb-3">
+            Bank Details
+          </h3>
+
+          <p>Name : ICICI</p>
+          <p>Branch : Surat</p>
+          <p>Account Number : XXXXXXXX</p>
+          <p>IFSC : XXXXXXXX</p>
+        </div>
+
+        <div className="p-4 text-center">
+          <img
+            src="/qr.svg"
+            alt="qr"
+            className="w-40 mx-auto"
+          />
+
+          <p className="font-semibold mt-2">
+            Pay using UPI
+          </p>
+        </div>
+      </div>
+
+      {/* TERMS */}
+      <div className="border-t border-black p-4">
+        <h3 className="font-bold mb-2">
+          Terms and Conditions
+        </h3>
+
+        <p>Goods once sold will not be taken back.</p>
+        <p>Subject to local jurisdiction.</p>
+      </div>
+
+      {/* SIGNATURE */}
+      <div className="grid grid-cols-2 border-t border-black">
+        <div className="p-4">
+          Customer Signature
+        </div>
+
+        <div className="p-4 text-right">
+          Authorised Signature
+        </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
