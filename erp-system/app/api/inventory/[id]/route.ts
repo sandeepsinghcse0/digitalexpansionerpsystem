@@ -88,7 +88,7 @@ export async function PATCH(
           });
         } else {
           // If inventory record doesn't exist for some reason, create it
-          let tenant = await tx.tenant.findFirst();
+          const tenant = await tx.tenant.findFirst();
           const tenantId = tenant ? tenant.id : 1;
           await tx.inventory.create({
             data: {

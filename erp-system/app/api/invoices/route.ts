@@ -144,6 +144,8 @@ export async function POST(request: Request) {
       const rate = Number(item.rate || 0);
       const subtotalValue = quantity * rate;
       const gstPercent = Number(item.gstRate ?? item.gstPercent ?? 0);
+      const taxAmountValue = subtotalValue * (gstPercent / 100);
+      const totalAmountValue = subtotalValue + taxAmountValue;
 
       let gstRate = await prisma.gstrate.findFirst({
         where: {
@@ -195,8 +197,8 @@ export async function POST(request: Request) {
           quantity,
           unit_price: rate,
           subtotal: subtotalValue,
-          tax_amount: 0,
-          total_amount: subtotalValue,
+          tax_amount: taxAmountValue,
+          total_amount: totalAmountValue,
           description: item.description || null,
           updated_at: new Date(),
         },
