@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import Sidebar from "../components/Sidebar";
 
 interface ReportStats {
   revenue: number;
@@ -24,10 +25,6 @@ export default function ReportsPage() {
   });
 
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
 
   const fetchReports = async () => {
     try {
@@ -53,6 +50,10 @@ export default function ReportsPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
 
   const generateReport = () => {
     const doc = new jsPDF();
@@ -83,153 +84,163 @@ export default function ReportsPage() {
     doc.save(`ERP_Report_${Date.now()}.pdf`);
   };
 
-  if (loading) {
-    return (
-      <div className="p-8 text-white">
-        Loading Reports...
-      </div>
-    );
-  }
-
   return (
-    <div className="p-8 text-white">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-5xl font-bold">
-            Reports Dashboard
-          </h1>
+    <div className="min-h-screen bg-[#050816] text-white flex overflow-hidden">
+      {/* Background glow visual elements */}
+      <div className="fixed top-[-200px] right-[-100px] w-[500px] h-[500px] bg-blue-600/10 blur-[140px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-[-200px] left-[-100px] w-[400px] h-[400px] bg-indigo-500/10 blur-[140px] rounded-full pointer-events-none" />
 
-          <p className="text-slate-400 mt-2">
-            Business Analytics & Reports
-          </p>
-        </div>
+      {/* Sidebar */}
+      <Sidebar />
 
-        <button
-          onClick={generateReport}
-          className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-medium transition-all"
-        >
-          Generate Report
-        </button>
-      </div>
+      {/* Main dashboard space */}
+      <main className="flex-1 overflow-y-auto">
+        <div className="max-w-[1500px] mx-auto px-6 py-8 md:px-10 md:py-10">
+          {loading ? (
+            <div className="text-white">Loading Reports...</div>
+          ) : (
+            <>
+              {/* Header */}
+              <div className="flex justify-between items-center mb-8">
+                <div>
+                  <h1 className="text-5xl font-bold">
+                    Reports Dashboard
+                  </h1>
 
-      {/* Main Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
-          <p className="text-slate-400">Revenue</p>
+                  <p className="text-slate-400 mt-2">
+                    Business Analytics & Reports
+                  </p>
+                </div>
 
-          <h2 className="text-5xl font-bold text-green-400 mt-2">
-            ₹{stats.revenue.toLocaleString()}
-          </h2>
-        </div>
-
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
-          <p className="text-slate-400">Expenses</p>
-
-          <h2 className="text-5xl font-bold text-red-400 mt-2">
-            ₹{stats.expenses.toLocaleString()}
-          </h2>
-        </div>
-
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
-          <p className="text-slate-400">Profit</p>
-
-          <h2 className="text-5xl font-bold text-blue-400 mt-2">
-            ₹{stats.profit.toLocaleString()}
-          </h2>
-        </div>
-      </div>
-
-      {/* Secondary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
-          <p className="text-slate-400">
-            Total Invoices
-          </p>
-
-          <h2 className="text-4xl font-bold mt-2">
-            {stats.invoices}
-          </h2>
-        </div>
-
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
-          <p className="text-slate-400">
-            Total Customers
-          </p>
-
-          <h2 className="text-4xl font-bold mt-2">
-            {stats.customers}
-          </h2>
-        </div>
-
-        <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
-          <p className="text-slate-400">
-            Inventory Items
-          </p>
-
-          <h2 className="text-4xl font-bold mt-2">
-            {stats.inventory}
-          </h2>
-        </div>
-      </div>
-
-      {/* Reports Table */}
-      <div className="bg-[#071028] border border-slate-800 rounded-2xl overflow-hidden">
-        <div className="p-6 border-b border-slate-800">
-          <h2 className="text-xl font-semibold">
-            Reports
-          </h2>
-        </div>
-
-        <table className="w-full">
-          <thead>
-            <tr className="border-b border-slate-800">
-              <th className="text-left p-4">
-                Report Name
-              </th>
-
-              <th className="text-left p-4">
-                Generated
-              </th>
-
-              <th className="text-left p-4">
-                Status
-              </th>
-
-              <th className="text-left p-4">
-                Action
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <tr>
-              <td className="p-4">
-                ERP Business Report
-              </td>
-
-              <td className="p-4">
-                {new Date().toLocaleDateString()}
-              </td>
-
-              <td className="p-4">
-                <span className="bg-green-600 px-3 py-1 rounded-full text-sm">
-                  Ready
-                </span>
-              </td>
-
-              <td className="p-4">
                 <button
                   onClick={generateReport}
-                  className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
+                  className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-medium transition-all"
                 >
-                  Download
+                  Generate Report
                 </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+              </div>
+
+              {/* Main Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+                  <p className="text-slate-400">Revenue</p>
+
+                  <h2 className="text-5xl font-bold text-green-400 mt-2">
+                    ₹{stats.revenue.toLocaleString()}
+                  </h2>
+                </div>
+
+                <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+                  <p className="text-slate-400">Expenses</p>
+
+                  <h2 className="text-5xl font-bold text-red-400 mt-2">
+                    ₹{stats.expenses.toLocaleString()}
+                  </h2>
+                </div>
+
+                <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+                  <p className="text-slate-400">Profit</p>
+
+                  <h2 className="text-5xl font-bold text-blue-400 mt-2">
+                    ₹{stats.profit.toLocaleString()}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Secondary Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+                  <p className="text-slate-400">
+                    Total Invoices
+                  </p>
+
+                  <h2 className="text-4xl font-bold mt-2">
+                    {stats.invoices}
+                  </h2>
+                </div>
+
+                <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+                  <p className="text-slate-400">
+                    Total Customers
+                  </p>
+
+                  <h2 className="text-4xl font-bold mt-2">
+                    {stats.customers}
+                  </h2>
+                </div>
+
+                <div className="bg-[#071028] border border-slate-800 rounded-2xl p-6">
+                  <p className="text-slate-400">
+                    Inventory Items
+                  </p>
+
+                  <h2 className="text-4xl font-bold mt-2">
+                    {stats.inventory}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Reports Table */}
+              <div className="bg-[#071028] border border-slate-800 rounded-2xl overflow-hidden">
+                <div className="p-6 border-b border-slate-800">
+                  <h2 className="text-xl font-semibold">
+                    Reports
+                  </h2>
+                </div>
+
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-slate-800">
+                      <th className="text-left p-4">
+                        Report Name
+                      </th>
+
+                      <th className="text-left p-4">
+                        Generated
+                      </th>
+
+                      <th className="text-left p-4">
+                        Status
+                      </th>
+
+                      <th className="text-left p-4">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td className="p-4">
+                        ERP Business Report
+                      </td>
+
+                      <td className="p-4">
+                        {new Date().toLocaleDateString()}
+                      </td>
+
+                      <td className="p-4">
+                        <span className="bg-green-600 px-3 py-1 rounded-full text-sm">
+                          Ready
+                        </span>
+                      </td>
+
+                      <td className="p-4">
+                        <button
+                          onClick={generateReport}
+                          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
+                        >
+                          Download
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
