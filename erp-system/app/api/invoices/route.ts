@@ -1,22 +1,161 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../prisma/lib/prisma";
 
+const normalizeInvoice = (invoice: any) => ({
+  id: invoice.id,
+  invoice_number: invoice.invoice_number,
+  invoice_date: invoice.invoice_date,
+  due_date: invoice.due_date,
+  status: invoice.status,
+  subtotal: invoice.subtotal,
+  tax_amount: invoice.tax_amount,
+  total_amount: invoice.total_amount,
+  penalty_amount: invoice.penalty_amount,
+  notes: invoice.notes,
+  terms: invoice.terms,
+  customer: invoice.customer ? { name: invoice.customer.name } : null,
+  customer_profile: invoice.customer_profile
+    ? {
+        customer_name: invoice.customer_profile.customer_name,
+        company_name: invoice.customer_profile.company_name,
+        email: invoice.customer_profile.email,
+        phone: invoice.customer_profile.phone,
+        gst_number: invoice.customer_profile.gst_number,
+        address: invoice.customer_profile.address,
+        city: invoice.customer_profile.city,
+        state: invoice.customer_profile.state,
+        postal_code: invoice.customer_profile.postal_code,
+      }
+    : null,
+  seller_profile: invoice.seller_profile
+    ? {
+        business_name: invoice.seller_profile.business_name,
+        contact_name: invoice.seller_profile.contact_name,
+        email: invoice.seller_profile.email,
+        phone: invoice.seller_profile.phone,
+        gst_number: invoice.seller_profile.gst_number,
+        pan_number: invoice.seller_profile.pan_number,
+        address: invoice.seller_profile.address,
+        city: invoice.seller_profile.city,
+        state: invoice.seller_profile.state,
+        postal_code: invoice.seller_profile.postal_code,
+      }
+    : null,
+  invoiceitem: (invoice.invoiceitem || []).map((item: any) => ({
+    description: item.description,
+    quantity: item.quantity,
+    unit_price: item.unit_price,
+    subtotal: item.subtotal,
+    tax_amount: item.tax_amount,
+    total_amount: item.total_amount,
+    product: item.product ? { name: item.product.name } : null,
+    gstrate: item.gstrate ? { percentage: item.gstrate.percentage } : null,
+  })),
+});
+
 export async function GET() {
-  return NextResponse.json({
-    success: true,
-    message: "Invoices API working",
-  });
+  try {
+    const tenant = await prisma.tenant.findFirst();
+
+    if (!tenant) {
+      return NextResponse.json({ success: true, invoices: [] });
+    }
+
+    const invoices = await prisma.invoice.findMany({
+      where: { tenant_id: tenant.id },
+      include: {
+        customer: true,
+        seller_profile: true,
+        customer_profile: true,
+        invoiceitem: {
+          include: {
+            product: true,
+            gstrate: true,
+          },
+        },
+      },
+      orderBy: [{ created_at: "desc" }],
+    });
+
+    return NextResponse.json({
+      success: true,
+      invoices: invoices.map(normalizeInvoice),
+    });
+  } catch (error: any) {
+    console.error("========== GET INVOICES ERROR ==========");
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: error?.message || "Failed to load invoices",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json();
+    const invoiceId = Number(body.id);
+
+    if (!invoiceId) {
+      return NextResponse.json({ success: false, message: "Invoice id is required" }, { status: 400 });
+    }
+
+    const updateData: Record<string, any> = {};
+
+    if (body.status !== undefined) {
+      updateData.status = String(body.status).toUpperCase();
+    }
+
+    if (body.notes !== undefined) {
+      updateData.notes = body.notes;
+    }
+
+    if (body.dueDate !== undefined) {
+      updateData.due_date = body.dueDate ? new Date(body.dueDate) : null;
+    }
+
+    if (body.penaltyAmount !== undefined) {
+      updateData.penalty_amount = Number(body.penaltyAmount || 0);
+    }
+
+    const invoice = await prisma.invoice.update({
+      where: { id: invoiceId },
+      data: updateData,
+      include: {
+        customer: true,
+        seller_profile: true,
+        customer_profile: true,
+        invoiceitem: {
+          include: {
+            product: true,
+            gstrate: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({ success: true, invoice: normalizeInvoice(invoice) });
+  } catch (error: any) {
+    console.error("========== PATCH INVOICE ERROR ==========");
+    console.error(error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: error?.message || "Failed to update invoice",
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
-    const normalizeAlphaNum = (value?: string) =>
-      value ? value.toUpperCase().replace(/[^A-Z0-9]/g, "") : "";
-
-    const sanitizeGstNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 15);
-    const sanitizePanNumber = (value?: string) => normalizeAlphaNum(value).slice(0, 10);
 
     let tenant = await prisma.tenant.findFirst();
 
@@ -58,7 +197,7 @@ export async function POST(request: Request) {
         ? body.invoiceNumber
         : await generateUniqueInvoiceNumber();
 
-    const sellerProfile = await prisma.sellerProfile.create({
+    await prisma.sellerProfile.create({
       data: {
         tenant_id: tenant.id,
         business_name: body.sellerDetails?.businessName || "",
@@ -77,7 +216,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const customerProfile = await prisma.invoiceCustomerProfile.create({
+    await prisma.invoiceCustomerProfile.create({
       data: {
         tenant_id: tenant.id,
         customer_name: body.customerDetails?.customerName || "",
@@ -207,7 +346,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      invoice,
+      invoice: normalizeInvoice(invoice),
     });
   } catch (error: any) {
     console.error("========== INVOICE ERROR ==========");
