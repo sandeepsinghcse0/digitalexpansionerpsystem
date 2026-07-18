@@ -506,7 +506,7 @@ export default function InvoiceForm() {
     setIsSaving(true);
 
     try {
-      const saveUrl = "/api/invoice-drafts";
+      const saveUrl = "/api/invoices";
 
       const response = await fetch(saveUrl, {
         method: "POST",
@@ -545,7 +545,7 @@ export default function InvoiceForm() {
         }
       }
 
-      alert("Invoice draft saved successfully");
+      alert("Invoice saved successfully");
     } catch (error) {
       console.error(error);
       alert(error instanceof Error ? error.message : "Unable to save invoice");
