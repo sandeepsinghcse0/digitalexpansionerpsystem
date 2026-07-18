@@ -130,8 +130,6 @@ export default function InvoiceForm() {
     return errors;
   };
 
-  const validationErrors = validateInvoiceForm();
-
   useEffect(() => {
     const draftIdFromUrl = searchParams?.get("draftId");
     if (!draftIdFromUrl || loadedDraftIdRef.current === draftIdFromUrl) {
@@ -504,13 +502,6 @@ export default function InvoiceForm() {
 
   const validationErrors = validateInvoiceForm();
 
-  const downloadPDF = () => {
-    if (!showPreview) {
-      setShowPreview(true);
-      alert("Please click 'Download PDF' from the preview modal.");
-    }
-  };
-
   const handleSave = async () => {
     setIsSaving(true);
 
@@ -622,47 +613,111 @@ export default function InvoiceForm() {
       <div className="rounded-3xl bg-[#071028] p-6">
         <h2 className="mb-4 text-xl font-bold text-white">Seller Details</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <input value={sellerDetails.businessName} onChange={(e) => setSellerDetails({ ...sellerDetails, businessName: e.target.value })} placeholder="Business Name" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.contactName} onChange={(e) => setSellerDetails({ ...sellerDetails, contactName: e.target.value })} placeholder="Contact Name" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input type="email" value={sellerDetails.email} onChange={(e) => setSellerDetails({ ...sellerDetails, email: e.target.value })} placeholder="Email" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.phone} onChange={(e) => setSellerDetails({ ...sellerDetails, phone: e.target.value })} placeholder="Phone" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.gstNumber} onChange={(e) => setSellerDetails({ ...sellerDetails, gstNumber: sanitizeGstNumber(e.target.value) })} placeholder="GST Number (15 chars)" maxLength={15} pattern="[A-Z0-9]{15}" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.panNumber || ""} onChange={(e) => setSellerDetails({ ...sellerDetails, panNumber: sanitizePanNumber(e.target.value) })} placeholder="PAN Number (10 chars)" maxLength={10} pattern="[A-Z0-9]{10}" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.address} onChange={(e) => setSellerDetails({ ...sellerDetails, address: e.target.value })} placeholder="Address" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.city} onChange={(e) => setSellerDetails({ ...sellerDetails, city: e.target.value })} placeholder="City" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.state} onChange={(e) => setSellerDetails({ ...sellerDetails, state: e.target.value })} placeholder="State" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={sellerDetails.postalCode} onChange={(e) => setSellerDetails({ ...sellerDetails, postalCode: e.target.value })} placeholder="Postal Code" className="rounded-xl bg-slate-900 p-4 text-white" />
+          <div className="space-y-2">
+            <label htmlFor="seller-business-name" className="text-sm font-medium text-slate-300">Business Name</label>
+            <input id="seller-business-name" value={sellerDetails.businessName} onChange={(e) => setSellerDetails({ ...sellerDetails, businessName: e.target.value })} placeholder="Business Name" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-contact-name" className="text-sm font-medium text-slate-300">Contact Name</label>
+            <input id="seller-contact-name" value={sellerDetails.contactName} onChange={(e) => setSellerDetails({ ...sellerDetails, contactName: e.target.value })} placeholder="Contact Name" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-email" className="text-sm font-medium text-slate-300">Email</label>
+            <input id="seller-email" type="email" value={sellerDetails.email} onChange={(e) => setSellerDetails({ ...sellerDetails, email: e.target.value })} placeholder="Email" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-phone" className="text-sm font-medium text-slate-300">Phone</label>
+            <input id="seller-phone" value={sellerDetails.phone} onChange={(e) => setSellerDetails({ ...sellerDetails, phone: e.target.value })} placeholder="Phone" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-gst" className="text-sm font-medium text-slate-300">GST Number</label>
+            <input id="seller-gst" value={sellerDetails.gstNumber} onChange={(e) => setSellerDetails({ ...sellerDetails, gstNumber: sanitizeGstNumber(e.target.value) })} placeholder="GST Number (15 chars)" maxLength={15} pattern="[A-Z0-9]{15}" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-pan" className="text-sm font-medium text-slate-300">PAN Number</label>
+            <input id="seller-pan" value={sellerDetails.panNumber || ""} onChange={(e) => setSellerDetails({ ...sellerDetails, panNumber: sanitizePanNumber(e.target.value) })} placeholder="PAN Number (10 chars)" maxLength={10} pattern="[A-Z0-9]{10}" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-address" className="text-sm font-medium text-slate-300">Address</label>
+            <input id="seller-address" value={sellerDetails.address} onChange={(e) => setSellerDetails({ ...sellerDetails, address: e.target.value })} placeholder="Address" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-city" className="text-sm font-medium text-slate-300">City</label>
+            <input id="seller-city" value={sellerDetails.city} onChange={(e) => setSellerDetails({ ...sellerDetails, city: e.target.value })} placeholder="City" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-state" className="text-sm font-medium text-slate-300">State</label>
+            <input id="seller-state" value={sellerDetails.state} onChange={(e) => setSellerDetails({ ...sellerDetails, state: e.target.value })} placeholder="State" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="seller-postal-code" className="text-sm font-medium text-slate-300">Postal Code</label>
+            <input id="seller-postal-code" value={sellerDetails.postalCode} onChange={(e) => setSellerDetails({ ...sellerDetails, postalCode: e.target.value })} placeholder="Postal Code" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
         </div>
       </div>
 
       <div className="rounded-3xl bg-[#071028] p-6">
         <h2 className="mb-4 text-xl font-bold text-white">Customer Details</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <input
-            value={customerName}
-            onChange={(e) => {
-              const value = e.target.value;
-              setCustomerName(value);
-              setCustomerDetails((prev) => ({ ...prev, customerName: value }));
-            }}
-            placeholder="Customer Name"
-            className="rounded-xl bg-slate-900 p-4 text-white"
-          />
-          <input value={customerDetails.companyName} onChange={(e) => setCustomerDetails({ ...customerDetails, companyName: e.target.value })} placeholder="Company Name" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input type="email" value={customerDetails.email} onChange={(e) => setCustomerDetails({ ...customerDetails, email: e.target.value })} placeholder="Email" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={customerDetails.phone} onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })} placeholder="Phone" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={customerDetails.gstNumber} onChange={(e) => setCustomerDetails({ ...customerDetails, gstNumber: sanitizeGstNumber(e.target.value) })} placeholder="GST Number (15 chars)" maxLength={15} pattern="[A-Z0-9]{15}" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={customerDetails.panNumber || ""} onChange={(e) => setCustomerDetails({ ...customerDetails, panNumber: sanitizePanNumber(e.target.value) })} placeholder="PAN Number (10 chars)" maxLength={10} pattern="[A-Z0-9]{10}" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={customerDetails.address} onChange={(e) => setCustomerDetails({ ...customerDetails, address: e.target.value })} placeholder="Address" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={customerDetails.city} onChange={(e) => setCustomerDetails({ ...customerDetails, city: e.target.value })} placeholder="City" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={customerDetails.state} onChange={(e) => setCustomerDetails({ ...customerDetails, state: e.target.value })} placeholder="State" className="rounded-xl bg-slate-900 p-4 text-white" />
-          <input value={customerDetails.postalCode} onChange={(e) => setCustomerDetails({ ...customerDetails, postalCode: e.target.value })} placeholder="Postal Code" className="rounded-xl bg-slate-900 p-4 text-white" />
+          <div className="space-y-2">
+            <label htmlFor="customer-name" className="text-sm font-medium text-slate-300">Customer Name</label>
+            <input
+              id="customer-name"
+              value={customerName}
+              onChange={(e) => {
+                const value = e.target.value;
+                setCustomerName(value);
+                setCustomerDetails((prev) => ({ ...prev, customerName: value }));
+              }}
+              placeholder="Customer Name"
+              className="w-full rounded-xl bg-slate-900 p-4 text-white"
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-company" className="text-sm font-medium text-slate-300">Company Name</label>
+            <input id="customer-company" value={customerDetails.companyName} onChange={(e) => setCustomerDetails({ ...customerDetails, companyName: e.target.value })} placeholder="Company Name" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-email" className="text-sm font-medium text-slate-300">Email</label>
+            <input id="customer-email" type="email" value={customerDetails.email} onChange={(e) => setCustomerDetails({ ...customerDetails, email: e.target.value })} placeholder="Email" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-phone" className="text-sm font-medium text-slate-300">Phone</label>
+            <input id="customer-phone" value={customerDetails.phone} onChange={(e) => setCustomerDetails({ ...customerDetails, phone: e.target.value })} placeholder="Phone" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-gst" className="text-sm font-medium text-slate-300">GST Number</label>
+            <input id="customer-gst" value={customerDetails.gstNumber} onChange={(e) => setCustomerDetails({ ...customerDetails, gstNumber: sanitizeGstNumber(e.target.value) })} placeholder="GST Number (15 chars)" maxLength={15} pattern="[A-Z0-9]{15}" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-pan" className="text-sm font-medium text-slate-300">PAN Number</label>
+            <input id="customer-pan" value={customerDetails.panNumber || ""} onChange={(e) => setCustomerDetails({ ...customerDetails, panNumber: sanitizePanNumber(e.target.value) })} placeholder="PAN Number (10 chars)" maxLength={10} pattern="[A-Z0-9]{10}" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-address" className="text-sm font-medium text-slate-300">Address</label>
+            <input id="customer-address" value={customerDetails.address} onChange={(e) => setCustomerDetails({ ...customerDetails, address: e.target.value })} placeholder="Address" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-city" className="text-sm font-medium text-slate-300">City</label>
+            <input id="customer-city" value={customerDetails.city} onChange={(e) => setCustomerDetails({ ...customerDetails, city: e.target.value })} placeholder="City" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-state" className="text-sm font-medium text-slate-300">State</label>
+            <input id="customer-state" value={customerDetails.state} onChange={(e) => setCustomerDetails({ ...customerDetails, state: e.target.value })} placeholder="State" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="customer-postal-code" className="text-sm font-medium text-slate-300">Postal Code</label>
+            <input id="customer-postal-code" value={customerDetails.postalCode} onChange={(e) => setCustomerDetails({ ...customerDetails, postalCode: e.target.value })} placeholder="Postal Code" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+          </div>
         </div>
       </div>
 
       <div className="rounded-3xl bg-[#071028] p-6">
         <h2 className="mb-4 text-xl font-bold text-white">Notes</h2>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Optional notes" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+        <div className="space-y-2">
+          <label htmlFor="invoice-notes" className="text-sm font-medium text-slate-300">Invoice Notes</label>
+          <textarea id="invoice-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} placeholder="Optional notes" className="w-full rounded-xl bg-slate-900 p-4 text-white" />
+        </div>
       </div>
 
       {(status === "UNPAID" || status === "OVERDUE") && (
