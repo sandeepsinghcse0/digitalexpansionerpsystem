@@ -53,8 +53,34 @@ const normalizeInvoice = (invoice: any) => ({
   })),
 });
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const invoiceId = searchParams.get("id");
+
+    if (invoiceId) {
+      const invoice = await prisma.invoice.findUnique({
+        where: { id: Number(invoiceId) },
+        include: {
+          customer: true,
+          seller_profile: true,
+          customer_profile: true,
+          invoiceitem: {
+            include: {
+              product: true,
+              gstrate: true,
+            },
+          },
+        },
+      });
+
+      if (!invoice) {
+        return NextResponse.json({ success: false, message: "Invoice not found" }, { status: 404 });
+      }
+
+      return NextResponse.json({ success: true, invoice: normalizeInvoice(invoice) });
+    }
+
     const tenant = await prisma.tenant.findFirst();
 
     if (!tenant) {
@@ -104,25 +130,164 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ success: false, message: "Invoice id is required" }, { status: 400 });
     }
 
-    const updateData: Record<string, any> = {};
+    const invoice = await prisma.invoice.findUnique({
+      where: { id: invoiceId },
+      include: {
+        customer: true,
+        seller_profile: true,
+        customer_profile: true,
+      },
+    });
 
-    if (body.status !== undefined) {
-      updateData.status = String(body.status).toUpperCase();
+    if (!invoice) {
+      return NextResponse.json({ success: false, message: "Invoice not found" }, { status: 404 });
     }
 
-    if (body.notes !== undefined) {
-      updateData.notes = body.notes;
+    const tenantId = invoice.tenant_id;
+    const invoiceNumber = body.invoiceNumber || invoice.invoice_number;
+
+    if (body.sellerDetails) {
+      if (invoice.seller_profile_id) {
+        await prisma.sellerProfile.update({
+          where: { id: invoice.seller_profile_id },
+          data: {
+            business_name: body.sellerDetails.businessName || "",
+            contact_name: body.sellerDetails.contactName || "",
+            email: body.sellerDetails.email || null,
+            phone: body.sellerDetails.phone || null,
+            gst_number: body.sellerDetails.gstNumber || null,
+            pan_number: body.sellerDetails.panNumber || null,
+            address: body.sellerDetails.address || null,
+            city: body.sellerDetails.city || null,
+            state: body.sellerDetails.state || null,
+            postal_code: body.sellerDetails.postalCode || null,
+          },
+        });
+      } else {
+        const sellerProfile = await prisma.sellerProfile.create({
+          data: {
+            tenant_id: tenantId,
+            business_name: body.sellerDetails.businessName || "",
+            contact_name: body.sellerDetails.contactName || "",
+            email: body.sellerDetails.email || null,
+            phone: body.sellerDetails.phone || null,
+            gst_number: body.sellerDetails.gstNumber || null,
+            pan_number: body.sellerDetails.panNumber || null,
+            address: body.sellerDetails.address || null,
+            city: body.sellerDetails.city || null,
+            state: body.sellerDetails.state || null,
+            postal_code: body.sellerDetails.postalCode || null,
+            country: "India",
+          },
+        });
+        await prisma.invoice.update({ where: { id: invoiceId }, data: { seller_profile_id: sellerProfile.id } });
+      }
     }
 
-    if (body.dueDate !== undefined) {
-      updateData.due_date = body.dueDate ? new Date(body.dueDate) : null;
+    if (body.customerDetails) {
+      if (invoice.customer_profile_id) {
+        await prisma.invoiceCustomerProfile.update({
+          where: { id: invoice.customer_profile_id },
+          data: {
+            customer_name: body.customerDetails.customerName || body.customerDetails.companyName || "",
+            company_name: body.customerDetails.companyName || null,
+            email: body.customerDetails.email || null,
+            phone: body.customerDetails.phone || null,
+            gst_number: body.customerDetails.gstNumber || null,
+            pan_number: body.customerDetails.panNumber || null,
+            address: body.customerDetails.address || null,
+            city: body.customerDetails.city || null,
+            state: body.customerDetails.state || null,
+            postal_code: body.customerDetails.postalCode || null,
+          },
+        });
+      } else {
+        const customerProfile = await prisma.invoiceCustomerProfile.create({
+          data: {
+            tenant_id: tenantId,
+            customer_name: body.customerDetails.customerName || body.customerDetails.companyName || "",
+            company_name: body.customerDetails.companyName || null,
+            email: body.customerDetails.email || null,
+            phone: body.customerDetails.phone || null,
+            gst_number: body.customerDetails.gstNumber || null,
+            pan_number: body.customerDetails.panNumber || null,
+            address: body.customerDetails.address || null,
+            city: body.customerDetails.city || null,
+            state: body.customerDetails.state || null,
+            postal_code: body.customerDetails.postalCode || null,
+            country: "India",
+          },
+        });
+        await prisma.invoice.update({ where: { id: invoiceId }, data: { customer_profile_id: customerProfile.id } });
+      }
     }
 
-    if (body.penaltyAmount !== undefined) {
-      updateData.penalty_amount = Number(body.penaltyAmount || 0);
+    await prisma.customer.update({
+      where: { id: invoice.customer_id },
+      data: {
+        name: body.customerDetails?.customerName || body.customerDetails?.companyName || invoice.customer?.name || "Guest Customer",
+        email: body.customerDetails?.email || null,
+        phone: body.customerDetails?.phone || null,
+        gst_number: body.customerDetails?.gstNumber || null,
+        updated_at: new Date(),
+      },
+    });
+
+    const updateData: Record<string, any> = {
+      invoice_number: invoiceNumber,
+      invoice_date: body.invoiceDate ? new Date(body.invoiceDate) : invoice.invoice_date,
+      due_date: body.dueDate ? new Date(body.dueDate) : null,
+      status: body.status ? String(body.status).toUpperCase() : invoice.status,
+      penalty_amount: body.penaltyAmount !== undefined ? Number(body.penaltyAmount || 0) : invoice.penalty_amount,
+      subtotal: body.subtotal !== undefined ? Number(body.subtotal || 0) : invoice.subtotal,
+      tax_amount: body.taxAmount !== undefined ? Number(body.taxAmount || 0) : invoice.tax_amount,
+      total_amount: body.totalAmount !== undefined ? Number(body.totalAmount || 0) : invoice.total_amount,
+      notes: body.notes !== undefined ? body.notes : invoice.notes,
+      terms: body.terms !== undefined ? body.terms : invoice.terms,
+      updated_at: new Date(),
+    };
+
+    if (body.items && Array.isArray(body.items)) {
+      await prisma.invoiceitem.deleteMany({ where: { invoice_id: invoiceId } });
+
+      const unit = (await prisma.unitofmeasure.findFirst({ where: { symbol: "PCS" } })) || (await prisma.unitofmeasure.create({ data: { name: "Piece", symbol: "PCS" } }));
+
+      for (const [index, item] of body.items.entries()) {
+        const quantity = Number(item.qty || 0);
+        const rate = Number(item.rate || 0);
+        const subtotalValue = quantity * rate;
+        const gstPercent = Number(item.gstRate ?? item.gstPercent ?? 0);
+        const taxAmountValue = subtotalValue * (gstPercent / 100);
+        const totalAmountValue = subtotalValue + taxAmountValue;
+
+        let gstRate = await prisma.gstrate.findFirst({ where: { tenant_id: tenantId, percentage: gstPercent } });
+        if (!gstRate) {
+          gstRate = await prisma.gstrate.create({ data: { tenant_id: tenantId, percentage: gstPercent, name: `GST ${gstPercent}%`, updated_at: new Date() } });
+        }
+
+        let product = await prisma.product.findFirst({ where: { tenant_id: tenantId, name: item.description || `Product ${index + 1}` } });
+        if (!product) {
+          product = await prisma.product.create({ data: { tenant_id: tenantId, sku: `SKU-${Date.now()}-${index + 1}`, name: item.description || `Product ${index + 1}`, description: item.description || null, unit_id: unit.id, cost_price: rate, selling_price: rate, gst_rate_id: gstRate.id, quantity_in_stock: 0, updated_at: new Date() } });
+        }
+
+        await prisma.invoiceitem.create({
+          data: {
+            invoice_id: invoiceId,
+            product_id: product.id,
+            gst_rate_id: gstRate.id,
+            quantity,
+            unit_price: rate,
+            subtotal: subtotalValue,
+            tax_amount: taxAmountValue,
+            total_amount: totalAmountValue,
+            description: item.description || null,
+            updated_at: new Date(),
+          },
+        });
+      }
     }
 
-    const invoice = await prisma.invoice.update({
+    const updatedInvoice = await prisma.invoice.update({
       where: { id: invoiceId },
       data: updateData,
       include: {
@@ -138,7 +303,7 @@ export async function PATCH(request: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, invoice: normalizeInvoice(invoice) });
+    return NextResponse.json({ success: true, invoice: normalizeInvoice(updatedInvoice) });
   } catch (error: any) {
     console.error("========== PATCH INVOICE ERROR ==========");
     console.error(error);

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import jsPDF from "jspdf";
 import InvoiceItem from "./InvoiceItem";
 import InvoiceSummary from "./InvoiceSummary";
 import InvoicePreview from "./InvoicePreview";
@@ -79,6 +80,9 @@ export default function InvoiceForm() {
   const [notes, setNotes] = useState("");
   const [draftId, setDraftId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditingMode, setIsEditingMode] = useState(false);
+  const [editingInvoiceId, setEditingInvoiceId] = useState<number | null>(null);
+  const [isLoadingInvoice, setIsLoadingInvoice] = useState(false);
   const searchParams = useSearchParams();
   const loadedDraftIdRef = useRef<string | null>(null);
 
@@ -132,6 +136,90 @@ export default function InvoiceForm() {
 
   useEffect(() => {
     const draftIdFromUrl = searchParams?.get("draftId");
+    const editIdFromUrl = searchParams?.get("editId");
+
+    if (editIdFromUrl) {
+      const parsedId = Number(editIdFromUrl);
+      if (Number.isFinite(parsedId) && parsedId > 0) {
+        setIsEditingMode(true);
+        setEditingInvoiceId(parsedId);
+        setIsLoadingInvoice(true);
+
+        fetch(`/api/invoices?id=${encodeURIComponent(String(parsedId))}`)
+          .then(async (response) => {
+            if (!response.ok) {
+              throw new Error("Failed to load invoice");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (!data?.success || !data.invoice) {
+              return;
+            }
+
+            const invoice = data.invoice;
+            setInvoiceNumber(invoice.invoice_number || generateUniqueInvoiceNumber());
+            setInvoiceDate(invoice.invoice_date ? new Date(invoice.invoice_date).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10));
+            setDueDate(invoice.due_date ? new Date(invoice.due_date).toISOString().slice(0, 10) : "");
+            setStatus(invoice.status || "DRAFT");
+            setPenaltyAmount(invoice.penalty_amount || 0);
+            setSellerDetails({
+              ...emptySellerDetails,
+              businessName: invoice.seller_profile?.business_name || "",
+              contactName: invoice.seller_profile?.contact_name || "",
+              email: invoice.seller_profile?.email || "",
+              phone: invoice.seller_profile?.phone || "",
+              gstNumber: invoice.seller_profile?.gst_number || "",
+              panNumber: invoice.seller_profile?.pan_number || "",
+              address: invoice.seller_profile?.address || "",
+              city: invoice.seller_profile?.city || "",
+              state: invoice.seller_profile?.state || "",
+              postalCode: invoice.seller_profile?.postal_code || "",
+            });
+            setCustomerDetails({
+              ...emptyCustomerDetails,
+              customerName: invoice.customer_profile?.customer_name || invoice.customer?.name || "",
+              companyName: invoice.customer_profile?.company_name || "",
+              email: invoice.customer_profile?.email || "",
+              phone: invoice.customer_profile?.phone || "",
+              gstNumber: invoice.customer_profile?.gst_number || "",
+              panNumber: invoice.customer_profile?.pan_number || "",
+              address: invoice.customer_profile?.address || "",
+              city: invoice.customer_profile?.city || "",
+              state: invoice.customer_profile?.state || "",
+              postalCode: invoice.customer_profile?.postal_code || "",
+            });
+            setCustomerName(invoice.customer_profile?.customer_name || invoice.customer?.name || "");
+            setNotes(invoice.notes || "");
+            setItems(
+              Array.isArray(invoice.invoiceitem) && invoice.invoiceitem.length
+                ? invoice.invoiceitem.map((item: any) => ({
+                    description: item.description || item.product?.name || "",
+                    qty: Number(item.quantity || 1),
+                    rate: Number(item.unit_price || item.subtotal || 0),
+                    gstRate: Number(item.gstrate?.percentage || 18),
+                  }))
+                : [
+                    {
+                      description: "",
+                      qty: 1,
+                      rate: 0,
+                      gstRate: 18,
+                    },
+                  ]
+            );
+          })
+          .catch((error) => {
+            console.error("Failed to load invoice:", error);
+          })
+          .finally(() => {
+            setIsLoadingInvoice(false);
+          });
+
+        return;
+      }
+    }
+
     if (!draftIdFromUrl || loadedDraftIdRef.current === draftIdFromUrl) {
       return;
     }
@@ -478,43 +566,72 @@ export default function InvoiceForm() {
       console.error(error);
       alert("Unable to generate PDF right now.");
     }
-    if (customerDetails.gstNumber && !gstRegex.test(customerDetails.gstNumber)) {
-      errors.push("Customer GST number must be 15 uppercase alphanumeric characters.");
-    }
-    if (sellerDetails.panNumber && !panRegex.test(sellerDetails.panNumber)) {
-      errors.push("Seller PAN number must be 10 uppercase alphanumeric characters.");
-    }
-    if (customerDetails.panNumber && !panRegex.test(customerDetails.panNumber)) {
-      errors.push("Customer PAN number must be 10 uppercase alphanumeric characters.");
-    }
-    if (invoiceDate && Number.isNaN(Date.parse(invoiceDate))) {
-      errors.push("Invoice date must be a valid date.");
-    }
-    if (dueDate && Number.isNaN(Date.parse(dueDate))) {
-      errors.push("Due date must be a valid date.");
-    }
-    if (invoiceDate && dueDate && new Date(dueDate) < new Date(invoiceDate)) {
-      errors.push("Due date cannot be earlier than the invoice date.");
-    }
-
-    return errors;
   };
 
   const validationErrors = validateInvoiceForm();
+
+  const handlePrintReceipt = () => {
+    const printWindow = window.open("", "_blank", "width=900,height=800");
+
+    if (!printWindow) {
+      alert("Please allow popups to print the receipt.");
+      return;
+    }
+
+    const receiptHtml = `
+      <html>
+        <head>
+          <title>Receipt - ${invoiceNumber}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 24px; color: #111; }
+            h1 { margin-bottom: 8px; }
+            .box { border: 1px solid #ddd; padding: 16px; margin-bottom: 16px; }
+            .row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+          </style>
+        </head>
+        <body>
+          <h1>Receipt</h1>
+          <div class="box">
+            <div class="row"><strong>Invoice No:</strong><span>${invoiceNumber}</span></div>
+            <div class="row"><strong>Date:</strong><span>${invoiceDate}</span></div>
+            <div class="row"><strong>Customer:</strong><span>${customerName || customerDetails.customerName || "Customer"}</span></div>
+            <div class="row"><strong>Status:</strong><span>${status}</span></div>
+          </div>
+          <div class="box">
+            ${items
+              .filter((item) => item.description?.trim() || item.rate > 0)
+              .map((item) => `<div class="row"><span>${item.description || "Item"}</span><span>₹${Number(item.rate || 0).toFixed(2)}</span></div>`)
+              .join("")}
+          </div>
+          <div class="box">
+            <div class="row"><strong>Subtotal:</strong><span>₹${subtotal.toFixed(2)}</span></div>
+            <div class="row"><strong>Tax:</strong><span>₹${taxAmount.toFixed(2)}</span></div>
+            <div class="row"><strong>Total:</strong><span>₹${totalAmount.toFixed(2)}</span></div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(receiptHtml);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
 
     try {
       const saveUrl = "/api/invoices";
+      const method = isEditingMode && editingInvoiceId ? "PATCH" : "POST";
 
       const response = await fetch(saveUrl, {
-        method: "POST",
+        method,
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: draftId || undefined,
+          id: editingInvoiceId || draftId || undefined,
           invoiceNumber,
           invoiceDate,
           dueDate,
@@ -536,6 +653,11 @@ export default function InvoiceForm() {
         throw new Error(result.message || "Unable to save invoice");
       }
 
+      if (isEditingMode && editingInvoiceId) {
+        alert("Invoice updated successfully");
+        return;
+      }
+
       if (result.draft?.id) {
         setDraftId(String(result.draft.id));
         if (typeof window !== "undefined") {
@@ -554,10 +676,14 @@ export default function InvoiceForm() {
     }
   };
 
+  if (isLoadingInvoice && isEditingMode) {
+    return <div className="text-white">Loading invoice...</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl bg-[#071028] p-6">
-        <h2 className="mb-4 text-xl font-bold text-white">Invoice Information</h2>
+        <h2 className="mb-4 text-xl font-bold text-white">{isEditingMode ? "Edit Invoice" : "Invoice Information"}</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">Invoice Number</label>
@@ -777,7 +903,13 @@ export default function InvoiceForm() {
           disabled={isSaving || validationErrors.length > 0}
           className="rounded-xl bg-yellow-500 px-6 py-3 text-white hover:bg-yellow-600 disabled:opacity-50"
         >
-          {isSaving ? "Saving..." : draftId ? "Update Draft" : "Save Draft"}
+          {isSaving ? (isEditingMode ? "Updating..." : "Saving...") : isEditingMode ? "Update Invoice" : draftId ? "Update Draft" : "Save Draft"}
+        </button>
+        <button
+          onClick={handlePrintReceipt}
+          className="rounded-xl bg-purple-600 px-6 py-3 text-white hover:bg-purple-700"
+        >
+          Print Receipt
         </button>
         <button
           onClick={() => setShowPreview(true)}

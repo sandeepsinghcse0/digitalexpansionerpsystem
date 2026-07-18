@@ -13,6 +13,7 @@ export default function InvoiceForm() {
       description: "",
       qty: 1,
       rate: 0,
+      gstRate: 18,
     },
   ]);
 

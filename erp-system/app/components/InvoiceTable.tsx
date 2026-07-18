@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type InvoiceItemData = {
   description?: string | null;
@@ -59,6 +60,7 @@ type InvoiceRecord = {
 };
 
 export default function InvoiceTable() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [invoices, setInvoices] = useState<InvoiceRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,7 +207,7 @@ export default function InvoiceTable() {
                       <button onClick={() => { setMode("view"); setSelectedInvoice(invoice); }} className="rounded-lg bg-blue-600 px-3 py-2 hover:bg-blue-700">
                         View
                       </button>
-                      <button onClick={() => { setMode("edit"); setEditInvoice(invoice); }} className="rounded-lg bg-yellow-600 px-3 py-2 hover:bg-yellow-700">
+                      <button onClick={() => router.push(`/invoices/create?editId=${invoice.id}`)} className="rounded-lg bg-yellow-600 px-3 py-2 hover:bg-yellow-700">
                         Edit
                       </button>
                       <button onClick={() => deleteInvoice(invoice.id)} className="rounded-lg bg-red-600 px-3 py-2 hover:bg-red-700">
